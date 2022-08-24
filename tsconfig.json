@@ -24,7 +24,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "importsNotUsedAsValues": "error",
-    "removeComments": true
+    "removeComments": true,
+    "types": ["./node_modules/navigation-api-types"]
   },
   "include": ["./src", "./lib", "./bin", "./__tests__"],
   "exclude": ["./dist", "node_modules"]
