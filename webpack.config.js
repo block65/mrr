@@ -67,6 +67,7 @@ export default (_, args) => ({
   output: {
     path: 'build',
     module: true,
+    filename: '[name].js',
     library: {
       type: 'module',
     },

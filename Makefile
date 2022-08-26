@@ -1,12 +1,16 @@
 
-SRCS := $(shell find lib -print)
+SRCS := $(shell find lib -print -name *.ts?)
 
-all: build/index.mjs
+all: build/index.js lib/index.d.ts
 
 .PHONY: clean
 clean:
-	rm -rf build
 	yarn tsc -b --clean
+	rm -rf dist build
+
+.PHONY: distclean
+distclean: clean
+	rm -rf node_modules
 
 .PHONY: test
 test:
@@ -17,8 +21,11 @@ node_modules: yarn.lock package.json
 	yarn install
 
 .PHONY: dev
-dev: webpack.config.js
+dev: node_modules webpack.config.js
 	yarn webpack -o build --mode=development -w
 
-build/index.mjs: $(SRCS) webpack.config.js babel.config.cjs
+lib/index.d.ts: node_modules
+	yarn tsc --emitDeclarationOnly
+
+build/index.js: node_modules $(SRCS) webpack.config.js babel.config.cjs
 	yarn webpack -o build --mode=production
