@@ -1,5 +1,6 @@
 import {
   AnchorHTMLAttributes,
+  ComponentProps,
   FC,
   KeyboardEvent,
   MouseEvent,
@@ -13,10 +14,15 @@ import { useMatch } from './routes.js';
 import type {
   DefaultRouteParams,
   ExtractRouteParams,
+  RequireKeys,
   RouteWithChildFunction,
   RouteWithChildren,
   RouteWithComponent,
 } from './types.js';
+
+export function asWildcardRoute<T extends string>(pattern: T): `${T}/:__rest*` {
+  return `${pattern}/:__rest*`;
+}
 
 export function Route<
   T extends string,
@@ -42,6 +48,10 @@ export function Route<
 
   return null;
 }
+
+export const WildcardRoute: FC<
+  RequireKeys<ComponentProps<typeof Route>, 'path'>
+> = (props) => <Route {...props} path={asWildcardRoute(props.path)} />;
 
 export const Link: FC<
   PropsWithChildren<

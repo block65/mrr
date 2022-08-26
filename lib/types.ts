@@ -37,6 +37,7 @@ export interface RouteWithChildren<T extends string> {
   path?: T;
   children?: ReactNode;
 }
+
 export interface RouteWithChildFunction<
   T extends string,
   P extends DefaultRouteParams = ExtractRouteParams<T>,
@@ -44,6 +45,7 @@ export interface RouteWithChildFunction<
   path?: T;
   children: (params: P) => JSX.Element;
 }
+
 export interface RouteWithComponent<
   T extends string,
   P extends DefaultRouteParams = ExtractRouteParams<T>,
@@ -83,7 +85,7 @@ export interface RestrictedURLProps {
   pathname: string;
   searchParams: URLSearchParams;
 
-  // things you can never provider (just to make sure TS doesnt allow
+  // things you can never provide (just to make sure TS doesnt allow
   // a stray URL object to be passed)
   origin?: never;
   username?: never;
@@ -92,3 +94,8 @@ export interface RestrictedURLProps {
   host?: never;
   port?: never;
 }
+
+export type RequireKeys<T extends object, K extends keyof T> = Required<
+  Pick<T, K>
+> &
+  Omit<T, K>;

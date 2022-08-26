@@ -24,10 +24,6 @@ function interpolate<T extends DefaultRouteParams>(
   );
 }
 
-export function asWildcardRoute<T extends string>(pattern: T): `${T}/:__rest*` {
-  return `${pattern}/:__rest*`;
-}
-
 export function routify<T extends string, Q extends QueryParams = never>(
   pathname: T,
 ): Routified<T, Q> {
