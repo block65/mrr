@@ -7,13 +7,24 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/lib/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "default": "./build/index.js"
+    },
+    "./routify": {
+      "types": "./dist/src/routify.d.ts",
+      "default": "./dist/src/routify.js"
+    },
+    "./utils": {
+      "types": "./dist/src/routify.d.ts",
+      "default": "./dist/src/routify.js"
     }
   },
   "files": [
     "build/index.js",
-    "dist/lib/*.d.ts"
+    "dist/lib/*.js",
+    "dist/lib/*.d.ts",
+    "dist/src/*.js",
+    "dist/src/*.d.ts"
   ],
   "browserslist": [
     "last 1 Chrome major versions",

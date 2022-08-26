@@ -4,7 +4,7 @@ import webpack from 'webpack';
 /** @type {import('webpack').Configuration} */
 export default (_, args) => ({
   entry: {
-    index: './lib/index.tsx',
+    index: './src/index.ts',
     ...(args.mode !== 'production' && { test: './__tests__/test.tsx' }),
   },
 

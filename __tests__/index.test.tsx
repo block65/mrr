@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { Link, Route, Router, Routes, useLocation } from '../lib/index.js';
+import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 import { routify } from '../lib/routify.js';
 
 export const LocationDisplay = () => {

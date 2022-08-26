@@ -38,7 +38,7 @@ export function urlRhs(url: URL): string {
 
 export function urlObjectAssign(
   url: URL,
-  props: PartialWithUndefined<Omit<URLProps, 'href'>>,
+  props: PartialWithUndefined<URLProps>,
 ): URL {
   const { origin, searchParams, ...rest } = props;
 
