@@ -5,7 +5,7 @@ import webpack from 'webpack';
 export default (_, args) => ({
   entry: {
     index: './lib/index.tsx',
-    test: './__tests__/test.tsx',
+    ...(args.mode !== 'production' && { test: './__tests__/test.tsx' }),
   },
 
   experiments: {
