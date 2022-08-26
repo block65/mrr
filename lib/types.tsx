@@ -72,7 +72,7 @@ export interface URLProps {
   pathname: string;
   port: string;
   protocol: string;
-  // search: string;
+  search: string;
   searchParams: URLSearchParams;
   username: string;
 }

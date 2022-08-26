@@ -7,7 +7,7 @@ import {
   type ComponentProps,
   Fragment,
 } from 'react';
-import type { PartialWithUndefined } from './types.js';
+import type { PartialWithUndefined, URLProps } from './types.js';
 
 export function withWindow<A>(
   a: (window: Window & typeof globalThis) => A,
@@ -38,7 +38,7 @@ export function urlRhs(url: URL): string {
 
 export function urlObjectAssign(
   url: URL,
-  props: PartialWithUndefined<Omit<URL, 'href'>>,
+  props: PartialWithUndefined<Omit<URLProps, 'href'>>,
 ): URL {
   const { origin, searchParams, ...rest } = props;
 
@@ -46,7 +46,7 @@ export function urlObjectAssign(
 
   Object.entries(rest).forEach(([k, v]) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    newUrl[k as keyof typeof rest] = v;
+    newUrl[k as keyof typeof rest] = v || '';
   });
 
   if (searchParams) {
