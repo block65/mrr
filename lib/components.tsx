@@ -104,11 +104,9 @@ export const Redirect: FC<PropsWithChildren<{ url: URL }>> = ({
   url,
   children,
 }) => {
-  const [, { push }] = useLocation();
-
   useEffect(() => {
     window.location.assign(url);
-  }, [push, url]);
+  }, [url]);
 
   return <>{children}</>;
 };
