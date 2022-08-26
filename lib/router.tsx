@@ -17,7 +17,7 @@ interface ContextInterface {
 }
 
 type NavigationMethod = (
-  partial: PartialWithUndefined<RestrictedURLProps>,
+  partial: PartialWithUndefined<RestrictedURLProps> | URL,
   options?: { data: unknown },
 ) => void;
 
@@ -160,11 +160,8 @@ export function useLocation(): [
     [url],
   );
 
-  const replace = useCallback(
-    (
-      partial: PartialWithUndefined<RestrictedURLProps>,
-      { data }: { data?: unknown } = {},
-    ) => {
+  const replace: NavigationMethod = useCallback(
+    (partial, { data }: { data?: unknown } = {}) => {
       navigateTo(partial, {
         state: data,
         replace: true,
@@ -173,11 +170,8 @@ export function useLocation(): [
     [navigateTo],
   );
 
-  const push = useCallback(
-    (
-      partial: PartialWithUndefined<RestrictedURLProps>,
-      { data }: { data?: unknown } = {},
-    ) => {
+  const push: NavigationMethod = useCallback(
+    (partial, { data }: { data?: unknown } = {}) => {
       navigateTo(partial, { state: data });
     },
     [navigateTo],
