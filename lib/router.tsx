@@ -128,22 +128,27 @@ export function useLocation(): [
 
   const navigateTo = useCallback(
     (
-      partial: PartialWithUndefined<RestrictedURLProps>,
-      options?: { replace?: boolean; data?: unknown },
+      partialOrUrl: PartialWithUndefined<RestrictedURLProps> | URL,
+      options?: { replace?: boolean; state?: unknown },
     ) => {
-      const { history } = window;
-      const nextUrl = urlObjectAssign(new URL(url), partial);
-      const nextRhs = urlRhs(nextUrl);
+      const nextUrl = urlObjectAssign(new URL(url), partialOrUrl);
 
-      if (options?.replace) {
-        history.replaceState(options.data, '', nextRhs);
+      if (navigationApiAvailable) {
+        navigation.navigate(nextUrl.toString(), {
+          history: options?.replace ? 'replace' : 'auto',
+          state: options?.state,
+        });
       } else {
-        history.pushState(options?.data, '', nextRhs);
-      }
+        const { history } = window;
+        const nextRhs = urlRhs(nextUrl);
 
-      // pushState and replaceState don't trigger popstate event
-      // this is only needed when there's no navigation API
-      if (!navigationApiAvailable) {
+        if (options?.replace) {
+          history.replaceState(options.state, '', nextRhs);
+        } else {
+          history.pushState(options?.state, '', nextRhs);
+        }
+
+        // pushState and replaceState don't trigger popstate event
         dispatchEvent(
           new PopStateEvent('popstate', {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -161,7 +166,7 @@ export function useLocation(): [
       { data }: { data?: unknown } = {},
     ) => {
       navigateTo(partial, {
-        data,
+        state: data,
         replace: true,
       });
     },
@@ -173,7 +178,7 @@ export function useLocation(): [
       partial: PartialWithUndefined<RestrictedURLProps>,
       { data }: { data?: unknown } = {},
     ) => {
-      navigateTo(partial, { data });
+      navigateTo(partial, { state: data });
     },
     [navigateTo],
   );
