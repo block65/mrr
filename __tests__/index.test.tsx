@@ -66,7 +66,7 @@ test('wildcard route', async () => {
       <LocationDisplay />
       <Routes>
         <Route wildcard path={userView.path}>
-          {({ params }) => (
+          {(params) => (
             <h1 data-testid="users">You are user {params.userId}</h1>
           )}
         </Route>
@@ -76,7 +76,7 @@ test('wildcard route', async () => {
         </Route>
 
         <Route component={ParamlessComponent} />
-        <Route>{({ params }) => <ParamlessComponent {...params} />}</Route>
+        <Route>{(params) => <ParamlessComponent {...params} />}</Route>
         <Route>
           <h1>fail</h1>
         </Route>
@@ -126,7 +126,7 @@ test('programmatic nav', async () => {
       <LocationDisplay />
       <Routes>
         <Route path={usersView.path}>
-          {({ params }) => (
+          {(params) => (
             <h1 data-testid={`heading-${params.userId}`}>
               You are user {params.userId}
             </h1>

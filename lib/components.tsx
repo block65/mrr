@@ -42,7 +42,7 @@ export function Route<
   if ('children' in props) {
     const { children } = props;
     if (typeof children === 'function') {
-      return children({ params: match ? match.params : ({} as P) });
+      return children(match ? match.params : ({} as P));
     }
     return <>{children}</>;
   }

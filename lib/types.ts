@@ -54,7 +54,7 @@ export interface RouteWithChildFunction<
 > {
   path?: T;
   wildcard?: true;
-  children: (props: { params: P }) => JSX.Element;
+  children: (params: P) => JSX.Element;
 }
 
 export interface RouteWithComponent<
