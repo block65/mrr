@@ -38,10 +38,13 @@ export function routify<T extends string, Q extends QueryParams = never>(
         throw new Error('origin is not defined and no DOM is available');
       }
 
-      const newUrl = urlObjectAssign(new URL(origin || window.location.href), {
-        pathname: interpolatedPathname,
-        ...rest,
-      });
+      const newUrl = urlObjectAssign(
+        new URL(origin || window.location.origin),
+        {
+          pathname: interpolatedPathname,
+          ...rest,
+        },
+      );
 
       searchParams.forEach((value, key) => {
         newUrl.searchParams.set(key, value);
