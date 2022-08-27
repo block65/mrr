@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { FC } from 'react';
 import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 import { routify } from '../lib/routify.js';
+import { useNavigate } from '../lib/router.js';
 
 export const LocationDisplay = () => {
   const [location] = useLocation();
@@ -47,4 +49,109 @@ test('basic', async () => {
   expect(screen.getByRole('heading')).toHaveTextContent(
     'You are at the login page',
   );
+});
+
+test('wildcard route', async () => {
+  const origin = 'https://router.example.com';
+
+  const userView = routify('/users/:userId');
+
+  const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
+    <>userId = {userId}</>
+  );
+  const ParamlessComponent: FC = () => <>Peanuts</>;
+
+  /* const { debug } =  */ render(
+    <Router origin={origin} pathname="/users/test1">
+      <LocationDisplay />
+      <Routes>
+        <Route wildcard path={userView.path}>
+          {({ params }) => (
+            <h1 data-testid="users">You are user {params.userId}</h1>
+          )}
+        </Route>
+        <Route path={userView.path} component={ComponentWithUserId} />
+        <Route path={userView.path}>
+          <ComponentWithUserId userId="I cant get the userId from here" />
+        </Route>
+
+        <Route component={ParamlessComponent} />
+        <Route>{({ params }) => <ParamlessComponent {...params} />}</Route>
+        <Route>
+          <h1>fail</h1>
+        </Route>
+      </Routes>
+    </Router>,
+  );
+
+  await waitFor(() => screen.getByTestId('users'));
+});
+
+test('programmatic nav', async () => {
+  const origin = 'https://router.example.com';
+
+  const usersView = routify('/users/:userId');
+
+  // const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
+  //   <>userId = {userId}</>
+  // );
+  // const ParamlessComponent: FC = () => <>Paramless</>;
+
+  const Buttons: FC = () => {
+    const { navigate } = useNavigate();
+
+    const users = ['alice', 'bob', 'carol', 'dave'];
+
+    return (
+      <ul>
+        {users.map((userId) => (
+          <li key={userId}>
+            <button
+              data-testid={`button-${userId}`}
+              onClick={() => {
+                const dest = usersView.build({ params: { userId } });
+                navigate(dest);
+              }}
+            >
+              {userId}
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  /* const { debug } =  */ render(
+    <Router origin={origin} pathname="/users/test1">
+      <LocationDisplay />
+      <Routes>
+        <Route path={usersView.path}>
+          {({ params }) => (
+            <h1 data-testid={`heading-${params.userId}`}>
+              You are user {params.userId}
+            </h1>
+          )}
+        </Route>
+
+        <Route>
+          <h1>fail</h1>
+        </Route>
+      </Routes>
+
+      <Buttons />
+    </Router>,
+  );
+
+  // debug();
+
+  await waitFor(() => screen.getByTestId('heading-test1'));
+
+  fireEvent.click(screen.getByTestId('button-alice'));
+  expect(screen.getByRole('heading')).toHaveTextContent(/alice/);
+
+  fireEvent.click(screen.getByTestId('button-bob'));
+  expect(screen.getByRole('heading')).toHaveTextContent(/bob/);
+
+  fireEvent.click(screen.getByTestId('button-carol'));
+  expect(screen.getByRole('heading')).toHaveTextContent(/carol/);
 });
