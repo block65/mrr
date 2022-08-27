@@ -74,8 +74,8 @@ export const Router: FC<
     if (navigationApiAvailable) {
       const navigateEventHandler: NavigateEventListener = (e) => {
         if (
-          e.navigationType === 'push' ||
-          (e.navigationType === 'replace' && e.destination.sameDocument)
+          (e.navigationType === 'push' || e.navigationType === 'replace') &&
+          e.destination.sameDocument
         ) {
           setUrlOnlyIfChanged(e.destination.url);
         }
