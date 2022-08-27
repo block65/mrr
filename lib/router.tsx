@@ -16,9 +16,14 @@ interface ContextInterface {
   matcher: Matcher;
 }
 
+type LegacyNavigationMethod = (
+  dest: PartialWithUndefined<RestrictedURLProps> | URL,
+  options?: { state: unknown },
+) => void;
+
 type NavigationMethod = (
-  partial: PartialWithUndefined<RestrictedURLProps> | URL,
-  options?: { data: unknown },
+  dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
+  options?: { history?: NavigationHistoryBehavior; state?: unknown },
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
@@ -59,7 +64,7 @@ export const Router: FC<
     ),
   );
 
-  const setUrlIfChanged = useCallback((dest: string) => {
+  const setUrlOnlyIfChanged = useCallback((dest: string) => {
     setUrl((src) => (src.toString() !== dest ? new URL(dest) : src));
   }, []);
 
@@ -67,17 +72,19 @@ export const Router: FC<
     // Navigation API
     if (navigationApiAvailable) {
       const navigateEventHandler: NavigateEventListener = (e) => {
-        setUrlIfChanged(e.destination.url);
+        setUrlOnlyIfChanged(e.destination.url);
       };
 
+      const eventName = 'navigate';
+
       navigation.addEventListener(
-        'navigate',
+        eventName,
         navigateEventHandler as EventListener,
       );
 
       return () => {
         navigation.removeEventListener(
-          'navigate',
+          eventName,
           navigateEventHandler as EventListener,
         );
       };
@@ -86,19 +93,21 @@ export const Router: FC<
     // History API
     if (typeof window !== 'undefined') {
       const navigateEventHandler = (/* evt: PopStateEvent */): void => {
-        setUrlIfChanged(window.location.href);
+        setUrlOnlyIfChanged(window.location.href);
       };
 
-      window.addEventListener('popstate', navigateEventHandler);
+      const eventName = 'popstate';
+
+      window.addEventListener(eventName, navigateEventHandler);
 
       return () => {
-        window.removeEventListener('popstate', navigateEventHandler);
+        window.removeEventListener(eventName, navigateEventHandler);
       };
     }
 
     // noop
     return () => {};
-  }, [setUrlIfChanged]);
+  }, [setUrlOnlyIfChanged]);
 
   return (
     <RouterContext.Provider value={{ url, matcher }}>
@@ -118,31 +127,39 @@ export function useRouter() {
 export function useLocation(): [
   URL,
   {
-    push: NavigationMethod;
-    replace: NavigationMethod;
-    go: (offset?: number) => void;
+    navigate: NavigationMethod;
     back: () => void;
+    /** @deprecated */
+    push: LegacyNavigationMethod;
+    /** @deprecated */
+    replace: LegacyNavigationMethod;
   },
 ] {
   const { url } = useRouter();
 
-  const navigateTo = useCallback(
+  const navigate = useCallback(
     (
-      partialOrUrl: PartialWithUndefined<RestrictedURLProps> | URL,
-      options?: { replace?: boolean; state?: unknown },
+      dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
+      options?: { history?: NavigationHistoryBehavior; state?: unknown },
     ) => {
-      const nextUrl = urlObjectAssign(new URL(url), partialOrUrl);
+      const nextUrl =
+        dest instanceof URL
+          ? dest
+          : urlObjectAssign(
+              new URL(url),
+              typeof dest === 'string' ? { pathname: dest } : dest,
+            );
 
       if (navigationApiAvailable) {
         navigation.navigate(nextUrl.toString(), {
-          history: options?.replace ? 'replace' : 'auto',
+          history: options?.history ?? 'auto',
           state: options?.state,
         });
       } else {
         const { history } = window;
         const nextRhs = urlRhs(nextUrl);
 
-        if (options?.replace) {
+        if (options?.history === 'replace') {
           history.replaceState(options.state, '', nextRhs);
         } else {
           history.pushState(options?.state, '', nextRhs);
@@ -160,30 +177,34 @@ export function useLocation(): [
     [url],
   );
 
-  const replace: NavigationMethod = useCallback(
-    (partial, { data }: { data?: unknown } = {}) => {
-      navigateTo(partial, {
-        state: data,
-        replace: true,
+  const replace: LegacyNavigationMethod = useCallback(
+    (dest, { state }: { state?: unknown } = {}) => {
+      navigate(dest, {
+        state,
+        history: 'replace',
       });
     },
-    [navigateTo],
+    [navigate],
   );
 
-  const push: NavigationMethod = useCallback(
-    (partial, { data }: { data?: unknown } = {}) => {
-      navigateTo(partial, { state: data });
+  const push: LegacyNavigationMethod = useCallback(
+    (dest, { state }: { state?: unknown } = {}) => {
+      navigate(dest, { state });
     },
-    [navigateTo],
+    [navigate],
   );
-
-  const go = useCallback((offset = 0) => {
-    window.history.go(offset);
-  }, []);
 
   const back = useCallback(() => {
-    window.history.back();
+    if (navigationApiAvailable) {
+      navigation.back();
+    } else {
+      window.history.back();
+    }
   }, []);
 
-  return [url, { replace, push, go, back }];
+  return [url, { navigate, back, replace, push }];
+}
+
+export function useNavigate() {
+  return useLocation()[1];
 }

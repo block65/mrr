@@ -1,56 +1,68 @@
 import type { FC, ReactNode } from 'react';
 
-export type DefaultRouteParams = Record<string, string>;
+type Path = string | undefined;
+
+export type RouteParams = Record<string, string>;
 
 // CREDIT @types/react-router
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3067ea199822cc2f06edcb84854adeecdfe640ad/types/react-router/index.d.ts#L149
-export type ExtractRouteOptionalParam<PathType extends string> =
-  PathType extends `${infer Param}?`
+export type ExtractRouteOptionalParam<T extends string> =
+  T extends `${infer Param}?`
     ? { [k in Param]: string | undefined }
-    : PathType extends `${infer Param}*`
+    : T extends `${infer Param}*`
     ? { [k in Param]: string | undefined }
-    : PathType extends `${infer Param}+`
+    : T extends `${infer Param}+`
     ? { [k in Param]: string }
-    : { [k in PathType]: string };
+    : { [k in T]: string };
 
 // CREDIT @types/react-router
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3067ea199822cc2f06edcb84854adeecdfe640ad/types/react-router/index.d.ts#L149
-export type ExtractRouteParams<PathType extends string> =
-  string extends PathType
-    ? { [k in string]: string }
-    : // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}/${infer Rest}`
-    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
-      ? ExtractRouteOptionalParam<Param> & ExtractRouteParams<Rest>
-      : ExtractRouteOptionalParam<ParamWithOptionalRegExp> &
-          ExtractRouteParams<Rest>
-    : // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}`
-    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
-      ? ExtractRouteOptionalParam<Param>
-      : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
-    : DefaultRouteParams;
+export type ExtractRouteParams<PathType extends Path> = string extends PathType
+  ? { [k in string]: string }
+  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}/${infer Rest}`
+  ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
+    ? ExtractRouteOptionalParam<Param> & ExtractRouteParams<Rest>
+    : ExtractRouteOptionalParam<ParamWithOptionalRegExp> &
+        ExtractRouteParams<Rest>
+  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}`
+  ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
+    ? ExtractRouteOptionalParam<Param>
+    : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
+  : RouteParams;
 
-export interface RouteWithChildren<T extends string> {
+export interface DefaultRoute {
+  children?: ReactNode;
+}
+
+export interface DefaultRoute {
+  component?: FC;
+}
+
+export interface RouteWithChildren<T extends string | undefined> {
   path?: T;
+  wildcard?: true;
   children?: ReactNode;
 }
 
 export interface RouteWithChildFunction<
-  T extends string,
-  P extends DefaultRouteParams = ExtractRouteParams<T>,
+  T extends Path,
+  P extends RouteParams = ExtractRouteParams<T>,
 > {
   path?: T;
-  children: (params: P) => JSX.Element;
+  wildcard?: true;
+  children: (props: { params: P }) => JSX.Element;
 }
 
 export interface RouteWithComponent<
-  T extends string,
-  P extends DefaultRouteParams = ExtractRouteParams<T>,
+  T extends Path,
+  P extends RouteParams = ExtractRouteParams<T>,
 > {
   path?: T;
+  wildcard?: true;
   component: FC<P>;
 }
 
@@ -58,9 +70,7 @@ export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
 
-export interface RouteComponentProps<
-  T extends DefaultRouteParams = DefaultRouteParams,
-> {
+export interface RouteComponentProps<T extends RouteParams = RouteParams> {
   params: T;
 }
 

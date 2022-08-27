@@ -2,13 +2,13 @@ import type { ReactElement, ComponentProps } from 'react';
 import { parse } from 'regexparam';
 import type { Route } from './components.js';
 import { pathCache } from './path-cache.js';
-import type { DefaultRouteParams } from './types.js';
+import type { RouteParams } from './types.js';
 
 export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
 
-export type Match<P extends DefaultRouteParams> = MatchResult<P> | false;
+export type Match<P extends RouteParams> = MatchResult<P> | false;
 
-export interface MatchResult<P extends DefaultRouteParams> {
+export interface MatchResult<P extends RouteParams> {
   path: string;
   index: number;
   params: P;
@@ -17,7 +17,7 @@ export interface MatchResult<P extends DefaultRouteParams> {
 export type Matcher = (
   component: RouteComponent,
   url: URL,
-) => Match<DefaultRouteParams> | false;
+) => Match<RouteParams> | false;
 
 // const pathToRegexpCache = new Map<string, MatchFunction<DefaultRouteParams>>();
 
@@ -50,17 +50,17 @@ const regexparamCache = new Map<
 >();
 
 function regexParamExec(path: string, keys: string[], pattern: RegExp) {
-  const matches = pattern.exec(path) || [];
+  const matches = (pattern.exec(path) || []).slice(1);
   return Object.fromEntries(
     matches.map((m, idx) => [keys[idx], m]),
-  ) as DefaultRouteParams;
+  ) as RouteParams;
 }
 
 export const regexParamMatcher: Matcher = (
   { props }: RouteComponent,
   { pathname }: URL,
-): Match<DefaultRouteParams> => {
-  if (!props.path) {
+): Match<RouteParams> => {
+  if (!('path' in props)) {
     return { index: 0, params: {}, path: '' };
   }
 

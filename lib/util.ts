@@ -42,7 +42,7 @@ export function urlObjectAssign(
 ): URL {
   const { origin, searchParams, ...rest } = props;
 
-  const newUrl = origin ? new URL(urlRhs(url), origin) : url;
+  const newUrl = origin ? new URL(urlRhs(url), origin) : new URL(url);
 
   Object.entries(rest).forEach(([k, v]) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

@@ -1,4 +1,4 @@
-import type { DefaultRouteParams, ExtractRouteParams } from './types.js';
+import type { RouteParams, ExtractRouteParams } from './types.js';
 import { urlObjectAssign } from './util.js';
 
 type QueryParams = Record<string, string>;
@@ -13,10 +13,7 @@ export interface Routified<P extends string, Q extends QueryParams> {
   }) => URL;
 }
 
-function interpolate<T extends DefaultRouteParams>(
-  path: string,
-  params: T,
-): string {
+function interpolate<T extends RouteParams>(path: string, params: T): string {
   return path.replace(
     /:(\w+)/g,
     (_match, token: string) =>

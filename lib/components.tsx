@@ -1,6 +1,5 @@
 import {
   AnchorHTMLAttributes,
-  ComponentProps,
   FC,
   KeyboardEvent,
   MouseEvent,
@@ -12,9 +11,9 @@ import {
 import { useLocation, useRouter } from './router.js';
 import { useMatch } from './routes.js';
 import type {
-  DefaultRouteParams,
+  DefaultRoute,
+  RouteParams,
   ExtractRouteParams,
-  RequireKeys,
   RouteWithChildFunction,
   RouteWithChildren,
   RouteWithComponent,
@@ -26,9 +25,10 @@ export function asWildcardRoute<T extends string>(pattern: T): `${T}/:__rest*` {
 
 export function Route<
   T extends string,
-  P extends DefaultRouteParams = ExtractRouteParams<T>,
+  P extends RouteParams = ExtractRouteParams<T>,
 >(
   props:
+    | DefaultRoute
     | RouteWithChildren<T>
     | RouteWithChildFunction<T, P>
     | RouteWithComponent<T, P>,
@@ -40,18 +40,15 @@ export function Route<
   }
 
   if ('children' in props) {
-    if (typeof props.children === 'function') {
-      return match ? props.children(match.params) : props.children({} as P);
+    const { children } = props;
+    if (typeof children === 'function') {
+      return children({ params: match ? match.params : ({} as P) });
     }
-    return <>{props.children}</>;
+    return <>{children}</>;
   }
 
   return null;
 }
-
-export const WildcardRoute: FC<
-  RequireKeys<ComponentProps<typeof Route>, 'path'>
-> = (props) => <Route {...props} path={asWildcardRoute(props.path)} />;
 
 export const Link: FC<
   PropsWithChildren<
