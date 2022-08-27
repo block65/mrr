@@ -1,7 +1,14 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
-import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
+import {
+  Link,
+  Route,
+  RouteComponentProps,
+  Router,
+  Routes,
+  useLocation,
+} from '../src/index.js';
 import { routify } from '../lib/routify.js';
 import { useNavigate } from '../lib/router.js';
 
@@ -56,10 +63,11 @@ test('wildcard route', async () => {
 
   const userView = routify('/users/:userId');
 
-  const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
-    <>userId = {userId}</>
-  );
-  const ParamlessComponent: FC = () => <>Peanuts</>;
+  const ComponentWithUserId: FC<RouteComponentProps<{ userId: string }>> = ({
+    params: { userId },
+  }) => <>userId = {userId}</>;
+
+  const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
   /* const { debug } =  */ render(
     <Router origin={origin} pathname="/users/test1">
@@ -71,10 +79,6 @@ test('wildcard route', async () => {
           )}
         </Route>
         <Route path={userView.path} component={ComponentWithUserId} />
-        <Route path={userView.path}>
-          <ComponentWithUserId userId="I cant get the userId from here" />
-        </Route>
-
         <Route component={ParamlessComponent} />
         <Route>{(params) => <ParamlessComponent {...params} />}</Route>
         <Route>

@@ -1,7 +1,7 @@
 
 SRCS := $(shell find lib -print -name *.ts?)
 
-all: build/index.js lib/index.d.ts
+all: build/index.js dist/src/index.d.ts
 
 .PHONY: clean
 clean:
@@ -24,8 +24,8 @@ node_modules: yarn.lock package.json
 dev: node_modules webpack.config.js
 	yarn webpack -o build --mode=development -w
 
-lib/index.d.ts: node_modules
-	yarn tsc --emitDeclarationOnly
+dist/src/index.d.ts: node_modules
+	yarn tsc --emitDeclarationOnly --removeComments false
 
 build/index.js: node_modules $(SRCS) webpack.config.js babel.config.cjs
 	yarn webpack -o build --mode=production

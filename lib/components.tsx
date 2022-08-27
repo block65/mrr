@@ -36,7 +36,7 @@ export function Route<
   const match = useMatch<P>();
 
   if ('component' in props) {
-    return match ? props.component(match.params) : props.component({} as P);
+    return props.component({ params: match ? match.params : ({} as P) });
   }
 
   if ('children' in props) {

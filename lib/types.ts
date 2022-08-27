@@ -34,10 +34,12 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
   : RouteParams;
 
+// eslint-disable-next-line import/export
 export interface DefaultRoute {
   children?: ReactNode;
 }
 
+// eslint-disable-next-line import/export
 export interface DefaultRoute {
   component?: FC;
 }
@@ -63,7 +65,7 @@ export interface RouteWithComponent<
 > {
   path?: T;
   wildcard?: true;
-  component: FC<P>;
+  component: FC<{ params: P }>;
 }
 
 export type PartialWithUndefined<T> = {

@@ -16,6 +16,7 @@ interface ContextInterface {
   matcher: Matcher;
 }
 
+/** @deprecated */
 type LegacyNavigationMethod = (
   dest: PartialWithUndefined<RestrictedURLProps> | URL,
   options?: { state: unknown },
@@ -72,7 +73,12 @@ export const Router: FC<
     // Navigation API
     if (navigationApiAvailable) {
       const navigateEventHandler: NavigateEventListener = (e) => {
-        setUrlOnlyIfChanged(e.destination.url);
+        if (
+          e.navigationType === 'push' ||
+          (e.navigationType === 'replace' && e.destination.sameDocument)
+        ) {
+          setUrlOnlyIfChanged(e.destination.url);
+        }
       };
 
       const eventName = 'navigate';
