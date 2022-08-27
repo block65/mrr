@@ -73,6 +73,7 @@ export const Router: FC<
     // Navigation API
     if (navigationApiAvailable) {
       const navigateEventHandler: NavigateEventListener = (e) => {
+        // make sure we're only listening to relevant events
         if (
           (e.navigationType === 'push' || e.navigationType === 'replace') &&
           e.destination.sameDocument
