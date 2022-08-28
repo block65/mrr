@@ -1,19 +1,19 @@
 import {
   AnchorHTMLAttributes,
   FC,
-  KeyboardEvent,
-  MouseEvent,
   PropsWithChildren,
   ReactElement,
   useCallback,
   useEffect,
+  MouseEvent,
+  KeyboardEvent,
 } from 'react';
 import { useLocation, useRouter } from './router.js';
 import { useMatch } from './routes.js';
 import type {
   DefaultRoute,
-  RouteParams,
   ExtractRouteParams,
+  RouteParams,
   RouteWithChildFunction,
   RouteWithChildren,
   RouteWithComponent,
@@ -56,7 +56,7 @@ export const Link: FC<
   >
 > = ({ children, url, onClick, ...props }) => {
   const router = useRouter();
-  const [, { push }] = useLocation();
+  const [, { navigate }] = useLocation();
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>) => {
@@ -79,32 +79,26 @@ export const Link: FC<
         onClick(e);
       }
 
-      push({
+      navigate({
         hash: url.hash,
         pathname: url.pathname,
         // search: url.search,
         searchParams: url.searchParams,
       });
     },
-    [onClick, push, url.hash, url.pathname, url.searchParams],
+    [onClick, navigate, url.hash, url.pathname, url.searchParams],
   );
 
   const sameOrigin = url.origin === router.url.origin;
 
-  if (!sameOrigin)
-    <a
-      {...props}
-      href={url.href}
-      rel="no-opener noreferrer"
-      onClick={handleClick}
-    >
-      {children}
-    </a>;
-  return (
-    <a {...props} href={url.pathname} onClick={handleClick}>
-      {children}
-    </a>
-  );
+  const newProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
+    ...props,
+    href: url.pathname,
+    ...(typeof navigation === 'undefined' && { onClick: handleClick }),
+    ...(sameOrigin && { rel: 'no-opener noreferrer' }),
+  };
+
+  return <a {...newProps}>{children}</a>;
 };
 
 export const Redirect: FC<PropsWithChildren<{ url: URL }>> = ({

@@ -7,22 +7,22 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { Matcher, regexParamMatcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import { urlObjectAssign, urlRhs, withWindow } from './util.js';
-import { Matcher, regexParamMatcher } from './matcher.js';
 
 interface ContextInterface {
   url: URL;
   matcher: Matcher;
 }
 
+type Destination = PartialWithUndefined<RestrictedURLProps> | URL | string;
+
 /** @deprecated */
-type LegacyNavigationMethod = (
-  dest: PartialWithUndefined<RestrictedURLProps> | URL,
-) => void;
+type LegacyNavigationMethod = (dest: Destination) => void;
 
 type NavigationMethod = (
-  dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
+  dest: Destination,
   options?: { history?: NavigationHistoryBehavior },
 ) => void;
 
@@ -30,7 +30,14 @@ type NavigateEventListener = (evt: NavigateEvent) => void;
 
 export const RouterContext = createContext<null | ContextInterface>(null);
 
-const navigationApiAvailable = typeof navigation !== 'undefined';
+function calculateDest(dest: Destination, currentUrl: URL) {
+  return dest instanceof URL
+    ? dest
+    : urlObjectAssign(
+        new URL(currentUrl),
+        typeof dest === 'string' ? { pathname: dest } : dest,
+      );
+}
 
 export const Router: FC<
   PropsWithChildren<{
@@ -70,14 +77,28 @@ export const Router: FC<
 
   useEffect(() => {
     // Navigation API
-    if (navigationApiAvailable) {
+    if (typeof navigation !== 'undefined') {
       const navigateEventHandler: NavigateEventListener = (e) => {
-        // make sure we're only listening to relevant events
-        if (
-          (e.navigationType === 'push' || e.navigationType === 'replace') &&
-          e.destination.sameDocument
-        ) {
+        // Don't intercept fragment navigations or downloads.
+        if (e.hashChange || e.downloadRequest !== null) {
+          return;
+        }
+
+        const handler: NavigationInterceptHandler = async () => {
           setUrlOnlyIfChanged(e.destination.url);
+        };
+
+        // Some navigations, e.g. cross-origin navigations, we cannot intercept.
+        // Let the browser handle those normally.
+        if (e.canIntercept) {
+          e.intercept?.({
+            handler,
+          });
+        }
+
+        // as of Chrome 102, this seems to be the only thing that works
+        if (/* e.canTransition &&  */ e.transitionWhile) {
+          e.transitionWhile(handler());
         }
       };
 
@@ -148,21 +169,15 @@ export function useLocation(): [
       dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
     ) => {
-      const nextUrl =
-        dest instanceof URL
-          ? dest
-          : urlObjectAssign(
-              new URL(url),
-              typeof dest === 'string' ? { pathname: dest } : dest,
-            );
+      const nextUrl = calculateDest(dest, url);
+      const nextRhs = urlRhs(nextUrl);
 
-      if (navigationApiAvailable) {
-        navigation.navigate(nextUrl.toString(), {
-          history: options?.history ?? 'auto',
+      if (typeof navigation !== 'undefined') {
+        navigation.navigate(nextRhs, {
+          ...(options?.history && { history: options.history }),
         });
       } else {
         const { history } = window;
-        const nextRhs = urlRhs(nextUrl);
 
         if (options?.history === 'replace') {
           history.replaceState(null, '', nextRhs);
@@ -188,18 +203,27 @@ export function useLocation(): [
 
   const push: LegacyNavigationMethod = useCallback(
     (dest) => {
-      navigate(dest);
+      navigate(dest, { history: 'push' });
     },
     [navigate],
   );
 
-  const back = useCallback(() => {
-    if (navigationApiAvailable) {
-      navigation.back();
-    } else {
-      window.history.back();
-    }
-  }, []);
+  const back = useCallback(
+    (alternateDest?: Destination) => {
+      if (typeof navigation !== 'undefined') {
+        if (navigation.entries()?.length > 0) {
+          navigation.back();
+        } else if (alternateDest) {
+          // No history entries, go directly to alternateDest
+          navigate(alternateDest, { history: 'replace' });
+        }
+        navigation.back();
+      } else {
+        window.history.back();
+      }
+    },
+    [navigate],
+  );
 
   return [url, { navigate, back, replace, push }];
 }
