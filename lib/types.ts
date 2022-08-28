@@ -36,7 +36,7 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
 
 // eslint-disable-next-line import/export
 export interface DefaultRoute {
-  children?: ReactNode;
+  children?: ReactNode | (() => JSX.Element);
 }
 
 // eslint-disable-next-line import/export

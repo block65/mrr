@@ -85,7 +85,7 @@ test('wildcard routes + nested', async () => {
             </Route>
             <Route path={userView.path} component={ComponentWithUserId} />
             <Route component={ParamlessComponent} />
-            <Route>{(params) => <ParamlessComponent {...params} />}</Route>
+            <Route>{() => <ParamlessComponent />}</Route>
             <Route>
               <h1>fail</h1>
             </Route>
