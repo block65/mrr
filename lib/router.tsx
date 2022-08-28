@@ -19,12 +19,11 @@ interface ContextInterface {
 /** @deprecated */
 type LegacyNavigationMethod = (
   dest: PartialWithUndefined<RestrictedURLProps> | URL,
-  options?: { state: unknown },
 ) => void;
 
 type NavigationMethod = (
   dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
-  options?: { history?: NavigationHistoryBehavior; state?: unknown },
+  options?: { history?: NavigationHistoryBehavior },
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
@@ -147,7 +146,7 @@ export function useLocation(): [
   const navigate = useCallback(
     (
       dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
-      options?: { history?: NavigationHistoryBehavior; state?: unknown },
+      options?: { history?: NavigationHistoryBehavior },
     ) => {
       const nextUrl =
         dest instanceof URL
@@ -160,34 +159,27 @@ export function useLocation(): [
       if (navigationApiAvailable) {
         navigation.navigate(nextUrl.toString(), {
           history: options?.history ?? 'auto',
-          state: options?.state,
         });
       } else {
         const { history } = window;
         const nextRhs = urlRhs(nextUrl);
 
         if (options?.history === 'replace') {
-          history.replaceState(options.state, '', nextRhs);
+          history.replaceState(null, '', nextRhs);
         } else {
-          history.pushState(options?.state, '', nextRhs);
+          history.pushState(null, '', nextRhs);
         }
 
         // pushState and replaceState don't trigger popstate event
-        dispatchEvent(
-          new PopStateEvent('popstate', {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            state: history.state,
-          }),
-        );
+        dispatchEvent(new PopStateEvent('popstate'));
       }
     },
     [url],
   );
 
   const replace: LegacyNavigationMethod = useCallback(
-    (dest, { state }: { state?: unknown } = {}) => {
+    (dest) => {
       navigate(dest, {
-        state,
         history: 'replace',
       });
     },
@@ -195,8 +187,8 @@ export function useLocation(): [
   );
 
   const push: LegacyNavigationMethod = useCallback(
-    (dest, { state }: { state?: unknown } = {}) => {
-      navigate(dest, { state });
+    (dest) => {
+      navigate(dest);
     },
     [navigate],
   );
