@@ -34,7 +34,7 @@ export type Matcher = (
 //   return fn(pathname);
 // };
 
-const regexparamCache = new Map<
+const regexparamCache = new WeakMap<
   RouteProps<string>,
   | {
       keys: string[];
