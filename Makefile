@@ -34,3 +34,4 @@ types: node_modules
 
 build/index.js: node_modules $(SRCS) webpack.config.js babel.config.cjs
 	yarn webpack -o build --mode=production
+	npx bundlesize
