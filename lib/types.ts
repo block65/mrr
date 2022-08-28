@@ -44,27 +44,27 @@ export interface DefaultRoute {
   component?: FC;
 }
 
-export interface RouteWithChildren<T extends string | undefined> {
-  path?: T;
+export interface RouteProps<T extends string | undefined> {
+  path: T;
   wildcard?: true;
+}
+
+export interface RouteWithChildren<T extends string | undefined>
+  extends RouteProps<T> {
   children?: ReactNode;
 }
 
 export interface RouteWithChildFunction<
   T extends Path,
   P extends RouteParams = ExtractRouteParams<T>,
-> {
-  path?: T;
-  wildcard?: true;
+> extends RouteProps<T> {
   children: (params: P) => JSX.Element;
 }
 
 export interface RouteWithComponent<
   T extends Path,
   P extends RouteParams = ExtractRouteParams<T>,
-> {
-  path?: T;
-  wildcard?: true;
+> extends RouteProps<T> {
   component: FC<{ params: P }>;
 }
 

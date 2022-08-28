@@ -1,10 +1,7 @@
-import type { ReactElement, ComponentProps } from 'react';
 import { parse } from 'regexparam';
-import type { Route } from './components.js';
 import { pathCache } from './path-cache.js';
-import type { RouteParams } from './types.js';
-
-export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
+import type { RouteComponent } from './routes.js';
+import type { RouteParams, RouteProps } from './types.js';
 
 export type Match<P extends RouteParams> = MatchResult<P> | false;
 
@@ -38,7 +35,7 @@ export type Matcher = (
 // };
 
 const regexparamCache = new Map<
-  string,
+  RouteProps<string>,
   | {
       keys: string[];
       pattern: RegExp;
@@ -64,8 +61,8 @@ export const regexParamMatcher: Matcher = (
     return { index: 0, params: {}, path: '' };
   }
 
-  const { keys, pattern } = pathCache(regexparamCache, props.path, (path) =>
-    parse(path),
+  const { keys, pattern } = pathCache(regexparamCache, props, (p) =>
+    parse(p.path, !!p.wildcard),
   );
 
   if (pattern.test(pathname)) {

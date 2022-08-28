@@ -19,8 +19,8 @@ import type {
   RouteWithComponent,
 } from './types.js';
 
-export function asWildcardRoute<T extends string>(pattern: T): `${T}/:__rest*` {
-  return `${pattern}/:__rest*`;
+export function asWildcardRoute<T extends string>(pattern: T): `${T}/*` {
+  return `${pattern}/*`;
 }
 
 export function Route<

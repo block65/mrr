@@ -58,10 +58,11 @@ test('basic', async () => {
   );
 });
 
-test('wildcard route', async () => {
+test('wildcard routes + nested', async () => {
   const origin = 'https://router.example.com';
 
-  const userView = routify('/users/:userId');
+  const userRoot = routify('/users');
+  const userView = routify('/users/blah/:userId');
 
   const ComponentWithUserId: FC<RouteComponentProps<{ userId: string }>> = ({
     params: { userId },
@@ -70,19 +71,25 @@ test('wildcard route', async () => {
   const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
   /* const { debug } =  */ render(
-    <Router origin={origin} pathname="/users/test1">
+    <Router origin={origin} pathname="/users/blah/test1">
       <LocationDisplay />
       <Routes>
-        <Route wildcard path={userView.path}>
-          {(params) => (
-            <h1 data-testid="users">You are user {params.userId}</h1>
-          )}
-        </Route>
-        <Route path={userView.path} component={ComponentWithUserId} />
-        <Route component={ParamlessComponent} />
-        <Route>{(params) => <ParamlessComponent {...params} />}</Route>
-        <Route>
-          <h1>fail</h1>
+        <Route wildcard path={userRoot.path}>
+          <h1>inside userRoot</h1>
+          <Routes>
+            <Route path={userRoot.path}>this should not display</Route>
+            <Route wildcard path={userView.path}>
+              {(params) => (
+                <h1 data-testid="users">You are user {params.userId}</h1>
+              )}
+            </Route>
+            <Route path={userView.path} component={ComponentWithUserId} />
+            <Route component={ParamlessComponent} />
+            <Route>{(params) => <ParamlessComponent {...params} />}</Route>
+            <Route>
+              <h1>fail</h1>
+            </Route>
+          </Routes>
         </Route>
       </Routes>
     </Router>,
