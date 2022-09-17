@@ -101,13 +101,18 @@ export const Link: FC<
   return <a {...newProps}>{children}</a>;
 };
 
-export const Redirect: FC<PropsWithChildren<{ url: URL }>> = ({
-  url,
-  children,
-}) => {
-  useEffect(() => {
-    window.location.assign(url);
-  }, [url]);
+export const Redirect: FC<
+  PropsWithChildren<
+    NavigationMethodOptions & {
+      dest: Destination;
+    }
+  >
+> = ({ dest, children, history }) => {
+  const [, { navigate }] = useLocation();
+
+  useLayoutEffect(() => {
+    navigate(dest, history && { history });
+  }, [dest, history, navigate]);
 
   return <>{children}</>;
 };

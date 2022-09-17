@@ -21,9 +21,11 @@ type Destination = PartialWithUndefined<RestrictedURLProps> | URL | string;
 /** @deprecated */
 type LegacyNavigationMethod = (dest: Destination) => void;
 
+export type NavigationMethodOptions = { history?: NavigationHistoryBehavior };
+
 type NavigationMethod = (
   dest: Destination,
-  options?: { history?: NavigationHistoryBehavior },
+  options?: NavigationMethodOptions,
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
