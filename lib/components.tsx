@@ -117,7 +117,11 @@ export const Link: FC<
     ...(sameOrigin && { rel: 'no-opener noreferrer' }),
   };
 
-  return <a {...newProps}>{children}</a>;
+  return isValidElement(children) ? (
+    cloneElement(children, newProps)
+  ) : (
+    <a {...newProps}>{children}</a>
+  );
 };
 
 export const Redirect: FC<
