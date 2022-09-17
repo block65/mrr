@@ -4,7 +4,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
 } from 'react';
 import { Matcher, regexParamMatcher } from './matcher.js';
@@ -16,14 +16,19 @@ interface ContextInterface {
   matcher: Matcher;
 }
 
-type Destination = PartialWithUndefined<RestrictedURLProps> | URL | string;
+export type Destination =
+  | PartialWithUndefined<RestrictedURLProps>
+  | URL
+  | string;
 
 /** @deprecated */
 type LegacyNavigationMethod = (dest: Destination) => void;
 
+export type NavigationMethodOptions = { history?: NavigationHistoryBehavior };
+
 type NavigationMethod = (
   dest: Destination,
-  options?: { history?: NavigationHistoryBehavior },
+  options?: NavigationMethodOptions,
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
@@ -75,7 +80,10 @@ export const Router: FC<
     setUrl((src) => (src.toString() !== dest ? new URL(dest) : src));
   }, []);
 
-  useEffect(() => {
+  // useLayoutEffect so we can synchronously (or as close to) change the URL
+  // or start a navigation, avoiding a flash of rendered DOMS based on soon to
+  // be stale state
+  useLayoutEffect(() => {
     // Navigation API
     if (typeof navigation !== 'undefined') {
       const navigateEventHandler: NavigateEventListener = (e) => {
@@ -97,7 +105,7 @@ export const Router: FC<
         }
 
         // as of Chrome 102, this seems to be the only thing that works
-        if (/* e.canTransition &&  */ e.transitionWhile) {
+        if (e.canTransition && e.transitionWhile) {
           e.transitionWhile(handler());
         }
       };

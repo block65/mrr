@@ -13,7 +13,7 @@ distclean: clean
 	rm -rf node_modules
 
 .PHONY: test
-test:
+test: node_modules
 	NODE_OPTIONS=--experimental-vm-modules yarn jest
 
 .PRECIOUS: yarn.lock

@@ -3,7 +3,7 @@ import { urlObjectAssign } from './util.js';
 
 type QueryParams = Record<string, string>;
 
-export interface Routified<P extends string, Q extends QueryParams> {
+export interface NamedRoute<P extends string, Q extends QueryParams> {
   path: P;
   build: (x?: {
     params?: ExtractRouteParams<P>;
@@ -21,9 +21,9 @@ function interpolate<T extends RouteParams>(path: string, params: T): string {
   );
 }
 
-export function routify<T extends string, Q extends QueryParams = never>(
+export function namedRoute<T extends string, Q extends QueryParams = never>(
   pathname: T,
-): Routified<T, Q> {
+): NamedRoute<T, Q> {
   return {
     path: pathname,
     build({ params, query, origin, ...rest } = {}) {

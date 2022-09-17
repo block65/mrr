@@ -9,7 +9,7 @@ import {
   Routes,
   useLocation,
 } from '../src/index.js';
-import { routify } from '../lib/routify.js';
+import { namedRoute } from '../lib/named-route.js';
 import { useNavigate } from '../lib/router.js';
 
 export const LocationDisplay = () => {
@@ -21,9 +21,9 @@ export const LocationDisplay = () => {
 test('basic', async () => {
   const origin = 'https://router.example.com';
 
-  const root = routify('/');
-  const login = routify('/login');
-  const userView = routify('/user/:userId');
+  const root = namedRoute('/');
+  const login = namedRoute('/login');
+  const userView = namedRoute('/user/:userId');
 
   /* const { debug } =  */ render(
     <Router origin={origin} pathname="/">
@@ -37,11 +37,11 @@ test('basic', async () => {
         </Route>
         <Route path="/">
           <h1 data-testid="root">You are at the root!</h1>
-          <Link url={login.build({ origin })}>login</Link>
+          <Link dest={login.build({ origin })}>login</Link>
         </Route>
         <Route>
           <h1>404</h1>
-          <Link url={root.build({ origin })}>Go to root</Link>
+          <Link dest={root.build({ origin })}>Go to root</Link>
         </Route>
       </Routes>
     </Router>,
@@ -61,8 +61,8 @@ test('basic', async () => {
 test('wildcard routes + nested', async () => {
   const origin = 'https://router.example.com';
 
-  const userRoot = routify('/users');
-  const userView = routify('/users/blah/:userId');
+  const userRoot = namedRoute('/users');
+  const userView = namedRoute('/users/blah/:userId');
 
   const ComponentWithUserId: FC<RouteComponentProps<{ userId: string }>> = ({
     params: { userId },
@@ -101,7 +101,7 @@ test('wildcard routes + nested', async () => {
 test('programmatic nav', async () => {
   const origin = 'https://router.example.com';
 
-  const usersView = routify('/users/:userId');
+  const usersView = namedRoute('/users/:userId');
 
   // const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
   //   <>userId = {userId}</>
