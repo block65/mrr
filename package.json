@@ -10,13 +10,9 @@
       "types": "./dist/src/index.d.ts",
       "default": "./build/index.js"
     },
-    "./routify": {
-      "types": "./dist/src/routify.d.ts",
-      "default": "./dist/src/routify.js"
-    },
-    "./utils": {
-      "types": "./dist/src/routify.d.ts",
-      "default": "./dist/src/routify.js"
+    "./named-route": {
+      "types": "./dist/src/named-route.d.ts",
+      "default": "./dist/src/named-route.js"
     }
   },
   "files": [
