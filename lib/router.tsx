@@ -105,7 +105,7 @@ export const Router: FC<
         }
 
         // as of Chrome 102, this seems to be the only thing that works
-        if (/* e.canTransition &&  */ e.transitionWhile) {
+        if (e.canTransition && e.transitionWhile) {
           e.transitionWhile(handler());
         }
       };
