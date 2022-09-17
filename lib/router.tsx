@@ -16,7 +16,10 @@ interface ContextInterface {
   matcher: Matcher;
 }
 
-type Destination = PartialWithUndefined<RestrictedURLProps> | URL | string;
+export type Destination =
+  | PartialWithUndefined<RestrictedURLProps>
+  | URL
+  | string;
 
 /** @deprecated */
 type LegacyNavigationMethod = (dest: Destination) => void;
