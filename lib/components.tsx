@@ -1,14 +1,21 @@
 import {
   AnchorHTMLAttributes,
+  cloneElement,
   FC,
+  isValidElement,
+  KeyboardEvent,
+  MouseEvent,
   PropsWithChildren,
   ReactElement,
   useCallback,
-  useEffect,
-  MouseEvent,
-  KeyboardEvent,
+  useLayoutEffect,
 } from 'react';
-import { useLocation, useRouter } from './router.js';
+import {
+  Destination,
+  NavigationMethodOptions,
+  useLocation,
+  useRouter,
+} from './router.js';
 import { useMatch } from './routes.js';
 import type {
   DefaultRoute,
@@ -52,11 +59,17 @@ export function Route<
 
 export const Link: FC<
   PropsWithChildren<
-    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & { url: URL }
+    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
+      NavigationMethodOptions & { dest: Destination }
   >
-> = ({ children, url, onClick, ...props }) => {
+> = ({ children, dest, onClick, history, ...props }) => {
   const router = useRouter();
   const [, { navigate }] = useLocation();
+
+  const stringDest = typeof dest === 'string';
+
+  const sameOrigin =
+    stringDest || !dest.origin || dest.origin === router.url.origin;
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>) => {
@@ -79,21 +92,27 @@ export const Link: FC<
         onClick(e);
       }
 
-      navigate({
-        hash: url.hash,
-        pathname: url.pathname,
-        // search: url.search,
-        searchParams: url.searchParams,
-      });
-    },
-    [onClick, navigate, url.hash, url.pathname, url.searchParams],
-  );
+      const navOptions = history && { history };
 
-  const sameOrigin = url.origin === router.url.origin;
+      if (stringDest) {
+        navigate(dest, navOptions);
+      } else {
+        navigate(
+          {
+            hash: dest.hash,
+            pathname: dest.pathname,
+            searchParams: dest.searchParams,
+          },
+          navOptions,
+        );
+      }
+    },
+    [onClick, history, stringDest, navigate, dest],
+  );
 
   const newProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
     ...props,
-    href: url.pathname,
+    href: stringDest ? dest : dest.pathname,
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),
     ...(sameOrigin && { rel: 'no-opener noreferrer' }),
   };
