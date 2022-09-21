@@ -2,7 +2,7 @@
   "files": [
     {
       "path": "./build/index.js",
-      "maxSize": "2.125 kB",
+      "maxSize": "2.13 kB",
       "compression": "brotli"
     }
   ]
