@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic 1`] = `
+<DocumentFragment>
+  <a
+    href="/login"
+  >
+    test as string
+  </a>
+  <a
+    href="https://invalid.example.com"
+  >
+    cross origin link
+  </a>
+  <a
+    href="/login"
+  >
+    test as fragment
+  </a>
+  <a
+    href="/login"
+  />
+  <a
+    data-linkylink="true"
+  >
+    test nested in an FC
+  </a>
+  <a
+    href="/login"
+  >
+    this will not work properly
+  </a>
+  <a
+    href="/login"
+  >
+    plnk plonk
+  </a>
+  <a
+    href="/login"
+    id="123"
+  >
+    Hello!
+  </a>
+  <a
+    href="/login"
+  >
+    <div
+      data-compycomp="true"
+    >
+      Once
+      <div
+        data-compycomp="true"
+      >
+        Twice
+        <div
+          data-compycomp="true"
+        >
+          Three times a lady
+        </div>
+      </div>
+    </div>
+  </a>
+  <a
+    href="/login"
+  >
+    this will also not work properly
+  </a>
+  ,
+</DocumentFragment>
+`;
