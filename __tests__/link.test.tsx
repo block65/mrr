@@ -3,13 +3,7 @@ import { render } from '@testing-library/react';
 import type { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
 import { FormattedMessage, IntlProvider } from 'react-intl';
 import { namedRoute } from '../lib/named-route.js';
-import { Link, Router, useLocation } from '../src/index.js';
-
-export const LocationDisplay = () => {
-  const [location] = useLocation();
-
-  return <div data-testid="location-display">{location.pathname}</div>;
-};
+import { Link, Router } from '../src/index.js';
 
 const LinkyLink: FC<
   PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>
