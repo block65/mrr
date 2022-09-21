@@ -1,4 +1,4 @@
-export { Route, Link, Redirect, asWildcardRoute } from '../lib/components.js';
+export { Route, Link, Redirect } from '../lib/components.js';
 export { Router, useLocation } from '../lib/router.js';
 export { Routes } from '../lib/routes.js';
 
