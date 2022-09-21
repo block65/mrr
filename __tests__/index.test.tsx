@@ -25,7 +25,7 @@ test('basic', async () => {
   const login = namedRoute('/login');
   const userView = namedRoute('/user/:userId');
 
-  /* const { debug } =  */ render(
+  const { asFragment } = render(
     <Router origin={origin} pathname="/">
       <LocationDisplay />
       <Routes>
@@ -56,6 +56,8 @@ test('basic', async () => {
   expect(screen.getByRole('heading')).toHaveTextContent(
     'You are at the login page',
   );
+
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test('wildcard routes + nested', async () => {
@@ -70,7 +72,7 @@ test('wildcard routes + nested', async () => {
 
   const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
-  /* const { debug } =  */ render(
+  const { asFragment } = render(
     <Router origin={origin} pathname="/users/blah/test1">
       <LocationDisplay />
       <Routes>
@@ -96,6 +98,8 @@ test('wildcard routes + nested', async () => {
   );
 
   await waitFor(() => screen.getByTestId('users'));
+
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test('programmatic nav', async () => {
