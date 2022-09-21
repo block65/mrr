@@ -62,10 +62,13 @@ export const Link: FC<
   const router = useRouter();
   const [, { navigate }] = useLocation();
 
-  const stringDest = typeof dest === 'string';
+  const isStringDest = typeof dest === 'string';
 
-  const sameOrigin =
-    stringDest || !dest.origin || dest.origin === router.url.origin;
+  const isSameOrigin =
+    isStringDest ||
+    !dest.origin ||
+    !router.url.origin ||
+    dest.origin === router.url.origin;
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>) => {
@@ -90,7 +93,7 @@ export const Link: FC<
 
       const navOptions = history && { history };
 
-      if (stringDest) {
+      if (isStringDest) {
         navigate(dest, navOptions);
       } else {
         navigate(
@@ -103,14 +106,14 @@ export const Link: FC<
         );
       }
     },
-    [onClick, history, stringDest, navigate, dest],
+    [onClick, history, isStringDest, navigate, dest],
   );
 
   const newProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
     ...props,
-    href: stringDest ? dest : dest.pathname,
+    href: isStringDest ? dest : dest.pathname,
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),
-    ...(sameOrigin && { rel: 'no-opener noreferrer' }),
+    ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
   };
 
   return isValidElement(children) ? (
