@@ -39,7 +39,7 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
       }
 
       // return true means don't attempt further matches
-      return matchResult !== false;
+      return !!matchResult;
     });
 
   return (
