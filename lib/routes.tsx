@@ -27,7 +27,8 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
   flattenChildren(children)
     .filter(
       (c): c is RouteComponent =>
-        isValidElement<RouteComponent>(c) && c.type === Route,
+        isValidElement<RouteComponent>(c) &&
+        (c.type === Route || 'path' in c.props),
     )
     // NOTE: using some() for early exit on match
     .some((c) => {
