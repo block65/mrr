@@ -29,7 +29,7 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
       (c): c is RouteComponent =>
         isValidElement<RouteComponent>(c) && c.type === Route,
     )
-    // NOTE: using some for early exit on match
+    // NOTE: using some() for early exit on match
     .some((c) => {
       matchResult = matcher(c, url);
 
