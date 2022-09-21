@@ -46,7 +46,7 @@ function calculateDest(dest: Destination, currentUrl: URL) {
 
 export const Router: FC<
   PropsWithChildren<{
-    origin: string;
+    origin?: string;
     hash?: string;
     pathname?: string;
     search?: string;
@@ -60,15 +60,21 @@ export const Router: FC<
   pathname,
   origin,
 }) => {
+  const resolvedOrigin = withWindow(({ location }) => location.origin, origin);
+
+  if (!resolvedOrigin) {
+    throw new Error('Need `origin` param without DOM');
+  }
+
   const [url, setUrl] = useState(() =>
     withWindow<URL, URL>(
       ({ location }) =>
-        urlObjectAssign(new URL(location.origin), {
+        urlObjectAssign(new URL(resolvedOrigin), {
           search: search || location.search,
           hash: hash || location.hash,
           pathname: pathname || location.pathname,
         }),
-      urlObjectAssign(new URL(origin), {
+      urlObjectAssign(new URL(resolvedOrigin), {
         search: search || '',
         hash: hash || '',
         pathname: pathname || '',
