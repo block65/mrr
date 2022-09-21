@@ -34,7 +34,7 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
       matchResult = matcher(c, url);
 
       if (matchResult) {
-        child = <>{c}</>;
+        child = c;
       }
 
       // return true means don't attempt further matches
