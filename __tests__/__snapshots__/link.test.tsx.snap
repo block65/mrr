@@ -19,11 +19,12 @@ exports[`basic 1`] = `
   </a>
   <a
     href="/login"
-  />
-  <a
-    data-linkylink="true"
   >
-    test nested in an FC
+    <span
+      data-linkylink="true"
+    >
+      test nested in an FC
+    </span>
   </a>
   <a
     href="/login"

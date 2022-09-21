@@ -116,7 +116,10 @@ export const Link: FC<
     ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
   };
 
-  return isValidElement(children) ? (
+  // its not possible to tell if a child will accept a href prop or not
+  // we can only tell if its a component or not
+  // so we simply always wrap in an anchor, unless it's already an anchor
+  return isValidElement(children) && children.type === 'a' ? (
     cloneElement(children, newProps)
   ) : (
     <a {...newProps}>{children}</a>

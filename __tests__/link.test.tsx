@@ -13,7 +13,7 @@ export const LocationDisplay = () => {
 
 const LinkyLink: FC<
   PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>
-> = (props) => <a data-linkylink {...props} />;
+> = (props) => <span data-linkylink {...props} />;
 
 const CompyComp: FC<PropsWithChildren> = ({ children, ...props }) => (
   <div data-compycomp {...props}>
