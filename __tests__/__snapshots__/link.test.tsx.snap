@@ -9,6 +9,7 @@ exports[`basic 1`] = `
   </a>
   <a
     href="https://invalid.example.com"
+    rel="no-opener noreferrer"
   >
     cross origin link
   </a>

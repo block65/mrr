@@ -13,7 +13,7 @@ export interface MatchResult<P extends RouteParams> {
 
 export type Matcher = (
   component: RouteComponent,
-  url: URL,
+  pathname: string,
 ) => Match<RouteParams> | false;
 
 // const pathToRegexpCache = new Map<string, MatchFunction<DefaultRouteParams>>();
@@ -55,7 +55,7 @@ function regexParamExec(path: string, keys: string[], pattern: RegExp) {
 
 export const regexParamMatcher: Matcher = (
   { props }: RouteComponent,
-  { pathname }: URL,
+  pathname: string,
 ): Match<RouteParams> => {
   if (!('path' in props)) {
     return { index: 0, params: {}, path: '' };

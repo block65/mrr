@@ -1,5 +1,5 @@
 import type { RouteParams, ExtractRouteParams } from './types.js';
-import { urlObjectAssign } from './util.js';
+import { nullOrigin, urlObjectAssign, urlRhs } from './util.js';
 
 type QueryParams = Record<string, string>;
 
@@ -10,7 +10,7 @@ export interface NamedRoute<P extends string, Q extends QueryParams> {
     query?: Q;
     hash?: string;
     origin?: string;
-  }) => URL;
+  }) => string;
 }
 
 function interpolate<T extends RouteParams>(path: string, params: T): string {
@@ -34,23 +34,15 @@ export function namedRoute<T extends string, Q extends QueryParams = never>(
       const searchParams = new URLSearchParams(query);
       searchParams.sort();
 
-      if (!origin && typeof window === 'undefined') {
-        throw new Error('origin is not defined and no DOM is available');
-      }
-
-      const newUrl = urlObjectAssign(
-        new URL(origin || window.location.origin),
-        {
-          pathname: interpolatedPathname,
-          ...rest,
-        },
-      );
-
-      searchParams.forEach((value, key) => {
-        newUrl.searchParams.set(key, value);
+      const newUrl = urlObjectAssign(new URL(origin || nullOrigin), {
+        pathname: interpolatedPathname,
+        search: searchParams.toString(),
+        ...rest,
       });
 
-      return newUrl;
+      return newUrl.origin === nullOrigin.origin
+        ? urlRhs(newUrl)
+        : newUrl.toString();
     },
   };
 }

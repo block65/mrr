@@ -22,7 +22,7 @@ test('basic', async () => {
 
   const { asFragment } = render(
     <IntlProvider locale="en" onError={() => {}}>
-      <Router origin="https://www.example.com">
+      <Router>
         <Link dest={login.build()}>test as string</Link>
         <Link dest="https://invalid.example.com">cross origin link</Link>
         <Link dest={login.build()}>

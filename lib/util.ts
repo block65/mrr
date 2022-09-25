@@ -7,7 +7,10 @@ import {
   type ComponentProps,
   Fragment,
 } from 'react';
+import type { Destination } from './router.js';
 import type { PartialWithUndefined, URLProps } from './types.js';
+
+export const nullOrigin = new URL('http://null');
 
 export function withWindow<A>(
   a: (window: Window & typeof globalThis) => A,
@@ -67,4 +70,14 @@ export function flattenChildren(children: React.ReactNode): ReactNode[] {
     }
     return [child];
   }, []);
+}
+
+export function calculateDest(dest: Destination, currentUrl: URL) {
+  if (dest instanceof URL) {
+    return dest;
+  }
+  if (typeof dest === 'string') {
+    return new URL(dest, currentUrl);
+  }
+  return urlObjectAssign(new URL(nullOrigin), dest);
 }

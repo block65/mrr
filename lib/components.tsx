@@ -25,6 +25,7 @@ import type {
   RouteWithChildren,
   RouteWithComponent,
 } from './types.js';
+import { calculateDest, urlRhs, nullOrigin } from './util.js';
 
 export function Route<
   T extends string,
@@ -59,16 +60,15 @@ export const Link: FC<
       NavigationMethodOptions & { dest: Destination }
   >
 > = ({ children, dest, onClick, history, ...props }) => {
-  const router = useRouter();
+  const { url } = useRouter();
   const [, { navigate }] = useLocation();
 
   const isStringDest = typeof dest === 'string';
 
+  const destAsUrl = calculateDest(dest, url);
+
   const isSameOrigin =
-    isStringDest ||
-    !dest.origin ||
-    !router.url.origin ||
-    dest.origin === router.url.origin;
+    destAsUrl.origin === nullOrigin.origin || destAsUrl.origin === url.origin;
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLAnchorElement> | KeyboardEvent<HTMLAnchorElement>) => {
@@ -111,7 +111,7 @@ export const Link: FC<
 
   const newProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
     ...props,
-    href: isStringDest ? dest : dest.pathname,
+    href: isSameOrigin ? urlRhs(destAsUrl) : dest.toString(),
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),
     ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
   };

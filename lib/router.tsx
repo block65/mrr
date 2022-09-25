@@ -9,7 +9,13 @@ import {
 } from 'react';
 import { Matcher, regexParamMatcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
-import { urlObjectAssign, urlRhs, withWindow } from './util.js';
+import {
+  calculateDest,
+  urlObjectAssign,
+  urlRhs,
+  withWindow,
+  nullOrigin,
+} from './util.js';
 
 interface ContextInterface {
   url: URL;
@@ -37,49 +43,23 @@ const hasNav = typeof navigation !== 'undefined';
 
 export const RouterContext = createContext<null | ContextInterface>(null);
 
-function calculateDest(dest: Destination, currentUrl: URL) {
-  return dest instanceof URL
-    ? dest
-    : urlObjectAssign(
-        new URL(currentUrl),
-        typeof dest === 'string' ? { pathname: dest } : dest,
-      );
-}
-
 export const Router: FC<
   PropsWithChildren<{
-    origin?: string;
-    hash?: string;
+    matcher?: Matcher;
     pathname?: string;
     search?: string;
-    matcher?: Matcher;
   }>
-> = ({
-  children,
-  matcher = regexParamMatcher,
-  search,
-  hash,
-  pathname,
-  origin,
-}) => {
-  const resolvedOrigin = withWindow(({ location }) => location.origin, origin);
-
-  if (!resolvedOrigin) {
-    throw new Error('Need `origin` param without DOM');
-  }
-
+> = ({ children, matcher = regexParamMatcher, search, pathname }) => {
   const [url, setUrl] = useState(() =>
     withWindow<URL, URL>(
       ({ location }) =>
-        urlObjectAssign(new URL(resolvedOrigin), {
-          search: search || location.search,
-          hash: hash || location.hash,
-          pathname: pathname || location.pathname,
+        urlObjectAssign(new URL(location.href), {
+          pathname: pathname || '',
+          search: search || '',
         }),
-      urlObjectAssign(new URL(resolvedOrigin), {
-        search: search || '',
-        hash: hash || '',
+      urlObjectAssign(new URL(nullOrigin), {
         pathname: pathname || '',
+        search: search || '',
       }),
     ),
   );
@@ -185,20 +165,26 @@ export function useLocation(): [
       dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
     ) => {
-      const nextUrl = calculateDest(dest, url);
-      const nextRhs = urlRhs(nextUrl);
+      const nextDest = calculateDest(dest, url);
 
       if (hasNav) {
-        navigation.navigate(nextRhs, {
+        navigation.navigate(nextDest.toString(), {
           ...(options?.history && { history: options.history }),
         });
       } else {
         const { history } = window;
 
-        if (options?.history === 'replace') {
-          history.replaceState(null, '', nextRhs);
+        const nextRhs = urlRhs(nextDest);
+
+        // we can only use push/replaceState for same origin
+        if (nextDest.origin === url.origin) {
+          if (options?.history === 'replace') {
+            history.replaceState(null, '', nextRhs);
+          } else {
+            history.pushState(null, '', nextRhs);
+          }
         } else {
-          history.pushState(null, '', nextRhs);
+          window.location.assign(nextDest);
         }
 
         // pushState and replaceState don't trigger popstate event

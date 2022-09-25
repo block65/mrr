@@ -32,7 +32,7 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
     )
     // NOTE: using some() for early exit on match
     .some((c) => {
-      matchResult = matcher(c, url);
+      matchResult = matcher(c, url.pathname);
 
       if (matchResult) {
         child = c;

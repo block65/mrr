@@ -19,14 +19,12 @@ export const LocationDisplay = () => {
 };
 
 test('basic', async () => {
-  const origin = 'https://router.example.com';
-
   const root = namedRoute('/');
   const login = namedRoute('/login');
   const userView = namedRoute('/user/:userId');
 
   const { asFragment } = render(
-    <Router origin={origin} pathname="/">
+    <Router pathname="/">
       <LocationDisplay />
       <Routes>
         <Route path={userView.path}>
@@ -61,8 +59,6 @@ test('basic', async () => {
 });
 
 test('wildcard routes + nested', async () => {
-  const origin = 'https://router.example.com';
-
   const userRoot = namedRoute('/users');
   const userView = namedRoute('/users/blah/:userId');
 
@@ -73,7 +69,7 @@ test('wildcard routes + nested', async () => {
   const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
   const { asFragment } = render(
-    <Router origin={origin} pathname="/users/blah/test1">
+    <Router pathname="/users/blah/test1">
       <LocationDisplay />
       <Routes>
         <Route wildcard path={userRoot.path}>
@@ -93,6 +89,10 @@ test('wildcard routes + nested', async () => {
             </Route>
           </Routes>
         </Route>
+
+        <Route>
+          <h1>fail</h1>
+        </Route>
       </Routes>
     </Router>,
   );
@@ -103,8 +103,6 @@ test('wildcard routes + nested', async () => {
 });
 
 test('programmatic nav', async () => {
-  const origin = 'https://router.example.com';
-
   const usersView = namedRoute('/users/:userId');
 
   // const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
@@ -137,7 +135,7 @@ test('programmatic nav', async () => {
   };
 
   /* const { debug } =  */ render(
-    <Router origin={origin} pathname="/users/test1">
+    <Router pathname="/users/test1">
       <LocationDisplay />
       <Routes>
         <Route path={usersView.path}>
