@@ -54,8 +54,8 @@ export const Router: FC<
     withWindow<URL, URL>(
       ({ location }) =>
         urlObjectAssign(new URL(location.href), {
-          pathname: pathname || '',
-          search: search || '',
+          pathname: pathname || location.pathname,
+          search: search || location.search,
         }),
       urlObjectAssign(new URL(nullOrigin), {
         pathname: pathname || '',
