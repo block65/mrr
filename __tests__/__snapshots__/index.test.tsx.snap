@@ -14,21 +14,3 @@ exports[`basic 1`] = `
   </h1>
 </DocumentFragment>
 `;
-
-exports[`wildcard routes + nested 1`] = `
-<DocumentFragment>
-  <div
-    data-testid="location-display"
-  >
-    /users/blah/test1
-  </div>
-  <h1>
-    inside userRoot
-  </h1>
-  <h1
-    data-testid="users"
-  >
-    You are user test1
-  </h1>
-</DocumentFragment>
-`;
