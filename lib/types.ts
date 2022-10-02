@@ -46,7 +46,7 @@ export interface DefaultRoute {
 
 export interface RouteProps<T extends string | undefined> {
   path: T;
-  wildcard?: true;
+  wildcard?: boolean | undefined;
 }
 
 export interface RouteWithChildren<T extends string | undefined>
