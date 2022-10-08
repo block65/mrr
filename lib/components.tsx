@@ -2,6 +2,8 @@ import {
   AnchorHTMLAttributes,
   cloneElement,
   FC,
+  ForwardedRef,
+  forwardRef,
   isValidElement,
   KeyboardEvent,
   MouseEvent,
@@ -54,12 +56,14 @@ export function Route<
   return null;
 }
 
-export const Link: FC<
+export const Link = forwardRef<
+  HTMLAnchorElement,
   PropsWithChildren<
     Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
       NavigationMethodOptions & { dest: Destination }
   >
-> = ({ children, dest, onClick, history, ...props }) => {
+  // eslint-disable-next-line prefer-arrow-callback
+>(function Link({ children, dest, onClick, history, ...props }, ref) {
   const { url } = useRouter();
   const [, { navigate }] = useLocation();
 
@@ -109,11 +113,14 @@ export const Link: FC<
     [onClick, history, isStringDest, navigate, dest],
   );
 
-  const newProps: AnchorHTMLAttributes<HTMLAnchorElement> = {
+  const newProps: AnchorHTMLAttributes<HTMLAnchorElement> & {
+    ref?: ForwardedRef<HTMLAnchorElement>;
+  } = {
     ...props,
     href: isSameOrigin ? urlRhs(destAsUrl) : dest.toString(),
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),
     ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
+    ref,
   };
 
   // its not possible to tell if a child will accept a href prop or not
@@ -124,7 +131,7 @@ export const Link: FC<
   ) : (
     <a {...newProps}>{children}</a>
   );
-};
+});
 
 export const Redirect: FC<
   PropsWithChildren<
