@@ -15,6 +15,7 @@ distclean: clean
 .PHONY: test
 test: node_modules
 	NODE_OPTIONS=--experimental-vm-modules yarn jest
+	$(MAKE) build/index.js
 
 .PRECIOUS: yarn.lock
 node_modules: yarn.lock package.json
@@ -32,6 +33,12 @@ dist: node_modules
 types: node_modules
 	yarn tsc --emitDeclarationOnly --removeComments false
 
-build/index.js: node_modules $(SRCS) webpack.config.js babel.config.cjs
-	yarn webpack -o build --mode=production
+build/index.js: node_modules $(SRCS)
+	yarn esbuild src/index.ts \
+		--bundle \
+		--outfile=$@ \
+		--external:react \
+		--external:react-dom \
+		--format=esm \
+		--minify
 	npx bundlesize
