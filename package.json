@@ -8,7 +8,7 @@
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "default": "./build/index.js"
+      "default": "./build/main.js"
     },
     "./named-route": {
       "types": "./dist/src/named-route.d.ts",

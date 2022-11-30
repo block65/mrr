@@ -34,11 +34,5 @@ types: node_modules
 	yarn tsc --emitDeclarationOnly --removeComments false
 
 build/index.js: node_modules $(SRCS)
-	yarn esbuild src/index.ts \
-		--bundle \
-		--outfile=$@ \
-		--external:react \
-		--external:react-dom \
-		--format=esm \
-		--minify
+	yarn vite build
 	npx bundlesize
