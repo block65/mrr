@@ -12,6 +12,21 @@ import type { PartialWithUndefined, URLProps } from './types.js';
 
 export const nullOrigin = new URL('http://null');
 
+export const noop = () => {};
+
+export class Deferred<T extends void = void> {
+  public promise: Promise<T>;
+
+  public resolve: (value: T | PromiseLike<T>) => void;
+
+  constructor() {
+    this.resolve = noop;
+    this.promise = new Promise<T>((resolve) => {
+      this.resolve = resolve;
+    });
+  }
+}
+
 export function withWindow<A>(
   a: (window: Window & typeof globalThis) => A,
 ): A | undefined;

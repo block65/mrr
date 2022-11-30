@@ -12,6 +12,8 @@ import { Matcher, regexParamMatcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import {
   calculateDest,
+  Deferred,
+  noop,
   nullOrigin,
   urlObjectAssign,
   urlRhs,
@@ -21,6 +23,7 @@ import {
 interface ContextInterface {
   url: URL;
   matcher: Matcher;
+  ready: Promise<void>;
 }
 
 export type Destination =
@@ -51,6 +54,14 @@ export const Router: FC<
     search?: string;
   }>
 > = ({ children, matcher = regexParamMatcher, search, pathname }) => {
+  // In React, children fire effects before the parent, therefore  it is
+  // possible for a child to navigate before we add any event listeners.
+  // In this situation, all component logic would be bypassed.
+  // Storing this "deferred" allows us to wait for the event listeners to be
+  // added before then final navigation is honoured, without having to
+  // delay rendering
+  const def = useRef(new Deferred());
+
   const [url, setUrl] = useState(() =>
     withWindow<URL, URL>(
       ({ location }) =>
@@ -103,11 +114,14 @@ export const Router: FC<
         navigateEventHandler as EventListener,
       );
 
+      def.current.resolve();
+
       return () => {
         navigation.removeEventListener(
           eventName,
           navigateEventHandler as EventListener,
         );
+        def.current = new Deferred();
       };
     }
 
@@ -127,11 +141,13 @@ export const Router: FC<
     }
 
     // noop
-    return () => {};
-  }, [setUrlOnlyIfChanged]);
+    return noop;
+  }, [def, setUrlOnlyIfChanged]);
 
   return (
-    <RouterContext.Provider value={{ url, matcher }}>
+    <RouterContext.Provider
+      value={{ url, matcher, ready: def.current.promise }}
+    >
       {children}
     </RouterContext.Provider>
   );
@@ -156,7 +172,7 @@ export function useLocation(): [
     replace: LegacyNavigationMethod;
   },
 ] {
-  const { url } = useRouter();
+  const { url, ready } = useRouter();
 
   const navigate = useCallback(
     (
@@ -166,9 +182,12 @@ export function useLocation(): [
       const nextDest = calculateDest(dest, url);
 
       if (useNavigationApi) {
-        navigation.navigate(nextDest.toString(), {
-          ...(options?.history && { history: options.history }),
-        });
+        // eslint-disable-next-line no-void
+        void ready.then(() =>
+          navigation.navigate(nextDest.toString(), {
+            ...(options?.history && { history: options.history }),
+          }),
+        );
       } else {
         const { history } = window;
 
@@ -189,7 +208,7 @@ export function useLocation(): [
         dispatchEvent(new PopStateEvent('popstate'));
       }
     },
-    [url],
+    [ready, url],
   );
 
   const replace: LegacyNavigationMethod = useCallback(
