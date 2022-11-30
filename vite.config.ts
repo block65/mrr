@@ -8,8 +8,10 @@ export default defineConfig({
     outDir: 'build',
     target: 'es2021',
     lib: {
-      entry: join(__dirname, 'src/index.ts'),
-      fileName: 'main',
+      entry: {
+        main: join(__dirname, 'src/index.ts'),
+        'named-route': join(__dirname, 'src/named-route.ts'),
+      },
       formats: ['es'],
     },
     rollupOptions: {
