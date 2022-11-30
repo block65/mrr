@@ -4,7 +4,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
-  useLayoutEffect,
+  useEffect,
   useState,
 } from 'react';
 import { Matcher, regexParamMatcher } from './matcher.js';
@@ -68,10 +68,7 @@ export const Router: FC<
     setUrl((src) => (src.toString() !== dest ? new URL(dest) : src));
   }, []);
 
-  // useLayoutEffect so we can synchronously (or as close to) change the URL
-  // or start a navigation, avoiding a flash of rendered DOMS based on soon to
-  // be stale state
-  useLayoutEffect(() => {
+  useEffect(() => {
     // Navigation API
     if (useNavigationApi) {
       const navigateEventHandler: NavigateEventListener = (e) => {
