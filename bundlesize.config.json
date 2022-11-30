@@ -1,8 +1,8 @@
 {
   "files": [
     {
-      "path": "./build/index.js",
-      "maxSize": "2.1 kB",
+      "path": "./build/*.js",
+      "maxSize": "2.2 kB",
       "compression": "brotli"
     }
   ]
