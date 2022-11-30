@@ -1,7 +1,7 @@
 
 SRCS := $(shell find lib -print -name *.ts?)
 
-all: build/index.js dist types
+all: build/main.js types
 
 .PHONY: clean
 clean:
@@ -25,14 +25,10 @@ node_modules: yarn.lock package.json
 dev: node_modules webpack.config.js
 	yarn webpack -o build --mode=development -w
 
-.PHONY: dist
-dist: node_modules
-	yarn tsc
-
 .PHONY: types
 types: node_modules
 	yarn tsc --emitDeclarationOnly --removeComments false
 
-build/index.js: node_modules $(SRCS)
+build/main.js: node_modules $(SRCS)
 	yarn vite build
 	npx bundlesize
