@@ -5,7 +5,7 @@ exports[`basic 1`] = `
   <div
     data-testid="location-display"
   >
-    /login
+    http://localhost/login
   </div>
   <h1
     data-testid="login"

@@ -1,14 +1,12 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import type { FC } from 'react';
-import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 import { namedRoute } from '../lib/named-route.js';
-import { useNavigate } from '../lib/router.js';
+import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 
 export const LocationDisplay = () => {
   const [location] = useLocation();
 
-  return <div data-testid="location-display">{location.pathname}</div>;
+  return <div data-testid="location-display">{location.href}</div>;
 };
 
 test('basic', async () => {
