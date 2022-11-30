@@ -12,7 +12,7 @@
     },
     "./named-route": {
       "types": "./dist/src/named-route.d.ts",
-      "default": "./dist/src/named-route.js"
+      "default": "./build/named-route.js"
     }
   },
   "files": [
