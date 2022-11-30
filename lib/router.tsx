@@ -39,7 +39,7 @@ type NavigationMethod = (
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
 
-const hasNav = typeof navigation !== 'undefined';
+const useNavigationApi = typeof navigation !== 'undefined';
 
 export const RouterContext = createContext<null | ContextInterface>(null);
 
@@ -73,7 +73,7 @@ export const Router: FC<
   // be stale state
   useLayoutEffect(() => {
     // Navigation API
-    if (hasNav) {
+    if (useNavigationApi) {
       const navigateEventHandler: NavigateEventListener = (e) => {
         // Don't intercept fragment navigations or downloads.
         if (e.hashChange || e.downloadRequest !== null) {
@@ -167,7 +167,7 @@ export function useLocation(): [
     ) => {
       const nextDest = calculateDest(dest, url);
 
-      if (hasNav) {
+      if (useNavigationApi) {
         navigation.navigate(nextDest.toString(), {
           ...(options?.history && { history: options.history }),
         });
@@ -212,7 +212,7 @@ export function useLocation(): [
 
   const back = useCallback(
     (alternateDest?: Destination) => {
-      if (hasNav) {
+      if (useNavigationApi) {
         if (navigation.entries()?.length > 0) {
           navigation.back();
         } else if (alternateDest) {
