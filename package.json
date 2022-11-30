@@ -16,7 +16,8 @@
     }
   },
   "files": [
-    "build/index.js",
+    "build/*.js",
+    "build/*.js.map",
     "dist/lib/*.js",
     "dist/lib/*.d.ts",
     "dist/src/*.js",
