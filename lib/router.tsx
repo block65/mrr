@@ -5,16 +5,17 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { Matcher, regexParamMatcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import {
   calculateDest,
+  nullOrigin,
   urlObjectAssign,
   urlRhs,
   withWindow,
-  nullOrigin,
 } from './util.js';
 
 interface ContextInterface {
