@@ -79,5 +79,6 @@ export function calculateDest(dest: Destination, currentUrl: URL) {
   if (typeof dest === 'string') {
     return new URL(dest, currentUrl);
   }
-  return urlObjectAssign(new URL(nullOrigin), dest);
+
+  return urlObjectAssign(new URL(currentUrl), dest);
 }
