@@ -36,11 +36,10 @@ const NavigationInsideEffect: FC = () => {
   const { navigate } = useNavigate();
 
   useEffect(() => {
-    // navigate({
-    //   pathname: '/pickles',
-    //   searchParams: new URLSearchParams({ foo: 'bar' }),
-    // });
-    navigate('/pickles?foo=bar');
+    navigate({
+      pathname: '/pickles',
+      searchParams: new URLSearchParams({ foo: 'bar' }),
+    });
   }, [navigate]);
 
   return <LocationDisplay />;
