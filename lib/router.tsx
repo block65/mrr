@@ -172,10 +172,10 @@ export function useLocation(): [
       } else {
         const { history } = window;
 
-        const nextRhs = urlRhs(nextDest);
-
         // we can only use push/replaceState for same origin
         if (nextDest.origin === url.origin) {
+          const nextRhs = urlRhs(nextDest);
+
           if (options?.history === 'replace') {
             history.replaceState(null, '', nextRhs);
           } else {
