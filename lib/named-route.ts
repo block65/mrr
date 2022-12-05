@@ -1,4 +1,4 @@
-import type { RouteParams, ExtractRouteParams } from './types.js';
+import type { Params, ExtractRouteParams } from './types.js';
 import { nullOrigin, urlObjectAssign, urlRhs } from './util.js';
 
 type QueryParams = Record<string, string>;
@@ -13,11 +13,12 @@ export interface NamedRoute<P extends string, Q extends QueryParams> {
   }) => string;
 }
 
-function interpolate<T extends RouteParams>(path: string, params: T): string {
-  return path.replace(
-    /:(\w+)/g,
-    (_match, token: string) =>
-      (params && token in params && params[token]) || '',
+export function interpolate<P extends string>(
+  path: P,
+  params: ExtractRouteParams<P> | Params = {},
+): string {
+  return path.replace(/\/:(\w+)[?+*]?/g, (_match, token: keyof typeof params) =>
+    params[token] ? `/${params[token]}` : '',
   );
 }
 
