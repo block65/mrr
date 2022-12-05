@@ -34,47 +34,18 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
   : RouteParams;
 
-// eslint-disable-next-line import/export
-export interface DefaultRoute {
-  children?: ReactNode | (() => JSX.Element);
-}
-
-// eslint-disable-next-line import/export
-export interface DefaultRoute {
-  component?: FC;
-}
+  : Params;
 
 export interface RouteProps<T extends string | undefined> {
   path: T;
   wildcard?: boolean | undefined;
 }
 
-export interface RouteWithChildren<T extends string | undefined>
-  extends RouteProps<T> {
-  children?: ReactNode;
-}
-
-export interface RouteWithChildFunction<
-  T extends Path,
-  P extends RouteParams = ExtractRouteParams<T>,
-> extends RouteProps<T> {
-  children: (params: P) => JSX.Element;
-}
-
-export interface RouteWithComponent<
-  T extends Path,
-  P extends RouteParams = ExtractRouteParams<T>,
-> extends RouteProps<T> {
-  component: FC<{ params: P }>;
-}
+export type DefaultRouteProps = { children: ReactNode };
 
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
-
-export interface RouteComponentProps<T extends RouteParams = RouteParams> {
-  params: T;
-}
 
 export interface URLProps {
   hash: string;

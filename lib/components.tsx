@@ -8,7 +8,6 @@ import {
   KeyboardEvent,
   MouseEvent,
   PropsWithChildren,
-  ReactElement,
   useCallback,
   useLayoutEffect,
 } from 'react';
@@ -20,40 +19,32 @@ import {
 } from './router.js';
 import { useMatch } from './routes.js';
 import type {
-  DefaultRoute,
+  DefaultRouteProps,
   ExtractRouteParams,
-  RouteParams,
-  RouteWithChildFunction,
-  RouteWithChildren,
-  RouteWithComponent,
+  Params,
+  RouteProps,
 } from './types.js';
-import { calculateDest, urlRhs, nullOrigin } from './util.js';
+import { calculateDest, nullOrigin, urlRhs } from './util.js';
 
 export function Route<
-  T extends string,
-  P extends RouteParams = ExtractRouteParams<T>,
+  TPath extends string,
+  TProps extends Params = ExtractRouteParams<TPath>,
 >(
   props:
-    | DefaultRoute
-    | RouteWithChildren<T>
-    | RouteWithChildFunction<T, P>
-    | RouteWithComponent<T, P>,
-): ReactElement | null {
-  const match = useMatch<P>();
+    | DefaultRouteProps
+    | PropsWithChildren<RouteProps<TPath>>
+    | (RouteProps<TPath> & {
+        component: FC<PropsWithChildren<TProps>>;
+        children?: never;
+      }),
+): ReturnType<FC<typeof props>> {
+  const match = useMatch<TProps>();
 
-  if ('component' in props) {
-    return props.component({ params: match ? match.params : ({} as P) });
+  if (props && 'component' in props && typeof props.component === 'function') {
+    return props.component(match ? match.params : ({} as TProps));
   }
 
-  if ('children' in props) {
-    const { children } = props;
-    if (typeof children === 'function') {
-      return children(match ? match.params : ({} as P));
-    }
-    return <>{children}</>;
-  }
-
-  return null;
+  return <>{props.children}</>;
 }
 
 export const Link = forwardRef<

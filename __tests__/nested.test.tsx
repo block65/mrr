@@ -2,14 +2,14 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
 import { namedRoute } from '../lib/named-route.js';
-import { Route, RouteComponentProps, Router, Routes } from '../src/index.js';
+import { Route, Router, Routes } from '../src/index.js';
 import { LocationDisplay } from './index.test.js';
 
 test('wildcard routes + nested', async () => {
   const userRoot = namedRoute('/users');
   const userView = namedRoute('/users/blah/:userId');
 
-  const ComponentWithUserId: FC<RouteComponentProps<{ userId: string }>> = ({
+  const ComponentWithUserId: FC<{ userId: string }> = ({
     params: { userId },
   }) => <>userId = {userId}</>;
 
@@ -23,14 +23,17 @@ test('wildcard routes + nested', async () => {
           <h1>inside userRoot</h1>
           <Routes>
             <Route path={userRoot.path}>this should not display</Route>
-            <Route wildcard path={userView.path}>
-              {(params) => (
+            <Route
+              wildcard
+              path={userView.path}
+              component={(params) => (
                 <h1 data-testid="users">You are user {params.userId}</h1>
               )}
-            </Route>
+            ></Route>
             <Route path={userView.path} component={ComponentWithUserId} />
-            <Route component={ParamlessComponent} />
-            <Route>{() => <ParamlessComponent />}</Route>
+            <Route>
+              <ParamlessComponent />
+            </Route>
             <Route>
               <h1>fail</h1>
             </Route>
@@ -60,11 +63,13 @@ test('default route + wildcard routes + nested', async () => {
           <Routes>
             <Route>
               <Routes>
-                <Route wildcard path={userView.path}>
-                  {(params) => (
+                <Route
+                  wildcard
+                  path={userView.path}
+                  component={(params) => (
                     <h1 data-testid="users">You are user {params.userId}</h1>
                   )}
-                </Route>
+                />
                 <Route>
                   <h1>fail</h1>
                 </Route>

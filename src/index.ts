@@ -4,4 +4,4 @@ export { Routes } from '../lib/routes.js';
 
 export * from '../lib/hooks.js';
 
-export type { RouteComponentProps, ExtractRouteParams } from '../lib/types.js';
+export type { ExtractRouteParams } from '../lib/types.js';

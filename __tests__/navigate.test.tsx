@@ -51,13 +51,14 @@ test('nav with clicks', async () => {
     <Router pathname="/users/test1">
       <LocationDisplay />
       <Routes>
-        <Route path={usersView.path}>
-          {(params) => (
+        <Route
+          path={usersView.path}
+          component={(params) => (
             <h1 data-testid={`heading-${params.userId}`}>
               You are user {params.userId}
             </h1>
           )}
-        </Route>
+        />
 
         <Route>
           <h1>fail</h1>
@@ -67,8 +68,6 @@ test('nav with clicks', async () => {
       <Buttons />
     </Router>,
   );
-
-  // debug();
 
   await waitFor(() => screen.getByTestId('heading-test1'));
 
