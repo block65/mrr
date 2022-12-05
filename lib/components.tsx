@@ -26,18 +26,16 @@ import type {
 } from './types.js';
 import { calculateDest, nullOrigin, urlRhs } from './util.js';
 
-export function Route<
+export const Route = <
   TPath extends string,
   TProps extends Params = ExtractRouteParams<TPath>,
->(
-  props:
+>(props:
     | DefaultRouteProps
     | PropsWithChildren<RouteProps<TPath>>
     | (RouteProps<TPath> & {
         component: FC<PropsWithChildren<TProps>>;
         children?: never;
-      }),
-): ReturnType<FC<typeof props>> {
+      })): ReturnType<FC<typeof props>> => {
   const match = useMatch<TProps>();
 
   if (props && 'component' in props && typeof props.component === 'function') {

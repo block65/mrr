@@ -79,13 +79,11 @@ root.render(
           <Link dest={logout.build()}>logout</Link>
         </Route>
         <>
-          <>
-            <Route path={user.path}>
+          <Route path={user.path}>
               <h1>user</h1>
               <Link dest={admin.build()}>admin</Link>|
               <Link dest={logout.build()}>logout</Link>
             </Route>
-          </>
         </>
         <Route path="/broken-link">
           <h1>404 soz</h1>

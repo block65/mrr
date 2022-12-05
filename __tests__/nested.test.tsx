@@ -9,9 +9,9 @@ test('wildcard routes + nested', async () => {
   const userRoot = namedRoute('/users');
   const userView = namedRoute('/users/blah/:userId');
 
-  const ComponentWithUserId: FC<{ userId: string }> = ({
-    params: { userId },
-  }) => <>userId = {userId}</>;
+  const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
+    <>userId = {userId}</>
+  );
 
   const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
@@ -29,7 +29,7 @@ test('wildcard routes + nested', async () => {
               component={(params) => (
                 <h1 data-testid="users">You are user {params.userId}</h1>
               )}
-            ></Route>
+             />
             <Route path={userView.path} component={ComponentWithUserId} />
             <Route>
               <ParamlessComponent />
