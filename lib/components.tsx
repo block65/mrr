@@ -42,6 +42,7 @@ export const Route = <
     return props.component(match ? match.params : ({} as TProps));
   }
 
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{props.children}</>;
 }
 
