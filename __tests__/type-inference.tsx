@@ -20,10 +20,7 @@ test('inferred component function props', async () => {
         </Route>
         <Route path={login.path} component={(props) => <h1>{props.foo}</h1>} />
         <Route path={login.path} component={EffCee} />
-        <Route path={login.path} component={EffCee}>
-          not both
-        </Route>
-        <Route>Default - 404 </Route>
+        <Route>Default route with children</Route>
       </Routes>
     </Router>,
   );

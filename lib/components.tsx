@@ -29,13 +29,15 @@ import { calculateDest, nullOrigin, urlRhs } from './util.js';
 export const Route = <
   TPath extends string,
   TProps extends Params = ExtractRouteParams<TPath>,
->(props:
+>(
+  props:
     | DefaultRouteProps
-    | PropsWithChildren<RouteProps<TPath>>
+    | PropsWithChildren<RouteProps<TPath> & { component?: never }>
     | (RouteProps<TPath> & {
         component: FC<PropsWithChildren<TProps>>;
         children?: never;
-      })): ReturnType<FC<typeof props>> => {
+      }),
+): ReturnType<FC<typeof props>> => {
   const match = useMatch<TProps>();
 
   if (props && 'component' in props && typeof props.component === 'function') {
@@ -44,7 +46,7 @@ export const Route = <
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{props.children}</>;
-}
+};
 
 export const Link = forwardRef<
   HTMLAnchorElement,

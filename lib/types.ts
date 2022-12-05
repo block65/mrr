@@ -39,7 +39,10 @@ export interface RouteProps<T extends string | undefined> {
   wildcard?: boolean | undefined;
 }
 
-export type DefaultRouteProps = { children: ReactNode };
+export type DefaultRouteProps = {
+  children: ReactNode;
+  component?: never;
+};
 
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
