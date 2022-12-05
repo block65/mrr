@@ -1,16 +1,16 @@
-import type { FC, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type Path = string | undefined;
 
-export type RouteParams = Record<string, string>;
+export type Params = Record<string, string>;
 
 // CREDIT @types/react-router
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3067ea199822cc2f06edcb84854adeecdfe640ad/types/react-router/index.d.ts#L149
 export type ExtractRouteOptionalParam<T extends string> =
   T extends `${infer Param}?`
-    ? { [k in Param]: string | undefined }
+    ? { [k in Param]?: string }
     : T extends `${infer Param}*`
-    ? { [k in Param]: string | undefined }
+    ? { [k in Param]?: string }
     : T extends `${infer Param}+`
     ? { [k in Param]: string }
     : { [k in T]: string };
@@ -32,8 +32,6 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
     ? ExtractRouteOptionalParam<Param>
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
-  : RouteParams;
-
   : Params;
 
 export interface RouteProps<T extends string | undefined> {
