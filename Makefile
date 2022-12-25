@@ -22,13 +22,13 @@ node_modules: yarn.lock package.json
 	yarn install
 
 .PHONY: dev
-dev: node_modules webpack.config.js
-	yarn webpack -o build --mode=development -w
+dev: node_modules
+	yarn vite dev
 
 .PHONY: types
 types: node_modules
 	yarn tsc --emitDeclarationOnly --removeComments false
 
 build/main.js: node_modules $(SRCS)
-	yarn vite build
+	NODE_ENV=production yarn vite build
 	npx bundlesize
