@@ -1,6 +1,7 @@
-export { Route, Link, Redirect } from '../lib/components.js';
+export { Redirect } from '../lib/components/Redirect.js';
+export { Link } from '../lib/components/Link.js';
 export { Router, useLocation } from '../lib/router.js';
-export { Routes } from '../lib/routes.js';
+export { Routes, Route } from '../lib/routes.js';
 
 export * from '../lib/hooks.js';
 
