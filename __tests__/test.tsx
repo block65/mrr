@@ -39,7 +39,11 @@ const Programmatic: FC = () => {
 
   return (
     <p>
-      This <button onClick={ke}>lclclc</button>redirect is programmatic
+      This{' '}
+      <button type="button" onClick={ke}>
+        lclclc
+      </button>
+      redirect is programmatic
     </p>
   );
 };
@@ -80,10 +84,10 @@ root.render(
         </Route>
         <>
           <Route path={user.path}>
-              <h1>user</h1>
-              <Link dest={admin.build()}>admin</Link>|
-              <Link dest={logout.build()}>logout</Link>
-            </Route>
+            <h1>user</h1>
+            <Link dest={admin.build()}>admin</Link>|
+            <Link dest={logout.build()}>logout</Link>
+          </Route>
         </>
         <Route path="/broken-link">
           <h1>404 soz</h1>
