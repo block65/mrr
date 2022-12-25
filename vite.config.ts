@@ -9,7 +9,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'build',
-    target: 'es2021',
+    target: 'es2022',
     lib: {
       entry: {
         main: join(__dirname, 'src/index.ts'),
