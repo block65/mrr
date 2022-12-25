@@ -17,6 +17,7 @@ const Buttons: FC = () => {
       {users.map((userId) => (
         <li key={userId}>
           <button
+            type="button"
             data-testid={`button-${userId}`}
             onClick={() => {
               const dest = usersView.build({ params: { userId } });
