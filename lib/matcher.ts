@@ -1,9 +1,11 @@
 import { parse } from 'regexparam';
 import { pathCache } from './path-cache.js';
 import type { RouteComponent } from './routes.js';
-import type { Params, RouteProps } from './types.js';
+import type { ExtractRouteParams, Params, RouteProps } from './types.js';
 
-export type Match<P extends Params> = MatchResult<P> | false;
+export type Match<TPath extends string = '/'> =
+  | MatchResult<ExtractRouteParams<TPath>>
+  | false;
 
 export interface MatchResult<P extends Params> {
   path: string;
@@ -14,7 +16,7 @@ export interface MatchResult<P extends Params> {
 export type Matcher = (
   component: RouteComponent,
   pathname: string,
-) => Match<Params> | false;
+) => Match | false;
 
 // const pathToRegexpCache = new Map<string, MatchFunction<DefaultRouteParams>>();
 
@@ -54,8 +56,8 @@ function regexParamExec(path: string, keys: string[], pattern: RegExp) {
 export const regexParamMatcher: Matcher = (
   { props }: RouteComponent,
   pathname: string,
-): Match<Params> => {
   if (!props || !('path' in props)) {
+): Match => {
     return { index: 0, params: {}, path: '' };
   }
 

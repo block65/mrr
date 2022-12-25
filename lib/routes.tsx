@@ -10,12 +10,13 @@ import {
 import { Route } from './components.js';
 import type { Match, MatchResult } from './matcher.js';
 import { useLocation, useRouter } from './router.js';
-import type { Params } from './types.js';
+import type { Params, RouteComponentProps } from './types.js';
 import { flattenChildren } from './util.js';
 
 export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
 
-export const RoutesContext = createContext<Match<Params>>(false);
+export const RoutesContext = createContext<Match>(false);
+
 
 export const Routes: FC<PropsWithChildren> = ({ children }) => {
   const [url] = useLocation();

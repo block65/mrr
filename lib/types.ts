@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 type Path = string | undefined;
 
@@ -34,15 +34,24 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
   : Params;
 
-export interface RouteProps<T extends string | undefined> {
-  path: T;
+export interface RouteProps<TPath extends string> {
+  path: TPath;
   wildcard?: boolean | undefined;
 }
 
-export type DefaultRouteProps = {
-  children: ReactNode;
-  component?: never;
-};
+export type RouteComponentProps<TPath extends string> =
+  | {
+      children: ReactNode;
+      component?: never;
+    }
+  | (RouteProps<TPath> & {
+      children?: ReactNode | undefined;
+      component: never;
+    })
+  | (RouteProps<TPath> & {
+      component: FC<PropsWithChildren<ExtractRouteParams<TPath>>>;
+      children?: never;
+    });
 
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
