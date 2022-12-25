@@ -56,8 +56,8 @@ function regexParamExec(path: string, keys: string[], pattern: RegExp) {
 export const regexParamMatcher: Matcher = (
   { props }: RouteComponent,
   pathname: string,
-  if (!props || !('path' in props)) {
 ): Match => {
+  if (!('path' in props)) {
     return { index: 0, params: {}, path: '' };
   }
 
