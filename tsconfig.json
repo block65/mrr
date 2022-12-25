@@ -27,6 +27,6 @@
     "removeComments": true,
     "types": ["./node_modules/navigation-api-types"]
   },
-  "include": ["./src", "./lib", "./bin", "./__tests__"],
+  // "include": ["./src", "./lib", "./bin", "./__tests__"],
   "exclude": ["./dist", "node_modules"]
 }
