@@ -177,37 +177,42 @@ export function useLocation(): [
   const { url, ready } = useRouter();
 
   const navigate = useCallback(
-    (
+    async (
       dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
     ) => {
       const nextDest = calculateDest(dest, url);
 
-      ready.then(() => {
-        if (useNavigationApi) {
-          navigation.navigate(nextDest.toString(), {
-            ...(options?.history && { history: options.history }),
-          });
-        } else {
-          const { history } = window;
+      await ready;
 
-          // we can only use push/replaceState for same origin
-          if (nextDest.origin === url.origin) {
-            const nextRhs = urlRhs(nextDest);
+      if (useNavigationApi) {
+        return navigation.navigate(nextDest.toString(), {
+          ...(options?.history && { history: options.history }),
+        });
+      } else {
+        const { history } = window;
 
-            if (options?.history === 'replace') {
-              history.replaceState(null, '', nextRhs);
-            } else {
-              history.pushState(null, '', nextRhs);
-            }
+        // we can only use push/replaceState for same origin
+        if (nextDest.origin === url.origin) {
+          const nextRhs = urlRhs(nextDest);
+
+          if (options?.history === 'replace') {
+            history.replaceState(null, '', nextRhs);
           } else {
-            window.location.assign(nextDest);
+            history.pushState(null, '', nextRhs);
           }
-
-          // pushState and replaceState don't trigger popstate event
-          dispatchEvent(new PopStateEvent(popStateEventName));
+        } else {
+          window.location.assign(nextDest);
         }
-      });
+
+        // pushState and replaceState don't trigger popstate event
+        dispatchEvent(new PopStateEvent(popStateEventName));
+
+        return {
+          committed: Promise.resolve(),
+          finished: Promise.resolve(),
+        };
+      }
     },
     [ready, url],
   );
