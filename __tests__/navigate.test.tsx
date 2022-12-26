@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FC, useEffect } from 'react';
+import { jest } from '@jest/globals';
 import { namedRoute } from '../lib/named-route.js';
 import { Router, useNavigate } from '../lib/router.js';
 import { Route, Routes } from '../lib/routes.js';
@@ -46,7 +47,6 @@ const NavigationInsideEffect: FC = () => {
 };
 
 test('nav with clicks', async () => {
-  // const { debug } =
   render(
     <Router pathname="/users/test1">
       <LocationDisplay />
@@ -91,11 +91,9 @@ test.only('programmatic navigation with hooks', async () => {
   await waitFor(() => {
     // global location
     expect(location.href).toBe('http://localhost/pickles?foo=bar');
-  });
 
-  await waitFor(() =>
     expect(screen.getByTestId('location-display')).toHaveTextContent(
       'http://localhost/pickles?foo=bar',
-    ),
-  );
+    );
+  });
 });
