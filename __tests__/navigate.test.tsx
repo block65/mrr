@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FC, useEffect } from 'react';
-import { jest } from '@jest/globals';
 import { namedRoute } from '../lib/named-route.js';
 import { Router, useNavigate } from '../lib/router.js';
 import { Route, Routes } from '../lib/routes.js';
