@@ -17,12 +17,19 @@ import {
 } from '../router.js';
 import { calculateDest, nullOrigin, urlRhs } from '../util.js';
 
+type LinkBaseProps = AnchorHTMLAttributes<HTMLAnchorElement>;
+
+export type LinkProps = PropsWithChildren<
+  Omit<LinkBaseProps, 'href'> & NavigationMethodOptions & { dest: Destination }
+>;
+
+export type LinkChildProps = LinkBaseProps & {
+  ref?: ForwardedRef<HTMLAnchorElement>;
+};
+
 export const Link = forwardRef<
   HTMLAnchorElement,
-  PropsWithChildren<
-    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
-      NavigationMethodOptions & { dest: Destination }
-  >
+  LinkProps
   // eslint-disable-next-line prefer-arrow-callback
 >(function Link({ children, dest, onClick, history, ...props }, ref) {
   const { url } = useRouter();
@@ -74,9 +81,7 @@ export const Link = forwardRef<
     [onClick, history, isStringDest, navigate, dest],
   );
 
-  const newProps: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    ref?: ForwardedRef<HTMLAnchorElement>;
-  } = {
+  const newProps: LinkChildProps = {
     ...props,
     href: isSameOrigin ? urlRhs(destAsUrl) : dest.toString(),
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),

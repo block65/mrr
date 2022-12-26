@@ -8,65 +8,29 @@ exports[`basic 1`] = `
     test as string
   </a>
   <a
-    href="https://invalid.example.com"
-    rel="no-opener noreferrer"
-  >
-    cross origin link
-  </a>
-  <a
     href="/login"
   >
     test as fragment
   </a>
   <a
+    data-linkylink="true"
     href="/login"
   >
-    <span
-      data-linkylink="true"
-    >
-      test nested in an FC
-    </span>
+    this text should be in a component that has a href
   </a>
-  <a
-    href="/login"
-  >
-    this will not work properly
-  </a>
-  <a
-    href="/login"
-  >
-    plnk plonk
-  </a>
+  this text will not be in a component that has a href :sadface:
   <a
     href="/login"
     id="123"
   >
-    Hello!
+    This anchor should have a href!
   </a>
+  this text will not be in a component that has a href :sadface:
   <a
-    href="/login"
+    href="https://invalid.example.com"
+    rel="no-opener noreferrer"
   >
-    <div
-      data-compycomp="true"
-    >
-      Once
-      <div
-        data-compycomp="true"
-      >
-        Twice
-        <div
-          data-compycomp="true"
-        >
-          Three times a lady
-        </div>
-      </div>
-    </div>
+    cross origin link
   </a>
-  <a
-    href="/login"
-  >
-    this will also not work properly
-  </a>
-  ,
 </DocumentFragment>
 `;
