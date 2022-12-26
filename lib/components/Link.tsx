@@ -3,6 +3,7 @@ import {
   cloneElement,
   ForwardedRef,
   forwardRef,
+  Fragment,
   isValidElement,
   KeyboardEvent,
   MouseEvent,
@@ -89,12 +90,18 @@ export const Link = forwardRef<
     ref,
   };
 
-  // its not possible to tell if a child will accept a href prop or not
-  // we can only tell if its a component or not
-  // so we simply always wrap in an anchor, unless it's already an anchor
-  return isValidElement(children) ? (
-    cloneElement(children, newProps)
-  ) : (
+  // If it's a valid element (that is also not a fragment), we pass the props
+  // in, otherwise we wrap with an anchor.
+  // It's up to the consumer to make sure they pass an element that
+  // can interpret/handle the received props
+  const isValid = isValidElement(children);
+  const isFragment = isValid && children.type === Fragment;
+
+  const shouldWrap = !isValid || isFragment;
+
+  return shouldWrap ? (
     <a {...newProps}>{children}</a>
+  ) : (
+    cloneElement(children, newProps)
   );
 });
