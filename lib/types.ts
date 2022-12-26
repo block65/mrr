@@ -1,16 +1,16 @@
-import type { FC, ReactNode } from 'react';
+import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 type Path = string | undefined;
 
-export type RouteParams = Record<string, string>;
+export type Params = Record<string, string>;
 
 // CREDIT @types/react-router
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3067ea199822cc2f06edcb84854adeecdfe640ad/types/react-router/index.d.ts#L149
 export type ExtractRouteOptionalParam<T extends string> =
   T extends `${infer Param}?`
-    ? { [k in Param]: string | undefined }
+    ? { [k in Param]?: string }
     : T extends `${infer Param}*`
-    ? { [k in Param]: string | undefined }
+    ? { [k in Param]?: string }
     : T extends `${infer Param}+`
     ? { [k in Param]: string }
     : { [k in T]: string };
@@ -32,49 +32,30 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
     ? ExtractRouteOptionalParam<Param>
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
-  : RouteParams;
+  : Params;
 
-// eslint-disable-next-line import/export
-export interface DefaultRoute {
-  children?: ReactNode | (() => JSX.Element);
-}
-
-// eslint-disable-next-line import/export
-export interface DefaultRoute {
-  component?: FC;
-}
-
-export interface RouteProps<T extends string | undefined> {
-  path: T;
+export interface RouteProps<TPath extends string> {
+  path: TPath;
   wildcard?: boolean | undefined;
 }
 
-export interface RouteWithChildren<T extends string | undefined>
-  extends RouteProps<T> {
-  children?: ReactNode;
-}
-
-export interface RouteWithChildFunction<
-  T extends Path,
-  P extends RouteParams = ExtractRouteParams<T>,
-> extends RouteProps<T> {
-  children: (params: P) => JSX.Element;
-}
-
-export interface RouteWithComponent<
-  T extends Path,
-  P extends RouteParams = ExtractRouteParams<T>,
-> extends RouteProps<T> {
-  component: FC<{ params: P }>;
-}
+export type RouteComponentProps<TPath extends string> =
+  | {
+      children: ReactNode;
+      component?: never;
+    }
+  | (RouteProps<TPath> & {
+      children?: ReactNode | undefined;
+      component: never;
+    })
+  | (RouteProps<TPath> & {
+      component: FC<PropsWithChildren<ExtractRouteParams<TPath>>>;
+      children?: never;
+    });
 
 export type PartialWithUndefined<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
-
-export interface RouteComponentProps<T extends RouteParams = RouteParams> {
-  params: T;
-}
 
 export interface URLProps {
   hash: string;

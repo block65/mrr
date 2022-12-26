@@ -30,7 +30,7 @@ const Programmatic: FC = () => {
     };
   }, [navigate]);
 
-  const ke = useCallback(() => {
+  const nav = useCallback(() => {
     navigate({
       // pathname: '/woot',
       searchParams: new URLSearchParams({ foo: Date.now().toString() }),
@@ -39,7 +39,11 @@ const Programmatic: FC = () => {
 
   return (
     <p>
-      This <button onClick={ke}>lclclc</button>redirect is programmatic
+      This
+      <button type="button" onClick={nav}>
+        nav
+      </button>
+      is programmatic
     </p>
   );
 };
@@ -79,13 +83,11 @@ root.render(
           <Link dest={logout.build()}>logout</Link>
         </Route>
         <>
-          <>
-            <Route path={user.path}>
-              <h1>user</h1>
-              <Link dest={admin.build()}>admin</Link>|
-              <Link dest={logout.build()}>logout</Link>
-            </Route>
-          </>
+          <Route path={user.path}>
+            <h1>user</h1>
+            <Link dest={admin.build()}>admin</Link>|
+            <Link dest={logout.build()}>logout</Link>
+          </Route>
         </>
         <Route path="/broken-link">
           <h1>404 soz</h1>

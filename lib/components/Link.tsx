@@ -1,67 +1,36 @@
 import {
   AnchorHTMLAttributes,
   cloneElement,
-  FC,
   ForwardedRef,
   forwardRef,
+  Fragment,
   isValidElement,
   KeyboardEvent,
   MouseEvent,
   PropsWithChildren,
-  ReactElement,
   useCallback,
-  useLayoutEffect,
 } from 'react';
 import {
   Destination,
   NavigationMethodOptions,
   useLocation,
   useRouter,
-} from './router.js';
-import { useMatch } from './routes.js';
-import type {
-  DefaultRoute,
-  ExtractRouteParams,
-  RouteParams,
-  RouteWithChildFunction,
-  RouteWithChildren,
-  RouteWithComponent,
-} from './types.js';
-import { calculateDest, urlRhs, nullOrigin } from './util.js';
+} from '../router.js';
+import { calculateDest, nullOrigin, urlRhs } from '../util.js';
 
-export function Route<
-  T extends string,
-  P extends RouteParams = ExtractRouteParams<T>,
->(
-  props:
-    | DefaultRoute
-    | RouteWithChildren<T>
-    | RouteWithChildFunction<T, P>
-    | RouteWithComponent<T, P>,
-): ReactElement | null {
-  const match = useMatch<P>();
+type LinkBaseProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
-  if ('component' in props) {
-    return props.component({ params: match ? match.params : ({} as P) });
-  }
+export type LinkProps = PropsWithChildren<
+  Omit<LinkBaseProps, 'href'> & NavigationMethodOptions & { dest: Destination }
+>;
 
-  if ('children' in props) {
-    const { children } = props;
-    if (typeof children === 'function') {
-      return children(match ? match.params : ({} as P));
-    }
-    return <>{children}</>;
-  }
-
-  return null;
-}
+export type LinkChildProps = LinkBaseProps & {
+  ref?: ForwardedRef<HTMLAnchorElement>;
+};
 
 export const Link = forwardRef<
   HTMLAnchorElement,
-  PropsWithChildren<
-    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> &
-      NavigationMethodOptions & { dest: Destination }
-  >
+  LinkProps
   // eslint-disable-next-line prefer-arrow-callback
 >(function Link({ children, dest, onClick, history, ...props }, ref) {
   const { url } = useRouter();
@@ -113,9 +82,7 @@ export const Link = forwardRef<
     [onClick, history, isStringDest, navigate, dest],
   );
 
-  const newProps: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    ref?: ForwardedRef<HTMLAnchorElement>;
-  } = {
+  const newProps: LinkChildProps = {
     ...props,
     href: isSameOrigin ? urlRhs(destAsUrl) : dest.toString(),
     ...(typeof navigation === 'undefined' && { onClick: handleClick }),
@@ -123,28 +90,18 @@ export const Link = forwardRef<
     ref,
   };
 
-  // its not possible to tell if a child will accept a href prop or not
-  // we can only tell if its a component or not
-  // so we simply always wrap in an anchor, unless it's already an anchor
-  return isValidElement(children) && children.type === 'a' ? (
-    cloneElement(children, newProps)
-  ) : (
+  // If it's a valid element (that is also not a fragment), we pass the props
+  // in, otherwise we wrap with an anchor.
+  // It's up to the consumer to make sure they pass an element that
+  // can interpret/handle the received props
+  const isValid = isValidElement(children);
+  const isFragment = isValid && children.type === Fragment;
+
+  const shouldWrap = !isValid || isFragment;
+
+  return shouldWrap ? (
     <a {...newProps}>{children}</a>
+  ) : (
+    cloneElement(children, newProps)
   );
 });
-
-export const Redirect: FC<
-  PropsWithChildren<
-    NavigationMethodOptions & {
-      dest: Destination;
-    }
-  >
-> = ({ dest, children, history }) => {
-  const [, { navigate }] = useLocation();
-
-  useLayoutEffect(() => {
-    navigate(dest, history && { history });
-  }, [dest, history, navigate]);
-
-  return <>{children}</>;
-};

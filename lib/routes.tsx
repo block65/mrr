@@ -7,21 +7,37 @@ import {
   ReactElement,
   useContext,
 } from 'react';
-import { Route } from './components.js';
 import type { Match, MatchResult } from './matcher.js';
 import { useLocation, useRouter } from './router.js';
-import type { RouteParams } from './types.js';
+import type { Params, RouteComponentProps } from './types.js';
 import { flattenChildren } from './util.js';
 
 export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
 
-export const RoutesContext = createContext<Match<RouteParams>>(false);
+export const RoutesContext = createContext<Match>(false);
+
+export function useMatch<TPath extends string>(): Match<TPath> {
+  return useContext(RoutesContext) as Match<TPath>;
+}
+
+export const Route = <TPath extends string>(
+  props: RouteComponentProps<TPath>,
+): ReturnType<FC<typeof props>> => {
+  const match = useMatch<TPath>();
+
+  if (props && 'component' in props && typeof props.component === 'function') {
+    return match ? props.component(match.params) : null;
+  }
+
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{props.children}</>;
+};
 
 export const Routes: FC<PropsWithChildren> = ({ children }) => {
   const [url] = useLocation();
   const { matcher } = useRouter();
 
-  let matchResult: MatchResult<RouteParams> | false = false;
+  let matchResult: MatchResult<Params> | false = false;
   let child: RouteComponent | null = null;
 
   flattenChildren(children)
@@ -46,7 +62,3 @@ export const Routes: FC<PropsWithChildren> = ({ children }) => {
     <RoutesContext.Provider value={matchResult}>{child}</RoutesContext.Provider>
   );
 };
-
-export function useMatch<T extends RouteParams>(): Match<T> {
-  return useContext(RoutesContext) as Match<T>;
-}

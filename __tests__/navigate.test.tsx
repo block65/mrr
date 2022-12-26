@@ -1,9 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FC, useEffect } from 'react';
-import { Route } from '../lib/components.js';
 import { namedRoute } from '../lib/named-route.js';
 import { Router, useNavigate } from '../lib/router.js';
-import { Routes } from '../lib/routes.js';
+import { Route, Routes } from '../lib/routes.js';
 import { LocationDisplay } from './index.test.js';
 
 const usersView = namedRoute('/users/:userId');
@@ -18,6 +17,7 @@ const Buttons: FC = () => {
       {users.map((userId) => (
         <li key={userId}>
           <button
+            type="button"
             data-testid={`button-${userId}`}
             onClick={() => {
               const dest = usersView.build({ params: { userId } });
@@ -46,18 +46,18 @@ const NavigationInsideEffect: FC = () => {
 };
 
 test('nav with clicks', async () => {
-  // const { debug } =
   render(
     <Router pathname="/users/test1">
       <LocationDisplay />
       <Routes>
-        <Route path={usersView.path}>
-          {(params) => (
+        <Route
+          path={usersView.path}
+          component={(params) => (
             <h1 data-testid={`heading-${params.userId}`}>
               You are user {params.userId}
             </h1>
           )}
-        </Route>
+        />
 
         <Route>
           <h1>fail</h1>
@@ -67,8 +67,6 @@ test('nav with clicks', async () => {
       <Buttons />
     </Router>,
   );
-
-  // debug();
 
   await waitFor(() => screen.getByTestId('heading-test1'));
 
@@ -92,11 +90,9 @@ test.only('programmatic navigation with hooks', async () => {
   await waitFor(() => {
     // global location
     expect(location.href).toBe('http://localhost/pickles?foo=bar');
-  });
 
-  await waitFor(() =>
     expect(screen.getByTestId('location-display')).toHaveTextContent(
       'http://localhost/pickles?foo=bar',
-    ),
-  );
+    );
+  });
 });

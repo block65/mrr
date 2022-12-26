@@ -44,6 +44,7 @@ type NavigationMethod = (
 type NavigateEventListener = (evt: NavigateEvent) => void;
 
 const useNavigationApi = typeof navigation !== 'undefined';
+const popStateEventName = 'popstate';
 
 export const RouterContext = createContext<null | ContextInterface>(null);
 
@@ -131,12 +132,13 @@ export const Router: FC<
         setUrlOnlyIfChanged(window.location.href);
       };
 
-      const eventName = 'popstate';
+      window.addEventListener(popStateEventName, navigateEventHandler);
 
-      window.addEventListener(eventName, navigateEventHandler);
+      def.current.resolve();
 
       return () => {
-        window.removeEventListener(eventName, navigateEventHandler);
+        window.removeEventListener(popStateEventName, navigateEventHandler);
+        def.current = new Deferred();
       };
     }
 
@@ -175,38 +177,42 @@ export function useLocation(): [
   const { url, ready } = useRouter();
 
   const navigate = useCallback(
-    (
+    async (
       dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
     ) => {
       const nextDest = calculateDest(dest, url);
 
+      await ready;
+
       if (useNavigationApi) {
-        // eslint-disable-next-line no-void
-        void ready.then(() =>
-          navigation.navigate(nextDest.toString(), {
-            ...(options?.history && { history: options.history }),
-          }),
-        );
-      } else {
-        const { history } = window;
-
-        // we can only use push/replaceState for same origin
-        if (nextDest.origin === url.origin) {
-          const nextRhs = urlRhs(nextDest);
-
-          if (options?.history === 'replace') {
-            history.replaceState(null, '', nextRhs);
-          } else {
-            history.pushState(null, '', nextRhs);
-          }
-        } else {
-          window.location.assign(nextDest);
-        }
-
-        // pushState and replaceState don't trigger popstate event
-        dispatchEvent(new PopStateEvent('popstate'));
+        return navigation.navigate(nextDest.toString(), {
+          ...(options?.history && { history: options.history }),
+        });
       }
+
+      const { history } = window;
+
+      // we can only use push/replaceState for same origin
+      if (nextDest.origin === url.origin) {
+        const nextRhs = urlRhs(nextDest);
+
+        if (options?.history === 'replace') {
+          history.replaceState(null, '', nextRhs);
+        } else {
+          history.pushState(null, '', nextRhs);
+        }
+      } else {
+        window.location.assign(nextDest);
+      }
+
+      // pushState and replaceState don't trigger popstate event
+      dispatchEvent(new PopStateEvent(popStateEventName));
+
+      return {
+        committed: Promise.resolve(),
+        finished: Promise.resolve(),
+      };
     },
     [ready, url],
   );
