@@ -44,6 +44,7 @@ type NavigationMethod = (
 type NavigateEventListener = (evt: NavigateEvent) => void;
 
 const useNavigationApi = typeof navigation !== 'undefined';
+const popStateEventName = 'popstate';
 
 export const RouterContext = createContext<null | ContextInterface>(null);
 
@@ -131,12 +132,10 @@ export const Router: FC<
         setUrlOnlyIfChanged(window.location.href);
       };
 
-      const eventName = 'popstate';
-
-      window.addEventListener(eventName, navigateEventHandler);
+      window.addEventListener(popStateEventName, navigateEventHandler);
 
       return () => {
-        window.removeEventListener(eventName, navigateEventHandler);
+        window.removeEventListener(popStateEventName, navigateEventHandler);
       };
     }
 
@@ -205,7 +204,7 @@ export function useLocation(): [
         }
 
         // pushState and replaceState don't trigger popstate event
-        dispatchEvent(new PopStateEvent('popstate'));
+        dispatchEvent(new PopStateEvent(popStateEventName));
       }
     },
     [ready, url],
