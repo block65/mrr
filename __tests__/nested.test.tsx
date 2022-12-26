@@ -29,7 +29,7 @@ test('wildcard routes + nested', async () => {
               component={(params) => (
                 <h1 data-testid="users">You are user {params.userId}</h1>
               )}
-             />
+            />
             <Route path={userView.path} component={ComponentWithUserId} />
             <Route>
               <ParamlessComponent />
