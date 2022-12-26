@@ -30,7 +30,7 @@ const Programmatic: FC = () => {
     };
   }, [navigate]);
 
-  const ke = useCallback(() => {
+  const nav = useCallback(() => {
     navigate({
       // pathname: '/woot',
       searchParams: new URLSearchParams({ foo: Date.now().toString() }),
@@ -39,11 +39,11 @@ const Programmatic: FC = () => {
 
   return (
     <p>
-      This{' '}
-      <button type="button" onClick={ke}>
-        lclclc
+      This
+      <button type="button" onClick={nav}>
+        nav
       </button>
-      redirect is programmatic
+      is programmatic
     </p>
   );
 };
