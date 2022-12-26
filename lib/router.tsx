@@ -189,30 +189,30 @@ export function useLocation(): [
         return navigation.navigate(nextDest.toString(), {
           ...(options?.history && { history: options.history }),
         });
-      } else {
-        const { history } = window;
-
-        // we can only use push/replaceState for same origin
-        if (nextDest.origin === url.origin) {
-          const nextRhs = urlRhs(nextDest);
-
-          if (options?.history === 'replace') {
-            history.replaceState(null, '', nextRhs);
-          } else {
-            history.pushState(null, '', nextRhs);
-          }
-        } else {
-          window.location.assign(nextDest);
-        }
-
-        // pushState and replaceState don't trigger popstate event
-        dispatchEvent(new PopStateEvent(popStateEventName));
-
-        return {
-          committed: Promise.resolve(),
-          finished: Promise.resolve(),
-        };
       }
+
+      const { history } = window;
+
+      // we can only use push/replaceState for same origin
+      if (nextDest.origin === url.origin) {
+        const nextRhs = urlRhs(nextDest);
+
+        if (options?.history === 'replace') {
+          history.replaceState(null, '', nextRhs);
+        } else {
+          history.pushState(null, '', nextRhs);
+        }
+      } else {
+        window.location.assign(nextDest);
+      }
+
+      // pushState and replaceState don't trigger popstate event
+      dispatchEvent(new PopStateEvent(popStateEventName));
+
+      return {
+        committed: Promise.resolve(),
+        finished: Promise.resolve(),
+      };
     },
     [ready, url],
   );
