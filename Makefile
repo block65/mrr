@@ -15,7 +15,7 @@ distclean: clean
 .PHONY: test
 test: node_modules
 	NODE_OPTIONS=--experimental-vm-modules yarn jest
-	$(MAKE) build/index.js
+	$(MAKE) build/main.js
 
 .PRECIOUS: yarn.lock
 node_modules: yarn.lock package.json
