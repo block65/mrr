@@ -134,8 +134,11 @@ export const Router: FC<
 
       window.addEventListener(popStateEventName, navigateEventHandler);
 
+      def.current.resolve();
+
       return () => {
         window.removeEventListener(popStateEventName, navigateEventHandler);
+        def.current = new Deferred();
       };
     }
 
@@ -180,32 +183,31 @@ export function useLocation(): [
     ) => {
       const nextDest = calculateDest(dest, url);
 
-      if (useNavigationApi) {
-        // eslint-disable-next-line no-void
-        void ready.then(() =>
+      ready.then(() => {
+        if (useNavigationApi) {
           navigation.navigate(nextDest.toString(), {
             ...(options?.history && { history: options.history }),
-          }),
-        );
-      } else {
-        const { history } = window;
-
-        // we can only use push/replaceState for same origin
-        if (nextDest.origin === url.origin) {
-          const nextRhs = urlRhs(nextDest);
-
-          if (options?.history === 'replace') {
-            history.replaceState(null, '', nextRhs);
-          } else {
-            history.pushState(null, '', nextRhs);
-          }
+          });
         } else {
-          window.location.assign(nextDest);
-        }
+          const { history } = window;
 
-        // pushState and replaceState don't trigger popstate event
-        dispatchEvent(new PopStateEvent(popStateEventName));
-      }
+          // we can only use push/replaceState for same origin
+          if (nextDest.origin === url.origin) {
+            const nextRhs = urlRhs(nextDest);
+
+            if (options?.history === 'replace') {
+              history.replaceState(null, '', nextRhs);
+            } else {
+              history.pushState(null, '', nextRhs);
+            }
+          } else {
+            window.location.assign(nextDest);
+          }
+
+          // pushState and replaceState don't trigger popstate event
+          dispatchEvent(new PopStateEvent(popStateEventName));
+        }
+      });
     },
     [ready, url],
   );
