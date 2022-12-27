@@ -34,7 +34,7 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
   : Params;
 
-export interface RouteProps<TPath extends string> {
+export interface RoutingProps<TPath extends Path> {
   path: TPath;
   wildcard?: boolean | undefined;
 }

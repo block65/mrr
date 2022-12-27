@@ -1,7 +1,7 @@
 import { parse } from 'regexparam';
 import { pathCache } from './path-cache.js';
 import type { RouteComponent } from './routes.js';
-import type { ExtractRouteParams, Params, RouteProps } from './types.js';
+import type { ExtractRouteParams, Params, RoutingProps } from './types.js';
 
 export type Match<TPath extends string = '/'> =
   | MatchResult<ExtractRouteParams<TPath>>
@@ -37,7 +37,7 @@ export type Matcher = (
 // };
 
 const regexparamCache = new WeakMap<
-  RouteProps<string>,
+  RoutingProps<string>,
   | {
       keys: string[];
       pattern: RegExp;

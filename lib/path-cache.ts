@@ -1,6 +1,6 @@
-import type { RouteProps } from './types.js';
+import type { RoutingProps } from './types.js';
 
-export function pathCache<P extends RouteProps<string>, T>(
+export function pathCache<P extends RoutingProps<string>, T>(
   map: WeakMap<P, T>,
   props: P,
   builder: (props: P) => T,
