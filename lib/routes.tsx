@@ -25,11 +25,17 @@ export const Route = <TPath extends string>(
 ): ReturnType<FC<typeof props>> => {
   const match = useMatch<TPath>();
 
-  if (props && 'component' in props && typeof props.component === 'function') {
-    return match ? props.component(match.params) : null;
+  if (match) {
+    if (
+      props &&
+      'component' in props &&
+      typeof props.component === 'function'
+    ) {
+      return props.component(match.params);
+    }
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    return <>{props.children}</>;
   }
-
-  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{props.children}</>;
 };
 
