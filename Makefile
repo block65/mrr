@@ -14,6 +14,7 @@ distclean: clean
 
 .PHONY: test
 test: node_modules
+	yarn tsc --noEmit
 	NODE_OPTIONS=--experimental-vm-modules yarn jest
 	$(MAKE) build/main.js
 
