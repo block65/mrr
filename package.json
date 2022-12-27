@@ -23,6 +23,9 @@
     "dist/src/*.js",
     "dist/src/*.d.ts"
   ],
+  "scripts": {
+    "preversion": "make test"
+  },
   "browserslist": [
     "last 1 Chrome major versions",
     "last 2 Firefox major versions",
