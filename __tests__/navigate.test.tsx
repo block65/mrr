@@ -1,8 +1,15 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { FC, useEffect } from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import type { FC } from 'react';
 import { namedRoute } from '../lib/named-route.js';
 import { Router, useNavigate } from '../lib/router.js';
 import { Route, Routes } from '../lib/routes.js';
+import { NavigationInsideEffect } from './NavigationInsideEffect.js';
 import { LocationDisplay } from './index.test.js';
 
 const usersView = namedRoute('/users/:userId');
@@ -32,19 +39,6 @@ const Buttons: FC = () => {
   );
 };
 
-const NavigationInsideEffect: FC = () => {
-  const { navigate } = useNavigate();
-
-  useEffect(() => {
-    navigate({
-      pathname: '/pickles',
-      searchParams: new URLSearchParams({ foo: 'bar' }),
-    });
-  }, [navigate]);
-
-  return <LocationDisplay />;
-};
-
 test('nav with clicks', async () => {
   render(
     <Router pathname="/users/test1">
@@ -71,16 +65,22 @@ test('nav with clicks', async () => {
   await waitFor(() => screen.getByTestId('heading-test1'));
 
   fireEvent.click(screen.getByTestId('button-alice'));
-  expect(screen.getByRole('heading')).toHaveTextContent(/alice/);
+  await waitFor(() =>
+    expect(screen.getByRole('heading')).toHaveTextContent(/alice/),
+  );
 
   fireEvent.click(screen.getByTestId('button-bob'));
-  expect(screen.getByRole('heading')).toHaveTextContent(/bob/);
+  await waitFor(() =>
+    expect(screen.getByRole('heading')).toHaveTextContent(/bob/),
+  );
 
   fireEvent.click(screen.getByTestId('button-carol'));
-  expect(screen.getByRole('heading')).toHaveTextContent(/carol/);
+  await waitFor(() =>
+    expect(screen.getByRole('heading')).toHaveTextContent(/carol/),
+  );
 });
 
-test.only('programmatic navigation with hooks', async () => {
+test('programmatic navigation with hooks', async () => {
   render(
     <Router pathname="/">
       <NavigationInsideEffect />

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="location-display"
+  >
+    http://localhost/login
+  </div>
+  <h1
+    data-testid="login"
+  >
+    You are at the login page
+  </h1>
+</DocumentFragment>
+`;
