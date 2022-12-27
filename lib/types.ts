@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 
 type Path = string | undefined;
 
@@ -39,17 +39,23 @@ export interface RoutingProps<TPath extends Path> {
   wildcard?: boolean | undefined;
 }
 
-export type RouteComponentProps<TPath extends string> =
+export type RouteComponentProps<TPath extends Path> =
   | {
       children: ReactNode;
+      path?: never;
       component?: never;
     }
-  | (RouteProps<TPath> & {
-      children?: ReactNode | undefined;
-      component: never;
+  | {
+      component: FC<ExtractRouteParams<TPath>>;
+      path?: never;
+      children?: never;
+    }
+  | (RoutingProps<TPath> & {
+      children: ReactNode;
+      component?: never;
     })
-  | (RouteProps<TPath> & {
-      component: FC<PropsWithChildren<ExtractRouteParams<TPath>>>;
+  | (RoutingProps<TPath> & {
+      component: FC<ExtractRouteParams<TPath>>;
       children?: never;
     });
 
