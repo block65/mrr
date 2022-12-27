@@ -32,7 +32,7 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
     ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
     ? ExtractRouteOptionalParam<Param>
     : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
-  : Params;
+  : Record<string, never>;
 
 export interface RoutingProps<TPath extends Path> {
   path: TPath;
