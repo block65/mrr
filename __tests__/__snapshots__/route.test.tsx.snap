@@ -7,3 +7,11 @@ exports[`custom route 1`] = `
   </h1>
 </DocumentFragment>
 `;
+
+exports[`routes with components/children/paths/no paths 1`] = `
+<DocumentFragment>
+  <h1>
+    hello
+  </h1>
+</DocumentFragment>
+`;
