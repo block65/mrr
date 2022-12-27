@@ -50,7 +50,7 @@ const regexparamCache = new WeakMap<
 
 function regexParamExec(path: string, keys: string[], pattern: RegExp) {
   const matches = (pattern.exec(path) || []).slice(1);
-  return Object.fromEntries(matches.map((m, idx) => [keys[idx], m])) as Params;
+  return Object.fromEntries(matches.map((m, idx) => [keys[idx], m]));
 }
 
 export const regexParamMatcher: Matcher = (
@@ -61,8 +61,13 @@ export const regexParamMatcher: Matcher = (
     return { index: 0, params: {}, path: '' };
   }
 
-  const { keys, pattern } = pathCache(regexparamCache, props, (p) =>
-    parse(p.path, !!p.wildcard),
+  const { keys, pattern } = pathCache(
+    regexparamCache,
+    {
+      path: props.path,
+      wildcard: 'wildcard' in props && props.wildcard,
+    },
+    (p) => parse(p.path, !!p.wildcard),
   );
 
   if (pattern.test(pathname)) {
