@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
 import { namedRoute } from '../lib/named-route.js';
 import { Router, useNavigate } from '../lib/router.js';
