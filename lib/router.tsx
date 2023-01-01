@@ -96,6 +96,7 @@ export const Router: FC<
 
         // Some navigations, e.g. cross-origin navigations, we cannot intercept.
         // Let the browser handle those normally.
+        // as of Chrome 108, this works
         if (e.canIntercept) {
           e.intercept?.({
             handler,
@@ -103,6 +104,7 @@ export const Router: FC<
         }
 
         // as of Chrome 102, this seems to be the only thing that works
+        // as of Chrome 108, this no longer works
         if (e.canTransition && e.transitionWhile) {
           e.transitionWhile(handler());
         }
