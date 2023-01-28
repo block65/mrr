@@ -2,13 +2,13 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import type { FC, PropsWithChildren } from 'react';
 import { FormattedMessage, IntlProvider } from 'react-intl';
-import type { LinkChildProps } from '../lib/components/Link.js';
+import type { LinkProps } from '../lib/components/Link.js';
 import { namedRoute } from '../lib/named-route.js';
 import { Link, Router } from '../src/index.js';
 
-const ComponentThatTakesProps: FC<PropsWithChildren<LinkChildProps>> = (
-  props,
-) => <a data-linkylink {...props} />;
+const ComponentThatTakesProps: FC<PropsWithChildren<LinkProps>> = (props) => (
+  <a data-linkylink {...props} />
+);
 
 const ComponentThatIgnoresProps: FC<PropsWithChildren> = ({ children }) => (
   <>{children}</>
@@ -25,7 +25,7 @@ test('basic', async () => {
           <>test as fragment</>
         </Link>
         <Link dest={login.build()}>
-          <ComponentThatTakesProps>
+          <ComponentThatTakesProps dest="/">
             this text should be in a component that has a href
           </ComponentThatTakesProps>
         </Link>
