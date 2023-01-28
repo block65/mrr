@@ -18,10 +18,10 @@
   "files": [
     "build/*.js",
     "build/*.js.map",
-    "dist/lib/*.js",
-    "dist/lib/*.d.ts",
-    "dist/src/*.js",
-    "dist/src/*.d.ts"
+    "dist/lib/**/*.js",
+    "dist/lib/**/*.d.ts",
+    "dist/src/**/*.js",
+    "dist/src/**/*.d.ts"
   ],
   "scripts": {
     "preversion": "make test"
