@@ -1,5 +1,5 @@
 export { Redirect } from '../lib/components/Redirect.js';
-export { Link, type LinkChildProps } from '../lib/components/Link.js';
+export { Link, type LinkProps } from '../lib/components/Link.js';
 export { Router, useLocation } from '../lib/router.js';
 export { Routes, Route } from '../lib/routes.js';
 

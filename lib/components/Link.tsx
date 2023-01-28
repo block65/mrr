@@ -24,7 +24,7 @@ export type LinkProps = PropsWithChildren<
   Omit<LinkBaseProps, 'href'> & NavigationMethodOptions & { dest: Destination }
 >;
 
-export type LinkChildProps = LinkBaseProps & {
+type LinkChildProps = LinkBaseProps & {
   ref?: ForwardedRef<HTMLAnchorElement>;
 };
 
