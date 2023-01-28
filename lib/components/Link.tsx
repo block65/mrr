@@ -1,18 +1,18 @@
 import {
-  AnchorHTMLAttributes,
+  type AnchorHTMLAttributes,
   cloneElement,
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   Fragment,
   isValidElement,
-  KeyboardEvent,
-  MouseEvent,
-  PropsWithChildren,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PropsWithChildren,
   useCallback,
 } from 'react';
 import {
-  Destination,
-  NavigationMethodOptions,
+  type Destination,
+  type NavigationMethodOptions,
   useLocation,
   useRouter,
 } from '../router.js';
