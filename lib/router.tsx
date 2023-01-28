@@ -63,8 +63,8 @@ export const Router: FC<
   // delay rendering
   const def = useRef(new Deferred());
 
-  const [url, setUrl] = useState(() =>
-    withWindow<URL, URL>(
+  const [url, setUrl] = useState<URL>(() =>
+    withWindow(
       ({ location }) =>
         urlObjectAssign(new URL(location.href), {
           pathname: pathname || location.pathname,
@@ -105,7 +105,7 @@ export const Router: FC<
 
         // as of Chrome 102, this seems to be the only thing that works
         // as of Chrome 108, this no longer works
-        if (e.canTransition && e.transitionWhile) {
+        else if (e.canTransition && e.transitionWhile) {
           e.transitionWhile(handler());
         }
       };
