@@ -1,44 +1,123 @@
 import type { Params, ExtractRouteParams } from './types.js';
 import { nullOrigin, urlObjectAssign, urlRhs } from './util.js';
 
-type QueryParams = Record<string, string>;
+type Path = string;
 
-export interface NamedRoute<P extends string, Q extends QueryParams> {
-  path: P;
-  build: (x?: {
-    params?: ExtractRouteParams<P>;
-    query?: Q;
+type SearchParamsObject = Record<string, string>;
+
+interface NamedRouteWithParams<
+  TPath extends Path,
+  Q extends SearchParamsObject,
+> {
+  path: TPath;
+  build: (options: {
+    params: ExtractRouteParams<TPath>;
+    searchParams?: Q;
     hash?: string;
     origin?: string;
   }) => string;
 }
 
-export function interpolate<P extends string>(
-  path: P,
-  params: ExtractRouteParams<P> | Params = {},
+interface NamedRouteWithoutParams<
+  TPath extends Path,
+  Q extends SearchParamsObject,
+> {
+  path: TPath;
+  build: (options?: {
+    searchParams?: Q;
+    hash?: string;
+    origin?: string;
+  }) => string;
+}
+
+export type NamedRoute<
+  TPath extends Path,
+  Q extends SearchParamsObject = never,
+> = TPath extends `${string}:${infer _Rest}`
+  ? {
+      path: TPath;
+      build: (x: {
+        params: ExtractRouteParams<TPath>;
+        searchParams?: Q;
+        hash?: string;
+        origin?: string;
+      }) => string;
+    }
+  : {
+      path: TPath;
+      build: (x?: {
+        searchParams?: Q;
+        hash?: string;
+        origin?: string;
+      }) => string;
+    };
+
+export function interpolate<TPath extends Path>(
+  path: TPath,
+  params: ExtractRouteParams<TPath> | Params = {},
 ): string {
   return path.replace(/\/:(\w+)[?+*]?/g, (_match, token: keyof typeof params) =>
     params[token] ? `/${params[token]}` : '',
   );
 }
 
-export function namedRoute<T extends string, Q extends QueryParams = never>(
-  pathname: T,
-): NamedRoute<T, Q> {
-  return {
-    path: pathname,
-    build({ params, query, origin, ...rest } = {}) {
-      const interpolatedPathname = params
-        ? interpolate(pathname, params)
-        : pathname;
+type PathWithParams = `${Path}:${string}`;
 
-      const searchParams = new URLSearchParams(query);
-      searchParams.sort();
+function pathHasParams(path: PathWithParams | Path): path is PathWithParams {
+  return path.includes(':');
+}
+
+export function namedRoute<
+  Q extends SearchParamsObject = never,
+  TPath extends PathWithParams = PathWithParams,
+>(path: TPath): NamedRouteWithParams<TPath, Q>;
+export function namedRoute<
+  Q extends SearchParamsObject = never,
+  TPath extends Path = Path,
+>(path: TPath): NamedRouteWithoutParams<TPath, Q>;
+export function namedRoute<
+  Q extends SearchParamsObject = never,
+  TPath extends PathWithParams | Path = Path,
+>(path: TPath) {
+  if (pathHasParams(path)) {
+    return {
+      path,
+      build(options: {
+        params: ExtractRouteParams<TPath>;
+        searchParams?: Q;
+        hash?: string;
+        origin?: string;
+      }) {
+        const search = new URLSearchParams(options?.searchParams);
+        search.sort();
+
+        const newUrl = urlObjectAssign(new URL(origin || nullOrigin), {
+          pathname:
+            options && 'params' in options
+              ? interpolate(path, options.params)
+              : path,
+          search: search.toString(),
+          hash: options?.hash,
+          origin: options?.origin,
+        });
+
+        return newUrl.origin === nullOrigin.origin
+          ? urlRhs(newUrl)
+          : newUrl.toString();
+      },
+    };
+  }
+  return {
+    path,
+    build(options: { searchParams?: Q; hash?: string; origin?: string }) {
+      const search = new URLSearchParams(options?.searchParams);
+      search.sort();
 
       const newUrl = urlObjectAssign(new URL(origin || nullOrigin), {
-        pathname: interpolatedPathname,
-        search: searchParams.toString(),
-        ...rest,
+        pathname: path,
+        search: search.toString(),
+        hash: options?.hash,
+        origin: options?.origin,
       });
 
       return newUrl.origin === nullOrigin.origin
