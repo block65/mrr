@@ -1,4 +1,4 @@
-import { FC, StrictMode, useCallback, useEffect } from 'react';
+import { StrictMode, useCallback, type FC } from 'react';
 import { createRoot } from 'react-dom/client';
 import { namedRoute } from '../lib/named-route.js';
 import { useNavigate } from '../lib/router.js';
@@ -21,14 +21,6 @@ const here = namedRoute('/here');
 
 const Programmatic: FC = () => {
   const { navigate } = useNavigate();
-  // const [, { navigate }] = useLocation();
-
-  useEffect(() => {
-    console.log('effect already fired');
-    return () => {
-      console.log('effect cleanup fired');
-    };
-  }, [navigate]);
 
   const nav = useCallback(() => {
     navigate({
