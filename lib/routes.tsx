@@ -1,10 +1,10 @@
 import {
-  ComponentProps,
+  type ComponentProps,
   createContext,
-  FC,
+  type FC,
   isValidElement,
-  PropsWithChildren,
-  ReactElement,
+  type PropsWithChildren,
+  type ReactElement,
   useContext,
 } from 'react';
 import type { Match, MatchResult } from './matcher.js';

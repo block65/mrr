@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren, useLayoutEffect } from 'react';
+import { type FC, type PropsWithChildren, useLayoutEffect } from 'react';
 import {
-  Destination,
-  NavigationMethodOptions,
+  type Destination,
+  type NavigationMethodOptions,
   useLocation,
 } from '../router.js';
 

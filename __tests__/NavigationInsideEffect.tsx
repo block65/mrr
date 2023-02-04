@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { type FC, useEffect } from 'react';
 import { useNavigate } from '../lib/router.js';
 import { LocationDisplay } from './index.test.js';
 
