@@ -60,8 +60,8 @@ test('effects inside route components or children dont fire', async () => {
   render(
     <Router>
       <Routes>
-        <Route path={'/random'} component={HelloComponent} />
-        <Route path={'random2'}>
+        <Route path="/random" component={HelloComponent} />
+        <Route path="random2">
           <HelloComponent />
         </Route>
       </Routes>

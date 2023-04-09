@@ -1,14 +1,14 @@
 import {
   createContext,
-  FC,
-  PropsWithChildren,
+  type FC,
+  type PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { Matcher, regexParamMatcher } from './matcher.js';
+import { type Matcher, regexParamMatcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import {
   calculateDest,
