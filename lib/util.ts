@@ -14,6 +14,11 @@ export const nullOrigin = new URL('http://null');
 
 export const noop = () => {};
 
+export const hasNavigationApi = (n?: Navigation | undefined): n is Navigation =>
+  typeof n !== 'undefined';
+
+export const popStateEventName = 'popstate';
+
 export class Deferred<T extends void = void> {
   public promise: Promise<T>;
 

@@ -1,24 +1,18 @@
 import {
-  type ComponentProps,
-  createContext,
-  type FC,
   isValidElement,
+  type ComponentProps,
+  type FC,
   type PropsWithChildren,
   type ReactElement,
-  useContext,
 } from 'react';
-import type { Match, MatchResult } from './matcher.js';
-import { useLocation, useRouter } from './router.js';
+import { RoutesContext } from './RoutesContext.js';
+import type { MatchResult } from './matcher.js';
 import type { Params, RouteComponentProps } from './types.js';
+import { useMatch } from './use-match.js';
+import { useLocation, useRouter } from './use-router.js';
 import { flattenChildren } from './util.js';
 
 export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
-
-export const RoutesContext = createContext<Match>(false);
-
-export function useMatch<TPath extends string>(): Match<TPath> {
-  return useContext(RoutesContext) as Match<TPath>;
-}
 
 export const Route = <TPath extends string>(
   props: RouteComponentProps<TPath>,
@@ -41,7 +35,7 @@ export const Route = <TPath extends string>(
 
 export const Routes: FC<PropsWithChildren> = ({ children }) => {
   const [url] = useLocation();
-  const { matcher } = useRouter();
+  const [{ matcher }] = useRouter();
 
   let matchResult: MatchResult<Params> | false = false;
   let child: RouteComponent | null = null;

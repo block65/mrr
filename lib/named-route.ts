@@ -5,7 +5,7 @@ type Path = string;
 
 type SearchParamsObject = Record<string, string>;
 
-interface NamedRouteWithParams<
+export interface NamedRouteWithParams<
   TPath extends Path,
   Q extends SearchParamsObject,
 > {
@@ -18,7 +18,7 @@ interface NamedRouteWithParams<
   }) => string;
 }
 
-interface NamedRouteWithoutParams<
+export interface NamedRouteWithoutParams<
   TPath extends Path,
   Q extends SearchParamsObject,
 > {

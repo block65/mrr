@@ -1,22 +1,18 @@
 import {
-  type AnchorHTMLAttributes,
-  cloneElement,
-  type ForwardedRef,
-  forwardRef,
   Fragment,
+  cloneElement,
+  forwardRef,
   isValidElement,
+  useCallback,
+  type AnchorHTMLAttributes,
+  type ForwardedRef,
   type KeyboardEvent,
   type MouseEvent,
   type PropsWithChildren,
-  useCallback,
 } from 'react';
-import {
-  type Destination,
-  type NavigationMethodOptions,
-  useLocation,
-  useRouter,
-} from '../router.js';
-import { calculateDest, nullOrigin, urlRhs } from '../util.js';
+import { type Destination, type NavigationMethodOptions } from '../router.js';
+import { useLocation } from '../use-router.js';
+import { calculateUrl, hasNavigationApi, nullOrigin, urlRhs } from '../util.js';
 
 type LinkBaseProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
@@ -27,6 +23,8 @@ export type LinkProps = PropsWithChildren<
 type LinkChildProps = LinkBaseProps & {
   ref?: ForwardedRef<HTMLAnchorElement>;
 };
+
+const hasNav = hasNavigationApi(window.navigation);
 
 export const Link = forwardRef<
   HTMLAnchorElement,
@@ -66,25 +64,25 @@ export const Link = forwardRef<
       const navOptions = history && { history };
 
       if (isStringDest) {
-        navigate(dest, navOptions);
+        navigate(href, navOptions);
       } else {
         navigate(
           {
-            hash: dest.hash,
-            pathname: dest.pathname,
-            searchParams: dest.searchParams,
+            hash: href.hash,
+            pathname: href.pathname,
+            searchParams: href.searchParams,
           },
           navOptions,
         );
       }
     },
-    [onClick, history, isStringDest, navigate, dest],
+    [onClick, history, isStringDest, navigate, href],
   );
 
   const newProps: LinkChildProps = {
     ...props,
-    href: isSameOrigin ? urlRhs(destAsUrl) : dest.toString(),
-    ...(typeof navigation === 'undefined' && { onClick: handleClick }),
+    href: isSameOrigin ? urlRhs(destAsUrl) : href.toString(),
+    ...(!hasNav && { onClick: handleClick }),
     ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
     ref,
   };

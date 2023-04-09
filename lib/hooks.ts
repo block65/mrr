@@ -1,5 +1,9 @@
-import { useMemo } from 'react';
-import { useLocation } from './router.js';
+import { useEffect, useMemo } from 'react';
+import { useLocation } from './use-router.js';
+
+export function useNavigate() {
+  return useLocation()[1];
+}
 
 export function useSearchParams() {
   const [{ searchParams }] = useLocation();
