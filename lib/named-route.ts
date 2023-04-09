@@ -33,6 +33,7 @@ interface NamedRouteWithoutParams<
 export type NamedRoute<
   TPath extends Path,
   Q extends SearchParamsObject = never,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 > = TPath extends `${string}:${infer _Rest}`
   ? {
       path: TPath;
