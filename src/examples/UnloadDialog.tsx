@@ -11,8 +11,8 @@ import {
   useModal,
   useToggle,
 } from '@block65/react-design-system';
-import { useCallback, useEffect, type FC } from 'react';
-import { useRouter, type PartialNavigateEventListener } from '../index.js';
+import { useEffect, type FC } from 'react';
+import { useRouter } from '../index.js';
 
 export const UnloadDialog: FC = () => {
   const [dialog, dialogClose] = useDialog<'ok' | 'nah'>();
