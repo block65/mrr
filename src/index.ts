@@ -1,6 +1,6 @@
 export { Redirect } from '../lib/components/Redirect.js';
 export { Link, type LinkProps } from '../lib/components/Link.js';
-export { Router, useLocation } from '../lib/router.js';
+export { Router, useLocation, useNavigate, useRouter } from '../lib/router.js';
 export { Routes, Route } from '../lib/routes.js';
 
 export * from '../lib/hooks.js';
