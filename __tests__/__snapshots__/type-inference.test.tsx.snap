@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`inferred component function props 1`] = `
+<DocumentFragment>
+  Default route with children
+</DocumentFragment>
+`;

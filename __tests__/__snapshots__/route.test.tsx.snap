@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`cancel nav 1`] = `
+<DocumentFragment>
+  <h1>
+    custom route
+  </h1>
+</DocumentFragment>
+`;
+
 exports[`custom route 1`] = `
 <DocumentFragment>
   <h1>

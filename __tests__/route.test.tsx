@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { jest } from '@jest/globals';
 import { render } from '@testing-library/react';
-import type { FC, PropsWithChildren } from 'react';
+import { useCallback, type FC, type PropsWithChildren } from 'react';
 import { useEffect } from 'react';
 import { namedRoute } from '../lib/named-route.js';
 import {
@@ -27,6 +27,27 @@ test('custom route', async () => {
       </Routes>
     </Router>,
   );
+
+  expect(asFragment()).toMatchSnapshot();
+});
+
+test('cancel nav', async () => {
+  const Component: FC = () => {
+    const onNav = useCallback<PartialNavigateEventListener>(async (e) => {
+      e.preventDefault();
+    }, []);
+    return (
+      <Router hook={onNav}>
+        <Routes>
+          <Route path={login.path}>
+            <h1>custom route</h1>
+          </Route>
+        </Routes>
+      </Router>
+    );
+  };
+
+  const { asFragment } = render(<Component />);
 
   expect(asFragment()).toMatchSnapshot();
 });
