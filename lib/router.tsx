@@ -54,8 +54,8 @@ const { navigation } = window;
 const hasNav = hasNavigationApi(navigation);
 
 // used so we can recognise the subsequent recovery navigation event that
-// occurs when cancelling a navigation
-const kRecoveryNav = Symbol('recover');
+// occurs after cancelling a navigation
+const kCancelRecovery = Symbol('recover');
 
 function reducer(state: State, action: ActionInterface) {
   return { ...state, ...action };
@@ -122,8 +122,13 @@ export const Router: FC<
           return;
         }
 
+        // some urls for reference:
+        // Cancelling UI initiated navigations (back/forward) - https://github.com/WICG/navigation-api/issues/32
+        // Cancelable traversals: avoiding a slowdown - https://github.com/WICG/navigation-api/issues/254
         const handler: NavigationInterceptHandler = async () => {
-          if (hook && e.info !== kRecoveryNav) {
+          // we could also detect not user initiated, not cancellable etc
+
+          if (hook && e.info !== kCancelRecovery) {
             // WARN: `e` can be different after this is called
             // especially if the user calls `preventDefault`
             await hook({
@@ -136,7 +141,7 @@ export const Router: FC<
 
           if (e.defaultPrevented && currentUrl) {
             navigation.back({
-              info: kRecoveryNav,
+              info: kCancelRecovery,
             });
           }
 
