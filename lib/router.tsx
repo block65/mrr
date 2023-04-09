@@ -1,70 +1,90 @@
 import {
   createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  type Dispatch,
   type FC,
   type PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
 } from 'react';
-import { type Matcher, regexParamMatcher } from './matcher.js';
+import { regexParamMatcher, type Matcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import {
-  calculateDest,
   Deferred,
+  hasNavigationApi,
   noop,
   nullOrigin,
+  popStateEventName,
   urlObjectAssign,
-  urlRhs,
   withWindow,
 } from './util.js';
 
-interface ContextInterface {
+interface State {
   url: URL;
   matcher: Matcher;
   ready: Promise<void>;
+  hook?: PartialNavigateEventListener | undefined;
 }
+
+export type ContextInterface = [State, Dispatch<ActionInterface>];
+
+export type ActionInterface = Partial<State>;
+
+export type PartialNavigateEvent = Pick<
+  NavigateEvent,
+  'preventDefault' | 'signal' | 'type' | 'cancelable'
+>;
 
 export type Destination =
   | PartialWithUndefined<RestrictedURLProps>
   | URL
   | string;
 
-/** @deprecated */
-type LegacyNavigationMethod = (dest: Destination) => void;
-
 export type NavigationMethodOptions = { history?: NavigationHistoryBehavior };
 
-type NavigationMethod = (
-  dest: Destination,
+export type NavigationMethod = (
+  href: Destination,
   options?: NavigationMethodOptions,
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
 
-const useNavigationApi = typeof navigation !== 'undefined';
-const popStateEventName = 'popstate';
+const { navigation } = window;
+const hasNav = hasNavigationApi(navigation);
 
-export const RouterContext = createContext<null | ContextInterface>(null);
+// used so we can recognise the subsequent recovery navigation event that
+// occurs when cancelling a navigation
+const kRecoveryNav = Symbol('recover');
+
+function reducer(state: State, action: ActionInterface) {
+  return { ...state, ...action };
+}
+
+export const RouterContext = createContext<ContextInterface | null>(null);
+
+export type PartialNavigateEventListener = (
+  e: PartialNavigateEvent,
+) => void | Promise<void>;
 
 export const Router: FC<
   PropsWithChildren<{
     matcher?: Matcher;
     pathname?: string;
     search?: string;
+    hook?: PartialNavigateEventListener;
   }>
-> = ({ children, matcher = regexParamMatcher, search, pathname }) => {
+> = ({ children, pathname, search, ...props }) => {
   // In React, children fire effects before the parent, therefore  it is
-  // possible for a child to navigate before we add any event listeners.
+  // possible for a child to navigate before we even add any event listeners.
   // In this situation, all component logic would be bypassed.
   // Storing this "deferred" allows us to wait for the event listeners to be
   // added before then final navigation is honoured, without having to
   // delay rendering
   const def = useRef(new Deferred());
 
-  const [url, setUrl] = useState<URL>(() =>
-    withWindow(
+  const [state, dispatch] = useReducer(reducer, {
+    url: withWindow(
       ({ location }) =>
         urlObjectAssign(new URL(location.href), {
           pathname: pathname || location.pathname,
@@ -75,29 +95,60 @@ export const Router: FC<
         search: search || '',
       }),
     ),
+    ready: def.current.promise,
+    matcher: regexParamMatcher,
+    ...props,
+  });
+
+  const setUrlOnlyIfChanged = useCallback(
+    (dest: string) => {
+      if (state.url.toString() !== dest) {
+        dispatch({ url: new URL(dest) });
+      }
+    },
+    [state.url],
   );
 
-  const setUrlOnlyIfChanged = useCallback((dest: string) => {
-    setUrl((src) => (src.toString() !== dest ? new URL(dest) : src));
-  }, []);
+  const { hook } = state;
 
   useEffect(() => {
     // Navigation API
-    if (useNavigationApi) {
+    if (hasNav) {
       const navigateEventHandler: NavigateEventListener = (e) => {
+        const currentUrl = navigation.currentEntry?.url;
+
         // Don't intercept fragment navigations or downloads.
         if (e.hashChange || e.downloadRequest !== null) {
           return;
         }
 
         const handler: NavigationInterceptHandler = async () => {
-          setUrlOnlyIfChanged(e.destination.url);
+          if (hook && e.info !== kRecoveryNav) {
+            // WARN: `e` can be different after this is called
+            // especially if the user calls `preventDefault`
+            await hook({
+              preventDefault: () => e.preventDefault(),
+              cancelable: e.cancelable,
+              signal: e.signal,
+              type: e.type,
+            });
+          }
+
+          if (e.defaultPrevented && currentUrl) {
+            navigation.back({
+              info: kRecoveryNav,
+            });
+          }
+
+          if (!e.defaultPrevented && !e.signal.aborted) {
+            setUrlOnlyIfChanged(e.destination.url);
+          }
         };
 
         // Some navigations, e.g. cross-origin navigations, we cannot intercept.
         // Let the browser handle those normally.
         // as of Chrome 108, this works
-        if (e.canIntercept) {
+        if (e.canIntercept && !e.defaultPrevented) {
           e.intercept?.({
             handler,
           });
@@ -130,7 +181,16 @@ export const Router: FC<
 
     // History API
     if (typeof window !== 'undefined') {
-      const navigateEventHandler = (/* evt: PopStateEvent */): void => {
+      const navigateEventHandler = (evt: PopStateEvent): void => {
+        if (hook) {
+          hook({
+            preventDefault: evt.preventDefault,
+            signal: new AbortController().signal,
+            cancelable: evt.cancelable,
+            type: 'push',
+          });
+        }
+
         setUrlOnlyIfChanged(window.location.href);
       };
 
@@ -144,117 +204,12 @@ export const Router: FC<
       };
     }
 
-    // noop
     return noop;
-  }, [def, setUrlOnlyIfChanged]);
+  }, [hook, setUrlOnlyIfChanged]);
 
   return (
-    <RouterContext.Provider
-      value={{ url, matcher, ready: def.current.promise }}
-    >
+    <RouterContext.Provider value={[state, dispatch]}>
       {children}
     </RouterContext.Provider>
   );
 };
-
-export function useRouter() {
-  const state = useContext(RouterContext);
-  if (!state) {
-    throw new Error('Must be used within a Router');
-  }
-  return state;
-}
-
-export function useLocation(): [
-  URL,
-  {
-    navigate: NavigationMethod;
-    back: () => void;
-    /** @deprecated */
-    push: LegacyNavigationMethod;
-    /** @deprecated */
-    replace: LegacyNavigationMethod;
-  },
-] {
-  const { url, ready } = useRouter();
-
-  const navigate = useCallback(
-    async (
-      dest: PartialWithUndefined<RestrictedURLProps> | URL | string,
-      options?: { history?: NavigationHistoryBehavior },
-    ) => {
-      const nextDest = calculateDest(dest, url);
-
-      await ready;
-
-      if (useNavigationApi) {
-        return navigation.navigate(nextDest.toString(), {
-          ...(options?.history && { history: options.history }),
-        });
-      }
-
-      const { history } = window;
-
-      // we can only use push/replaceState for same origin
-      if (nextDest.origin === url.origin) {
-        const nextRhs = urlRhs(nextDest);
-
-        if (options?.history === 'replace') {
-          history.replaceState(null, '', nextRhs);
-        } else {
-          history.pushState(null, '', nextRhs);
-        }
-      } else {
-        window.location.assign(nextDest);
-      }
-
-      // pushState and replaceState don't trigger popstate event
-      dispatchEvent(new PopStateEvent(popStateEventName));
-
-      return {
-        committed: Promise.resolve(),
-        finished: Promise.resolve(),
-      };
-    },
-    [ready, url],
-  );
-
-  const replace: LegacyNavigationMethod = useCallback(
-    (dest) => {
-      navigate(dest, {
-        history: 'replace',
-      });
-    },
-    [navigate],
-  );
-
-  const push: LegacyNavigationMethod = useCallback(
-    (dest) => {
-      navigate(dest, { history: 'push' });
-    },
-    [navigate],
-  );
-
-  const back = useCallback(
-    (alternateDest?: Destination) => {
-      if (useNavigationApi) {
-        if (navigation.entries()?.length > 0) {
-          navigation.back();
-        } else if (alternateDest) {
-          // No history entries, go directly to alternateDest
-          navigate(alternateDest, { history: 'replace' });
-        }
-        navigation.back();
-      } else {
-        window.history.back();
-      }
-    },
-    [navigate],
-  );
-
-  return [url, { navigate, back, replace, push }];
-}
-
-export function useNavigate() {
-  return useLocation()[1];
-}

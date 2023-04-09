@@ -27,3 +27,25 @@ export function useHashAsParams(): URLSearchParams {
 export function useHashParam(value: string) {
   return useHashAsParams().get(value);
 }
+
+export function usePreventUnload(
+  cb: boolean | ((e: BeforeUnloadEvent) => boolean),
+) {
+  useEffect(() => {
+    const listenerOpts = { capture: true };
+
+    const listener = (e: BeforeUnloadEvent) => {
+      const preventUnload = typeof cb === 'function' ? cb(e) : cb;
+      if (preventUnload) {
+        e.preventDefault();
+        e.returnValue = preventUnload;
+      }
+    };
+
+    window.addEventListener('beforeunload', listener, listenerOpts);
+
+    return () => {
+      window.removeEventListener('beforeunload', listener, listenerOpts);
+    };
+  }, [cb]);
+}
