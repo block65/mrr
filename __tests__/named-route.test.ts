@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { namedRoute } from '../lib/named-route.js';
+import { namedRoute } from '../src/named-route.js';
 
 const route1 = namedRoute('/');
 const route2 = namedRoute('/test');

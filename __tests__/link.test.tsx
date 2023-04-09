@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import type { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
 import { FormattedMessage, IntlProvider } from 'react-intl';
-import { namedRoute } from '../lib/named-route.js';
 import { Link, Router } from '../src/index.js';
+import { namedRoute } from '../src/named-route.js';
 
 const ComponentThatTakesProps: FC<
   PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>

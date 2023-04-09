@@ -4,7 +4,12 @@ import { render } from '@testing-library/react';
 import type { FC, PropsWithChildren } from 'react';
 import { useEffect } from 'react';
 import { namedRoute } from '../lib/named-route.js';
-import { Route, Router, Routes } from '../src/index.js';
+import {
+  Route,
+  Router,
+  Routes,
+  type PartialNavigateEventListener,
+} from '../src/index.js';
 
 const login = namedRoute('/');
 

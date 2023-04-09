@@ -1,8 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
-import { namedRoute } from '../lib/named-route.js';
-import { Router, useNavigate } from '../lib/router.js';
-import { Route, Routes } from '../lib/routes.js';
+import { Route, Router, Routes, useNavigate } from '../src/index.js';
+import { namedRoute } from '../src/named-route.js';
 import { NavigationInsideEffect } from './NavigationInsideEffect.js';
 import { LocationDisplay } from './index.test.js';
 
