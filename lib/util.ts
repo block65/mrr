@@ -87,13 +87,13 @@ export function flattenChildren(children: React.ReactNode): ReactNode[] {
   }, []);
 }
 
-export function calculateDest(dest: Destination, currentUrl: URL) {
-  if (dest instanceof URL) {
-    return dest;
+export function calculateUrl(href: Destination, currentUrl: URL) {
+  if (href instanceof URL) {
+    return href;
   }
-  if (typeof dest === 'string') {
-    return new URL(dest, currentUrl);
+  if (typeof href === 'string') {
+    return new URL(href, currentUrl);
   }
 
-  return urlObjectAssign(new URL(currentUrl), dest);
+  return urlObjectAssign(new URL(currentUrl), href);
 }

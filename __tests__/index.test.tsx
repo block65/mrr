@@ -26,11 +26,11 @@ test('basic', async () => {
         </Route>
         <Route path="/">
           <h1 data-testid="root">You are at the root!</h1>
-          <Link dest={login.build({ origin })}>login</Link>
+          <Link href={login.build({ origin })}>login</Link>
         </Route>
         <Route>
           <h1>404</h1>
-          <Link dest={root.build({ origin })}>Go to root</Link>
+          <Link href={root.build({ origin })}>Go to root</Link>
         </Route>
       </Routes>
     </Router>,

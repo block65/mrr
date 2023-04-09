@@ -21,7 +21,7 @@ import { calculateDest, nullOrigin, urlRhs } from '../util.js';
 type LinkBaseProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
 export type LinkProps = PropsWithChildren<
-  Omit<LinkBaseProps, 'href'> & NavigationMethodOptions & { dest: Destination }
+  Omit<LinkBaseProps, 'href'> & NavigationMethodOptions & { href: Destination }
 >;
 
 type LinkChildProps = LinkBaseProps & {
@@ -32,13 +32,12 @@ export const Link = forwardRef<
   HTMLAnchorElement,
   LinkProps
   // eslint-disable-next-line prefer-arrow-callback
->(function Link({ children, dest, onClick, history, ...props }, ref) {
-  const { url } = useRouter();
-  const [, { navigate }] = useLocation();
+>(function Link({ children, href, onClick, history, ...props }, ref) {
+  const [url, { navigate }] = useLocation();
 
-  const isStringDest = typeof dest === 'string';
+  const isStringDest = typeof href === 'string';
 
-  const destAsUrl = calculateDest(dest, url);
+  const destAsUrl = calculateUrl(href, url);
 
   const isSameOrigin =
     destAsUrl.origin === nullOrigin.origin || destAsUrl.origin === url.origin;

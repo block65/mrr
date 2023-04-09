@@ -20,8 +20,8 @@ const Buttons: FC = () => {
             type="button"
             data-testid={`button-${userId}`}
             onClick={() => {
-              const dest = usersView.build({ params: { userId } });
-              navigate(dest);
+              const href = usersView.build({ params: { userId } });
+              navigate(href);
             }}
           >
             {userId}
