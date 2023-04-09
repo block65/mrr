@@ -33,3 +33,8 @@ types: node_modules
 build/main.js: node_modules $(SRCS)
 	NODE_ENV=production yarn vite build
 	npx bundlesize
+
+.PHONY: pretty
+pretty:
+	yarn eslint --fix .
+	yarn prettier --write .
