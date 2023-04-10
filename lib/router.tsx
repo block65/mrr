@@ -50,7 +50,7 @@ export type NavigationMethod = (
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
 
-const { navigation } = window;
+const { navigation } = globalThis;
 const hasNav = hasNavigationApi(navigation);
 
 // used so we can recognise the subsequent recovery navigation event that

@@ -12,7 +12,7 @@ import {
   urlRhs,
 } from './util.js';
 
-const { navigation } = window;
+const { navigation } = globalThis;
 const hasNav = hasNavigationApi(navigation);
 
 export function useRouter() {

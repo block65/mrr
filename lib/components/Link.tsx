@@ -24,7 +24,8 @@ type LinkChildProps = LinkBaseProps & {
   ref?: ForwardedRef<HTMLAnchorElement>;
 };
 
-const hasNav = hasNavigationApi(window.navigation);
+const { navigation } = globalThis;
+const hasNav = hasNavigationApi(navigation);
 
 export const Link = forwardRef<
   HTMLAnchorElement,
