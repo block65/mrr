@@ -20,7 +20,7 @@ import {
   withWindow,
 } from './util.js';
 
-interface State {
+export interface State {
   url: URL;
   matcher: Matcher;
   ready: Promise<void>;
