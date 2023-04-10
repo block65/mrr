@@ -43,7 +43,7 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.4",
     "@block65/eslint-config": "^9.0.0-alpha.0",
-    "@block65/react-design-system": "^0.20.3",
+    "@block65/react-design-system": "^0.21.0",
     "@jest/globals": "^29.5.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
