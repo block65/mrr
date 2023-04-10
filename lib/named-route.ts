@@ -68,6 +68,9 @@ function pathHasParams(path: PathWithParams | Path): path is PathWithParams {
   return path.includes(':');
 }
 
+// This would be way cleaner if we could speify optional generics, for more
+// info see:
+// https://stackoverflow.com/questions/60377365/typescript-infer-type-of-generic-after-optional-first-generic/60378308#60378308
 export function namedRoute<
   Q extends SearchParamsObject = never,
   TPath extends PathWithParams = PathWithParams,
