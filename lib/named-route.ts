@@ -117,11 +117,12 @@ export function namedRoute<
       const search = new URLSearchParams(options?.searchParams);
       search.sort();
 
-      const newUrl = urlObjectAssign(new URL(origin || nullOrigin), {
+      // nullOrigin is just used temporarily so we can santise the url
+      const newUrl = urlObjectAssign(new URL(options.origin || nullOrigin), {
         pathname: path,
         search: search.toString(),
-        hash: options?.hash,
-        origin: options?.origin,
+        hash: options.hash,
+        origin: options.origin,
       });
 
       return newUrl.origin === nullOrigin.origin
