@@ -95,7 +95,7 @@ export function namedRoute<
         const search = new URLSearchParams(options?.searchParams);
         search.sort();
 
-        const newUrl = urlObjectAssign(new URL(origin || nullOrigin), {
+        const newUrl = urlObjectAssign(new URL(options?.origin || nullOrigin), {
           pathname:
             options && 'params' in options
               ? interpolate(path, options.params)
@@ -113,16 +113,16 @@ export function namedRoute<
   }
   return {
     path,
-    build(options: { searchParams?: Q; hash?: string; origin?: string }) {
+    build(options?: { searchParams?: Q; hash?: string; origin?: string }) {
       const search = new URLSearchParams(options?.searchParams);
       search.sort();
 
       // nullOrigin is just used temporarily so we can santise the url
-      const newUrl = urlObjectAssign(new URL(options.origin || nullOrigin), {
+      const newUrl = urlObjectAssign(new URL(options?.origin || nullOrigin), {
         pathname: path,
         search: search.toString(),
-        hash: options.hash,
-        origin: options.origin,
+        hash: options?.hash,
+        origin: options?.origin,
       });
 
       return newUrl.origin === nullOrigin.origin
