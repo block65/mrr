@@ -70,9 +70,15 @@ export const App: FC = () => (
               </Link>
             </Text>
           </Route>
-          <Route path={there.path}>
-            <Programmatic />
-          </Route>
+          <>
+            <>
+              <>
+                <Route path={there.path}>
+                  <Programmatic />
+                </Route>
+              </>
+            </>
+          </>
           <Route path={everywhere.path}>
             <UnloadWarn />
           </Route>

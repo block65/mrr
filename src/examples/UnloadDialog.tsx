@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   Block,
   Button,
@@ -9,14 +8,14 @@ import {
   Modal,
   useDialog,
   useModal,
-  useToggle,
 } from '@block65/react-design-system';
+import { useToggle } from '@block65/react-design-system/hooks';
 import { useEffect, type FC } from 'react';
 import { useRouter } from '../index.js';
 
 export const UnloadDialog: FC = () => {
-  const [dialog, dialogClose] = useDialog<'ok' | 'nah'>();
-  const [modal] = useModal<'can' | 'cannot'>();
+  const [dialog, dialogClose] = useDialog<'ok' | 'nah' | 'dismiss'>();
+  const [modal] = useModal<'can' | 'cannot' | 'dismiss'>();
 
   const [canLeave, setCanLeave] = useToggle(false);
   const [, dispatch] = useRouter();
