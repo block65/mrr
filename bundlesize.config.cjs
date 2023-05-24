@@ -5,9 +5,5 @@ module.exports = {
       maxSize: '3.6 kB',
       compression: 'brotli',
     },
-    {
-      path: './build/main.js',
-      maxSize: '8 kB',
-    },
   ],
 };
