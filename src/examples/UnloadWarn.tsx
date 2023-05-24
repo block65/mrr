@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Button, Form, FormInput, Heading } from '@block65/react-design-system';
 import { useState, type FC } from 'react';
 import { usePreventUnload } from '../index.js';

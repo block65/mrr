@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable react-refresh/only-export-components */
 import '@block65/react-design-system/css';
 import 'the-new-css-reset';
 import { StrictMode } from 'react';

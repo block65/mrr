@@ -12,10 +12,11 @@ import type { PartialWithUndefined, URLProps } from './types.js';
 
 export const nullOrigin = new URL('http://null');
 
-export const noop = () => {};
+export function noop() {}
 
-export const hasNavigationApi = (n?: Navigation | undefined): n is Navigation =>
-  typeof n !== 'undefined';
+export function hasNavigationApi(n?: Navigation | undefined): n is Navigation {
+  return typeof n !== 'undefined';
+}
 
 export const popStateEventName = 'popstate';
 
