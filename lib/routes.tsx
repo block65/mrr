@@ -27,8 +27,6 @@ export const Route = <TPath extends string>(
     ) {
       return props.component(match.params);
     }
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    return <>{props.children}</>;
   }
   return <>{props.children}</>;
 };
