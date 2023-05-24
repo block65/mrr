@@ -11,8 +11,8 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { type Destination, type NavigationMethodOptions } from '../router.js';
-import { useLocation } from '../use-router.js';
-import { calculateUrl, hasNavigationApi, nullOrigin, urlRhs } from '../util.js';
+import { useLocation, useRouter } from '../use-router.js';
+import { calculateUrl, nullOrigin, urlRhs } from '../util.js';
 
 type LinkBaseProps = AnchorHTMLAttributes<HTMLAnchorElement>;
 
@@ -24,15 +24,14 @@ type LinkChildProps = LinkBaseProps & {
   ref?: ForwardedRef<HTMLAnchorElement>;
 };
 
-const { navigation } = globalThis;
-const hasNav = hasNavigationApi(navigation);
-
 export const Link = forwardRef<
   HTMLAnchorElement,
   LinkProps
   // eslint-disable-next-line prefer-arrow-callback
 >(function Link({ children, href, onClick, history, ...props }, ref) {
   const [url, { navigate }] = useLocation();
+  const [{ useNavigationApi }] = useRouter();
+  const hasNav = useNavigationApi;
 
   const isStringDest = typeof href === 'string';
 

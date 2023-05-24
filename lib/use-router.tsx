@@ -13,7 +13,6 @@ import {
 } from './util.js';
 
 const { navigation } = globalThis;
-const hasNav = hasNavigationApi(navigation);
 
 export function useRouter() {
   const state = useContext(RouterContext);
@@ -35,7 +34,8 @@ export function useLocation(): [
     back: () => void;
   },
 ] {
-  const [{ url, ready }] = useRouter();
+  const [{ url, ready, useNavigationApi }] = useRouter();
+  const hasNav = hasNavigationApi(navigation) && useNavigationApi !== false;
 
   const navigate = useCallback(
     async (
@@ -75,7 +75,7 @@ export function useLocation(): [
         finished: Promise.resolve(),
       };
     },
-    [ready, url],
+    [hasNav, ready, url],
   );
 
   const back = useCallback(
@@ -92,7 +92,7 @@ export function useLocation(): [
         window.history.back();
       }
     },
-    [navigate],
+    [hasNav, navigate],
   );
 
   return [url, { navigate, back }];

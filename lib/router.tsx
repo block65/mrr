@@ -25,6 +25,8 @@ export interface State {
   matcher: Matcher;
   ready: Promise<void>;
   hook?: PartialNavigateEventListener | undefined;
+  /** @private - discouraged, this is just an escape hatch */
+  useNavigationApi: boolean;
 }
 
 export type ContextInterface = [State, Dispatch<ActionInterface>];
@@ -49,9 +51,7 @@ export type NavigationMethod = (
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
-
 const { navigation } = globalThis;
-const hasNav = hasNavigationApi(navigation);
 
 // used so we can recognise the subsequent recovery navigation event that
 // occurs after cancelling a navigation
@@ -73,8 +73,11 @@ export const Router: FC<
     pathname?: string;
     search?: string;
     hook?: PartialNavigateEventListener;
+    useNavigationApi?: boolean;
   }>
-> = ({ children, pathname, search, ...props }) => {
+> = ({ children, pathname, search, useNavigationApi, ...props }) => {
+  const hasNav = hasNavigationApi(navigation) && useNavigationApi !== false;
+
   // In React, children fire effects before the parent, therefore  it is
   // possible for a child to navigate before we even add any event listeners.
   // In this situation, all component logic would be bypassed.
@@ -97,6 +100,7 @@ export const Router: FC<
     ),
     ready: def.current.promise,
     matcher: regexParamMatcher,
+    useNavigationApi: hasNav,
     ...props,
   });
 
