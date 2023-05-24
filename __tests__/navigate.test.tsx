@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
+import { expect, test } from 'vitest';
 import { Route, Router, Routes, useNavigate } from '../src/index.js';
 import { namedRoute } from '../src/named-route.js';
 import { NavigationInsideEffect } from './NavigationInsideEffect.js';
