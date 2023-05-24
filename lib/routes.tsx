@@ -8,7 +8,7 @@ import {
 import { RoutesContext } from './RoutesContext.js';
 import type { MatchResult } from './matcher.js';
 import type { Params, RouteComponentProps } from './types.js';
-import { useMatch } from './use-match.js';
+import { useRouteMatch } from './use-route-match.js';
 import { useLocation, useRouter } from './use-router.js';
 import { flattenChildren } from './util.js';
 
@@ -17,7 +17,7 @@ export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
 export const Route = <TPath extends string>(
   props: RouteComponentProps<TPath>,
 ): ReturnType<FC<typeof props>> => {
-  const match = useMatch<TPath>();
+  const match = useRouteMatch<TPath>();
 
   if (match) {
     if (
