@@ -84,10 +84,10 @@ test('programmatic navigation with hooks', async () => {
   await waitFor(() => {
     // global location
     // eslint-disable-next-line no-restricted-globals
-    expect(location.href).toBe('http://localhost/pickles?foo=bar');
+    expect(location.href).toBe('http://localhost:3000/pickles?foo=bar');
 
     expect(screen.getByTestId('location-display')).toHaveTextContent(
-      'http://localhost/pickles?foo=bar',
+      'http://localhost:3000/pickles?foo=bar',
     );
   });
 });

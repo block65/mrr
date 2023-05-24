@@ -5,7 +5,7 @@ exports[`basic 1`] = `
   <div
     data-testid="location-display"
   >
-    http://localhost/login
+    http://localhost:3000/login
   </div>
   <h1
     data-testid="login"
@@ -20,7 +20,7 @@ exports[`default route + wildcard routes + nested 1`] = `
   <div
     data-testid="location-display"
   >
-    http://localhost/users/blah/test1
+    http://localhost:3000/users/blah/test1
   </div>
   <h1
     data-testid="users"
@@ -35,7 +35,7 @@ exports[`wildcard routes + nested 1`] = `
   <div
     data-testid="location-display"
   >
-    http://localhost/users/blah/test1
+    http://localhost:3000/users/blah/test1
   </div>
   <h1>
     inside userRoot
