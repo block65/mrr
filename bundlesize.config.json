@@ -1,9 +1,0 @@
-{
-  "files": [
-    {
-      "path": "./build/*.js",
-      "maxSize": "2.6 kB",
-      "compression": "brotli"
-    }
-  ]
-}
