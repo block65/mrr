@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`useMatch 1`] = `
+<DocumentFragment>
+  <pre>
+    {
+  "foo": "oh-look-a-foo",
+  "bar": "omg-a-bar"
+}
+  </pre>
+</DocumentFragment>
+`;
