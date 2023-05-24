@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { namedRoute } from '../src/named-route.js';
 
 const route1 = namedRoute('/');

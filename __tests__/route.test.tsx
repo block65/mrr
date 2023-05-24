@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import { jest } from '@jest/globals';
 import { render } from '@testing-library/react';
 import { useCallback, type FC, type PropsWithChildren } from 'react';
 import { useEffect } from 'react';
+import { expect, test, vi } from 'vitest';
 import { namedRoute } from '../lib/named-route.js';
 import {
   Route,
@@ -74,7 +74,7 @@ test('routes with components/children/paths/no paths', async () => {
 });
 
 test('effects inside route components or children dont fire', async () => {
-  const effectFn = jest.fn();
+  const effectFn = vi.fn();
 
   const HelloComponent: FC = () => {
     useEffect(() => {

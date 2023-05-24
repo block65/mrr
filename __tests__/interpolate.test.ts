@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { interpolate } from '../lib/named-route.js';
 
 // type PathPart = `/${string}`;

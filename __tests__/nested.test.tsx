@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
+import { expect, test } from 'vitest';
 import { namedRoute } from '../lib/named-route.js';
 import { Route, Router, Routes } from '../src/index.js';
 import { LocationDisplay } from './index.test.js';
