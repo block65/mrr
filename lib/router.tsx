@@ -155,6 +155,9 @@ export const Router: FC<
         // as of Chrome 108, this works
         if (e.canIntercept && !e.defaultPrevented) {
           e.intercept?.({
+            // this allows react to handle focus, without it, you will lose
+            // focus on elements as the URL changes
+            focusReset: 'manual',
             handler,
           });
         }
