@@ -38,6 +38,7 @@
     "regexparam": "^2.0.1"
   },
   "devDependencies": {
+    "@block65/bundlesize": "^1.0.1",
     "@block65/eslint-config": "^9.2.0",
     "@block65/react-design-system": "^0.31.0",
     "@testing-library/dom": "^9.3.0",
