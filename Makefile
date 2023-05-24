@@ -5,7 +5,7 @@ all: build/main.js types
 
 .PHONY: clean
 clean:
-	yarn tsc -b --clean
+	pnpm tsc -b --clean
 	rm -rf dist build
 
 .PHONY: distclean
@@ -14,27 +14,27 @@ distclean: clean
 
 .PHONY: test
 test: node_modules
-	yarn tsc --noEmit
-	NODE_OPTIONS=--experimental-vm-modules yarn jest
+	pnpm tsc --noEmit
+	pnpm vitest run
 	$(MAKE) build/main.js
 
-.PRECIOUS: yarn.lock
-node_modules: yarn.lock package.json
-	yarn install
+.PRECIOUS: pnpm-lock.yaml
+node_modules: pnpm-lock.yaml package.json
+	pnpm install
 
 .PHONY: dev
 dev: node_modules
-	yarn vite dev
+	pnpm vite dev
 
 .PHONY: types
 types: node_modules
-	yarn tsc --emitDeclarationOnly --removeComments false
+	pnpm tsc --emitDeclarationOnly --removeComments false
 
 build/main.js: node_modules $(SRCS)
-	NODE_ENV=production yarn vite build
+	NODE_ENV=production pnpm vite build
 	npx bundlesize
 
 .PHONY: pretty
 pretty:
-	yarn eslint --fix .
-	yarn prettier --write .
+	pnpm eslint --fix .
+	pnpm prettier --write .
