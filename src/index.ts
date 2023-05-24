@@ -9,7 +9,7 @@ export {
 } from '../lib/use-router.js';
 
 export { Routes, Route } from '../lib/routes.js';
-export { useRouteMatch } from '../lib/use-route-match.js';
+export { useRouteParams } from '../lib/use-route-match.js';
 
 export * from '../lib/hooks.js';
 
