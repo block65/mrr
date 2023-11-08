@@ -4,7 +4,6 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [
-    // @ts-expect-error - bad types or incompat with node16 module reso
     react(),
   ],
   build: {
