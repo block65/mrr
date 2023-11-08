@@ -168,9 +168,9 @@ export const Router: FC<
 
         // as of Chrome 102, this seems to be the only thing that works
         // as of Chrome 108, this no longer works
-        else if (e.canTransition && e.transitionWhile) {
-          e.transitionWhile(handler());
-        }
+        // else if (e.canTransition && e.transitionWhile) {
+        //   e.transitionWhile(handler());
+        // }
       };
 
       const eventName = 'navigate';
