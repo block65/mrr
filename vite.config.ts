@@ -3,9 +3,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   build: {
     outDir: 'build',
     target: 'es2022',
@@ -18,11 +16,17 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+      ],
     },
     minify: true,
     sourcemap: true,
   },
+  esbuild: { legalComments: 'none' },
   test: {
     globals: true,
     environment: 'jsdom',

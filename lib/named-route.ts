@@ -57,8 +57,10 @@ export function interpolate<TPath extends Path>(
   path: TPath,
   params: ExtractRouteParams<TPath> | Params = {},
 ): string {
-  return path.replace(/\/:(\w+)[?+*]?/g, (_match, token: keyof typeof params) =>
-    params[token] ? `/${params[token]}` : '',
+  return path.replace(
+    /\/:(\w+)[?+*]?/g,
+    (_match, token: keyof typeof params) =>
+      params[token] ? `/${params[token]}` : '',
   );
 }
 

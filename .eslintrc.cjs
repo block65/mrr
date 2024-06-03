@@ -10,12 +10,8 @@ module.exports = {
     {
       files: ['src/examples/**/*', '__tests__/**/*.tsx', '*.config.ts'],
       rules: {
-        'import/no-extraneous-dependencies': [
-          1,
-          {
-            devDependencies: true,
-          },
-        ],
+        // allow extraneous DEV deps
+        'import/no-extraneous-dependencies': 'off',
       },
     },
   ],
