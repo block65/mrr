@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
-import { useCallback, type FC, type PropsWithChildren } from 'react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, type FC } from 'react';
 import { expect, test, vi } from 'vitest';
 import { namedRoute } from '../lib/named-route.js';
+import type { RouteComponentProps } from '../lib/types.js';
 import {
   Route,
   Router,
@@ -14,7 +14,7 @@ import {
 const login = namedRoute('/');
 
 test('custom route', async () => {
-  const CustomRoute = (props: PropsWithChildren<{ path: string }>) => (
+  const CustomRoute = <T extends string>(props: RouteComponentProps<T>) => (
     <Route {...props} />
   );
 
@@ -53,7 +53,7 @@ test('cancel nav', async () => {
 });
 
 test('routes with components/children/paths/no paths', async () => {
-  const HelloComponent: FC = () => <h1>hello</h1>;
+  const HelloComponent = () => <h1>hello</h1>;
 
   const { asFragment } = render(
     <Router>

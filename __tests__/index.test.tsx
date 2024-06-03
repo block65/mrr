@@ -4,6 +4,10 @@ import { expect, test } from 'vitest';
 import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 import { namedRoute } from '../src/named-route.js';
 
+if (!window) {
+  throw new Error('window is not defined');
+}
+
 export const LocationDisplay = () => {
   const [location] = useLocation();
 
@@ -27,11 +31,15 @@ test('basic', async () => {
         </Route>
         <Route path="/">
           <h1 data-testid="root">You are at the root!</h1>
-          <Link href={login.build({ origin })}>login</Link>
+          <Link href={login.build({ origin: window.location.origin })}>
+            login
+          </Link>
         </Route>
         <Route>
           <h1>404</h1>
-          <Link href={root.build({ origin })}>Go to root</Link>
+          <Link href={root.build({ origin: window.location.origin })}>
+            Go to root
+          </Link>
         </Route>
       </Routes>
     </Router>,
