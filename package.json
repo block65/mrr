@@ -13,6 +13,10 @@
     "./named-route": {
       "types": "./dist/src/named-route.d.ts",
       "default": "./build/named-route.js"
+    },
+    "./animate": {
+      "types": "./dist/src/animate.d.ts",
+      "default": "./build/animate.js"
     }
   },
   "files": [
