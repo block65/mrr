@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,6 +9,54 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+      }
+
+      @keyframes fade-out {
+        to {
+          opacity: 0;
+        }
+      }
+
+      @keyframes slide-from-bottom {
+        from {
+          transform: translateY(50px);
+        }
+      }
+
+      @keyframes slide-to-top {
+        to {
+          transform: translateY(-50px);
+        }
+      }
+
+      @keyframes slide-to-start {
+        to {
+          transform: translateX(-100%);
+        }
+      }
+
+      @keyframes slide-from-end {
+        from {
+          transform: translateX(100%);
+        }
+      }
+
+      ::view-transition-old(pooopies) {
+        animation:
+          90ms ease-in both fade-out,
+          90ms linear both slide-to-start;
+      }
+
+      ::view-transition-new(pooopies) {
+        animation:
+          90ms ease-in both fade-in,
+          90ms linear both slide-from-end;
       }
     </style>
   </head>

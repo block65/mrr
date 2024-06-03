@@ -1,62 +1,64 @@
 import {
+  cloneElement,
+  forwardRef,
   isValidElement,
-  type ComponentProps,
-  type FC,
+  useMemo,
+  type ComponentPropsWithRef,
   type PropsWithChildren,
   type ReactElement,
 } from 'react';
+import { Route } from './Route.js';
 import { RoutesContext } from './RoutesContext.js';
 import type { MatchResult } from './matcher.js';
-import type { Params, RouteComponentProps } from './types.js';
-import { useRouteMatch } from './use-route-match.js';
+import type { Params } from './types.js';
 import { useLocation, useRouter } from './use-router.js';
-import { flattenChildren } from './util.js';
+import { flattenFragments } from './util.js';
 
-export type RouteComponent = ReactElement<ComponentProps<typeof Route>>;
+export type RouteComponent = ComponentPropsWithRef<typeof Route>;
 
-export const Route = <TPath extends string>(
-  props: RouteComponentProps<TPath>,
-): ReturnType<FC<typeof props>> => {
-  const match = useRouteMatch<TPath>();
+export const Routes = forwardRef<HTMLElement, PropsWithChildren>(
+  ({ children }, forwardedRef) => {
+    const [url] = useLocation();
+    const [{ matcher }] = useRouter();
 
-  if (match) {
-    if (
-      props &&
-      'component' in props &&
-      typeof props.component === 'function'
-    ) {
-      return props.component(match.params);
-    }
-  }
-  return <>{props.children}</>;
-};
+    const { pathname } = url;
 
-export const Routes: FC<PropsWithChildren> = ({ children }) => {
-  const [url] = useLocation();
-  const [{ matcher }] = useRouter();
+    const [child, matchResult] = useMemo((): [
+      ReactElement<RouteComponent> | null,
+      MatchResult<Params> | false,
+    ] => {
+      let match: MatchResult<Params> | false = false;
+      let matchChild: ReactElement<RouteComponent> | null = null;
 
-  let matchResult: MatchResult<Params> | false = false;
-  let child: RouteComponent | null = null;
+      flattenFragments(children)
+        .filter(
+          (c): c is ReactElement<RouteComponent> =>
+            isValidElement<RouteComponent>(c) &&
+            // supports native routes, and also custom route components
+            (c.type === Route || 'path' in c.props),
+        )
+        // NOTE: using some() for early exit on match
+        .some((c) => {
+          match = matcher(c, pathname);
 
-  flattenChildren(children)
-    .filter(
-      (c): c is RouteComponent =>
-        isValidElement<RouteComponent>(c) &&
-        (c.type === Route || 'path' in c.props),
-    )
-    // NOTE: using some() for early exit on match
-    .some((c) => {
-      matchResult = matcher(c, url.pathname);
+          if (match) {
+            matchChild = cloneElement(c, {
+              ...(forwardedRef && { ref: forwardedRef }),
+              ...c.props,
+            });
+          }
 
-      if (matchResult) {
-        child = c;
-      }
+          // return true means don't attempt further matches
+          return !!match;
+        });
 
-      // return true means don't attempt further matches
-      return !!matchResult;
-    });
+      return [matchChild, match];
+    }, [children, forwardedRef, matcher, pathname]);
 
-  return (
-    <RoutesContext.Provider value={matchResult}>{child}</RoutesContext.Provider>
-  );
-};
+    return (
+      <RoutesContext.Provider value={matchResult}>
+        {child}
+      </RoutesContext.Provider>
+    );
+  },
+);

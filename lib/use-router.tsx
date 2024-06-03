@@ -1,18 +1,7 @@
 import { useCallback, useContext } from 'react';
-import {
-  RouterContext,
-  type NavigationMethod,
-  type Destination,
-} from './router.js';
+import { RouterContext, type Destination } from './router.js';
 import { type PartialWithUndefined, type RestrictedURLProps } from './types.js';
-import {
-  calculateUrl,
-  hasNavigationApi,
-  popStateEventName,
-  urlRhs,
-} from './util.js';
-
-const { navigation } = globalThis;
+import { calculateUrl, popStateEventName, urlRhs, withWindow } from './util.js';
 
 export function useRouter() {
   const state = useContext(RouterContext);
@@ -27,24 +16,28 @@ export function useHook() {
   return dispatch;
 }
 
-export function useLocation(): [
-  URL,
-  {
-    navigate: NavigationMethod;
-    back: () => void;
-  },
-] {
-  const [{ url, ready, useNavigationApi }] = useRouter();
-  const hasNav = hasNavigationApi(navigation) && useNavigationApi !== false;
+type FakeNavigationResult = {
+  committed: Promise<void>;
+  finished: Promise<void>;
+};
+
+const resolved = Promise.resolve();
+const fakeNavigationResult = {
+  committed: resolved,
+  finished: resolved,
+};
+
+export function useLocation() {
+  const [{ url, useNavigationApi }] = useRouter();
+  const hasNav =
+    typeof navigation !== 'undefined' && useNavigationApi !== false;
 
   const navigate = useCallback(
-    async (
+    (
       href: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
-    ) => {
+    ): NavigationResult | FakeNavigationResult => {
       const nextUrl = calculateUrl(href, url);
-
-      await ready;
 
       if (hasNav) {
         return navigation.navigate(nextUrl.toString(), {
@@ -52,48 +45,50 @@ export function useLocation(): [
         });
       }
 
-      const { history } = window;
+      return withWindow(({ history }) => {
+        // we can only use push/replaceState for same origin
+        if (nextUrl.origin === url.origin) {
+          const nextRhs = urlRhs(nextUrl);
 
-      // we can only use push/replaceState for same origin
-      if (nextUrl.origin === url.origin) {
-        const nextRhs = urlRhs(nextUrl);
+          if (options?.history === 'replace') {
+            history.replaceState(null, '', nextRhs);
+          } else {
+            history.pushState(null, '', nextRhs);
+          }
 
-        if (options?.history === 'replace') {
-          history.replaceState(null, '', nextRhs);
+          // pushState and replaceState don't trigger popstate event
+          dispatchEvent(new PopStateEvent(popStateEventName));
         } else {
-          history.pushState(null, '', nextRhs);
+          window?.location.assign(nextUrl);
         }
 
-        // pushState and replaceState don't trigger popstate event
-        dispatchEvent(new PopStateEvent(popStateEventName));
-      } else {
-        window.location.assign(nextUrl);
-      }
-
-      return {
-        committed: Promise.resolve(),
-        finished: Promise.resolve(),
-      };
+        return fakeNavigationResult;
+      }, fakeNavigationResult);
     },
-    [hasNav, ready, url],
+    [hasNav, url],
   );
 
   const back = useCallback(
-    (alternateHref?: Destination) => {
+    async (
+      alternateHref?: Destination,
+    ): Promise<NavigationResult | FakeNavigationResult> => {
       if (hasNav) {
         if (navigation.entries()?.length > 0) {
-          navigation.back();
-        } else if (alternateHref) {
-          // No history entries, go directly to alternateHref
-          navigate(alternateHref, { history: 'replace' });
+          return navigation.back();
         }
-        navigation.back();
-      } else {
-        window.history.back();
+
+        if (alternateHref) {
+          // No history entries, go directly to alternateHref
+          return navigate(alternateHref, { history: 'replace' });
+        }
+
+        return navigation.back();
       }
+      window?.history.back();
+      return fakeNavigationResult;
     },
     [hasNav, navigate],
   );
 
-  return [url, { navigate, back }];
+  return [url, { navigate, back }] as const;
 }

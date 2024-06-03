@@ -14,8 +14,10 @@ import { Link, Redirect, Route, Router, Routes } from '../index.js';
 import { Programmatic } from './Programmatic.js';
 import { UnloadDialog } from './UnloadDialog.js';
 import { UnloadWarn } from './UnloadWarn.js';
+import { ViewTransitionsExample } from './animation/ViewTransitions.js';
 import {
   admin,
+  animationRoute,
   everywhere,
   here,
   index,
@@ -40,6 +42,11 @@ export const App: FC = () => (
         <Routes>
           <Route path={index.path}>
             <Heading level="1">I present to you, a menu!</Heading>
+            <Text>
+              <Link href={animationRoute.build()}>
+                <TextLink>animations</TextLink>
+              </Link>
+            </Text>
             <Text>
               <Link href={here.build()}>
                 <TextLink>go here!</TextLink>
@@ -79,6 +86,10 @@ export const App: FC = () => (
               </>
             </>
           </>
+          <Route path={animationRoute.path} wildcard>
+            {/* <FramerMotionExample /> */}
+            <ViewTransitionsExample />
+          </Route>
           <Route path={everywhere.path}>
             <UnloadWarn />
           </Route>

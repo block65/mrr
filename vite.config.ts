@@ -13,6 +13,7 @@ export default defineConfig({
       entry: {
         main: join(__dirname, 'src/index.ts'),
         'named-route': join(__dirname, 'src/named-route.ts'),
+        animate: join(__dirname, 'src/animate.ts'),
       },
       formats: ['es'],
     },
