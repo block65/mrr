@@ -5,7 +5,7 @@ import {
   type ComponentProps,
   type ReactNode,
 } from 'react';
-import type { Destination } from './router.js';
+import type { Destination } from './Router.js';
 import type { PartialWithUndefined, URLProps } from './types.js';
 
 export const nullOrigin = new URL('https://0');

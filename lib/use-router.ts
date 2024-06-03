@@ -1,5 +1,5 @@
 import { useCallback, useContext } from 'react';
-import { RouterContext, type Destination } from './router.js';
+import { RouterContext, type Destination } from './Router.js';
 import { type PartialWithUndefined, type RestrictedURLProps } from './types.js';
 import { calculateUrl, popStateEventName, urlRhs, withWindow } from './util.js';
 

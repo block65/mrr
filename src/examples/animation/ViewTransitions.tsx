@@ -5,7 +5,7 @@ import {
 } from '@block65/react-design-system';
 import { type FC, type HTMLAttributes, type PropsWithChildren } from 'react';
 import { startViewTransition } from '../../../lib/animate.js';
-import { Routes } from '../../../lib/routes.js';
+import { Routes } from '../../../lib/Routes.js';
 import { Route, useLocation, useNavigate } from '../../index.js';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';

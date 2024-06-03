@@ -1,7 +1,7 @@
 import { Heading } from '@block65/react-design-system';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { FC, PropsWithChildren } from 'react';
-import { Routes } from '../../../lib/routes.js';
+import { Routes } from '../../../lib/Routes.js';
 import { Link, Route, useLocation, type LinkProps } from '../../index.js';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';

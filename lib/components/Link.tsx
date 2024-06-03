@@ -10,7 +10,7 @@ import {
   type MouseEvent,
   type PropsWithChildren,
 } from 'react';
-import { type Destination, type NavigationMethodOptions } from '../router.js';
+import { type Destination, type NavigationMethodOptions } from '../Router.js';
 import { useLocation, useRouter } from '../use-router.js';
 import { calculateUrl, nullOrigin, urlRhs } from '../util.js';
 

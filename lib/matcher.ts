@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { parse } from 'regexparam';
 import { pathCache } from './path-cache.js';
-import type { RouteComponent } from './routes.js';
+import type { RouteComponent } from './Routes.js';
 import type { ExtractRouteParams, Params, RoutingProps } from './types.js';
 
 export type Match<TPath extends string = '/'> =
