@@ -1,7 +1,7 @@
 name: Deploy
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -17,6 +17,7 @@ jobs:
         with:
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
+          node-version-file: .node-version
 
       - run: make
 
