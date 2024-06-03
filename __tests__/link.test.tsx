@@ -32,7 +32,6 @@ test('basic', async () => {
 
         <Link href={login.build()}>
           <FormattedMessage
-            id="broken"
             description="broken"
             defaultMessage="this text will not be in a component that has a href :sadface:"
           />

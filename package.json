@@ -48,6 +48,8 @@
     "@testing-library/dom": "^10.1.0",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
+    "@tsconfig/strictest": "^2.0.5",
+    "@tsconfig/vite-react": "^3.0.2",
     "@types/dom-view-transitions": "^1.0.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.0",

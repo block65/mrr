@@ -26,7 +26,6 @@ export default defineConfig({
     minify: true,
     sourcemap: true,
   },
-  esbuild: { legalComments: 'none' },
   test: {
     globals: true,
     environment: 'jsdom',
