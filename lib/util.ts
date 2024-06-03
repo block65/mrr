@@ -1,21 +1,18 @@
-/// <reference lib="dom" />
-
 import {
-  type ReactNode,
   Children,
+  Fragment,
   isValidElement,
   type ComponentProps,
-  Fragment,
+  type ReactNode,
 } from 'react';
-import type { Destination } from './router.js';
+import type { Destination } from './Router.js';
 import type { PartialWithUndefined, URLProps } from './types.js';
 
-export const nullOrigin = new URL('http://null');
+export const nullOrigin = new URL('https://0');
 
 export function noop() {}
-
-export function hasNavigationApi(n?: Navigation | undefined): n is Navigation {
-  return typeof n !== 'undefined';
+export async function pnoop() {
+  //
 }
 
 export const popStateEventName = 'popstate';
@@ -33,15 +30,10 @@ export class Deferred<T extends void = void> {
   }
 }
 
-export function withWindow<A>(
-  a: (window: Window & typeof globalThis) => A,
-): A | undefined;
+export function withWindow<A>(a: (window: Window) => A): A | undefined;
+export function withWindow<A, B>(a: (window: Window) => A, b: B): A | B;
 export function withWindow<A, B>(
-  a: (window: Window & typeof globalThis) => A,
-  b: B,
-): A | B;
-export function withWindow<A, B>(
-  a: (window: Window & typeof globalThis) => A,
+  a: (window: Window) => A,
   b?: B,
 ): A | B | undefined {
   return typeof window !== 'undefined' ? a(window) : b;
@@ -81,13 +73,13 @@ export function urlObjectAssign(
   return newUrl;
 }
 
-export function flattenChildren(children: React.ReactNode): ReactNode[] {
+export function flattenFragments(children: React.ReactNode): ReactNode[] {
   return Children.toArray(children).flatMap((child): ReactNode[] => {
     if (
       isValidElement<ComponentProps<typeof Fragment>>(child) &&
       child.type === Fragment
     ) {
-      return flattenChildren(child.props.children);
+      return flattenFragments(child.props.children);
     }
     return [child];
   }, []);

@@ -13,6 +13,10 @@
     "./named-route": {
       "types": "./dist/src/named-route.d.ts",
       "default": "./build/named-route.js"
+    },
+    "./animate": {
+      "types": "./dist/src/animate.d.ts",
+      "default": "./build/animate.js"
     }
   },
   "files": [
@@ -35,48 +39,53 @@
     "last 2 iOS major versions"
   ],
   "dependencies": {
-    "regexparam": "^2.0.1"
+    "regexparam": "^3.0.0"
   },
   "devDependencies": {
     "@block65/bundlesize": "^1.0.1",
-    "@block65/eslint-config": "^11.0.0",
-    "@block65/react-design-system": "0.32.0-beta.1",
-    "@testing-library/dom": "^9.3.3",
-    "@testing-library/jest-dom": "^6.1.4",
-    "@testing-library/react": "^14.0.0",
-    "@types/jest": "^29.5.7",
-    "@types/node": "^20.8.10",
-    "@types/react": "^18.2.36",
-    "@types/react-dom": "^18.2.14",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
-    "@vitejs/plugin-react": "^4.1.1",
-    "eslint": "^8.53.0",
-    "eslint-plugin-formatjs": "^4.11.1",
-    "eslint-plugin-import": "^2.29.0",
+    "@block65/eslint-config": "^12.0.1",
+    "@block65/react-design-system": "0.32.0",
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^15.0.7",
+    "@tsconfig/strictest": "^2.0.5",
+    "@tsconfig/vite-react": "^3.0.2",
+    "@types/dom-view-transitions": "^1.0.4",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-formatjs": "^4.13.3",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.4",
-    "jsdom": "^22.1.0",
-    "navigation-api-types": "^0.5.0",
-    "prettier": "^3.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-intl": "^6.5.2",
-    "the-new-css-reset": "^1.11.1",
-    "typescript": "^5.2.2",
-    "vite": "^4.5.0",
-    "vitest": "^0.34.6"
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.2",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "framer-motion": "^11.2.10",
+    "jsdom": "^24.1.0",
+    "navigation-api-types": "^0.5.1",
+    "prettier": "^3.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-intl": "^6.6.8",
+    "the-new-css-reset": "^1.11.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@types/react": "^18.2.36",
-    "@types/react-dom": "^18.2.14"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "engines": {
-    "node": ">=16.0.0"
-  }
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@9.1.4+sha512.9df9cf27c91715646c7d675d1c9c8e41f6fce88246f1318c1aa6a1ed1aeb3c4f032fcdf4ba63cc69c4fe6d634279176b5358727d8f2cc1e65b65f43ce2f8bfb0"
 }

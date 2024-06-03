@@ -8,3 +8,4 @@ export const there = namedRoute('/there');
 export const everywhere = namedRoute('/everywhere');
 export const nowhere = namedRoute('/nowhere');
 export const here = namedRoute('/here');
+export const animationRoute = namedRoute('/animation');

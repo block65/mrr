@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren, useLayoutEffect } from 'react';
-import { type Destination, type NavigationMethodOptions } from '../router.js';
+import { type Destination, type NavigationMethodOptions } from '../Router.js';
 import { useLocation } from '../use-router.js';
 
 export const Redirect: FC<

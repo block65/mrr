@@ -10,7 +10,7 @@ test('wildcard routes + nested', async () => {
   const userRoot = namedRoute('/users');
   const userView = namedRoute('/users/blah/:userId');
 
-  const ComponentWithUserId: FC<{ userId: string }> = ({ userId }) => (
+  const ComponentWithUserId = ({ userId }: { userId: string }) => (
     <>userId = {userId}</>
   );
 

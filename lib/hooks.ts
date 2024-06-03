@@ -42,10 +42,10 @@ export function usePreventUnload(
       }
     };
 
-    window.addEventListener('beforeunload', listener, listenerOpts);
+    window?.addEventListener('beforeunload', listener, listenerOpts);
 
     return () => {
-      window.removeEventListener('beforeunload', listener, listenerOpts);
+      window?.removeEventListener('beforeunload', listener, listenerOpts);
     };
   }, [cb]);
 }

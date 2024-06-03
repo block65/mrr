@@ -1,32 +1,14 @@
 {
+  "extends": ["@tsconfig/vite-react", "@tsconfig/strictest"],
   "compilerOptions": {
-    "moduleResolution": "node16",
-    "target": "es2022",
-    "lib": ["es2022"],
-    "module": "node16",
-    "jsx": "react-jsx",
-    "incremental": true,
-    "strict": true,
+    "noEmit": false,
     "declaration": true,
-    "outDir": "dist",
-    "esModuleInterop": true,
-    "preserveSymlinks": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "verbatimModuleSyntax": true,
-    "removeComments": true,
-    "types": ["./node_modules/navigation-api-types"]
+    "outDir": "./dist",
+    "types": ["./node_modules/navigation-api-types", "dom-view-transitions"],
+    "allowJs": false,
+    "checkJs": false,
+    "removeComments": false,
+    "allowImportingTsExtensions": false
   },
-  // "include": ["./src", "./lib", "./bin", "./__tests__"],
-  "exclude": ["./dist", "node_modules"]
+  "exclude": ["./dist", "./build", "node_modules"]
 }

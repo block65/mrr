@@ -3,7 +3,6 @@ import {
   useCallback,
   useEffect,
   useReducer,
-  useRef,
   type Dispatch,
   type FC,
   type PropsWithChildren,
@@ -11,8 +10,6 @@ import {
 import { regexParamMatcher, type Matcher } from './matcher.js';
 import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
 import {
-  Deferred,
-  hasNavigationApi,
   noop,
   nullOrigin,
   popStateEventName,
@@ -23,7 +20,6 @@ import {
 export interface State {
   url: URL;
   matcher: Matcher;
-  ready: Promise<void>;
   hook?: PartialNavigateEventListener | undefined;
   /** @private - discouraged, this is just an escape hatch */
   useNavigationApi: boolean;
@@ -51,7 +47,6 @@ export type NavigationMethod = (
 ) => void;
 
 type NavigateEventListener = (evt: NavigateEvent) => void;
-const { navigation } = globalThis;
 
 // used so we can recognise the subsequent recovery navigation event that
 // occurs after cancelling a navigation
@@ -67,6 +62,18 @@ export type PartialNavigateEventListener = (
   e: PartialNavigateEvent,
 ) => void | Promise<void>;
 
+/**
+ * Sometimes you want to run parent effects before those of the children. E.g.
+   when setting something up or binding document event listeners. By passing the
+   effect to the first child it will run before any effects by later children.
+ * @param {Function} effect
+ * @returns null
+ */
+const DelayedEffect: FC<{ effect: () => void }> = ({ effect }) => {
+  useEffect(() => effect?.(), [effect]);
+  return null;
+};
+
 export const Router: FC<
   PropsWithChildren<{
     matcher?: Matcher;
@@ -76,15 +83,8 @@ export const Router: FC<
     useNavigationApi?: boolean;
   }>
 > = ({ children, pathname, search, useNavigationApi, ...props }) => {
-  const hasNav = hasNavigationApi(navigation) && useNavigationApi !== false;
-
-  // In React, children fire effects before the parent, therefore  it is
-  // possible for a child to navigate before we even add any event listeners.
-  // In this situation, all component logic would be bypassed.
-  // Storing this "deferred" allows us to wait for the event listeners to be
-  // added before then final navigation is honoured, without having to
-  // delay rendering
-  const def = useRef(new Deferred());
+  const hasNav =
+    typeof navigation !== 'undefined' && useNavigationApi !== false;
 
   const [state, dispatch] = useReducer(reducer, {
     url: withWindow(
@@ -98,7 +98,6 @@ export const Router: FC<
         search: search || '',
       }),
     ),
-    ready: def.current.promise,
     matcher: regexParamMatcher,
     useNavigationApi: hasNav,
     ...props,
@@ -115,7 +114,7 @@ export const Router: FC<
 
   const { hook } = state;
 
-  useEffect(() => {
+  const init = useCallback(() => {
     // Navigation API
     if (hasNav) {
       const navigateEventHandler: NavigateEventListener = (e) => {
@@ -175,52 +174,44 @@ export const Router: FC<
 
       const eventName = 'navigate';
 
-      navigation.addEventListener(
-        eventName,
-        navigateEventHandler as EventListener,
-      );
+      navigation.addEventListener(eventName, navigateEventHandler);
 
-      def.current.resolve();
+      // first trigger
+      // navigation.dispatchEvent(new Event(eventName));
 
       return () => {
         navigation.removeEventListener(
           eventName,
           navigateEventHandler as EventListener,
         );
-        def.current = new Deferred();
       };
     }
 
-    // History API
-    if (typeof window !== 'undefined') {
-      const navigateEventHandler = (evt: PopStateEvent): void => {
+    return withWindow((w) => {
+      const navigateEventHandler = (e: PopStateEvent): void => {
         if (hook) {
           hook({
-            preventDefault: evt.preventDefault,
+            preventDefault: e.preventDefault.bind(e),
             signal: new AbortController().signal,
-            cancelable: evt.cancelable,
+            cancelable: e.cancelable,
             type: 'push',
           });
         }
 
-        setUrlOnlyIfChanged(window.location.href);
+        setUrlOnlyIfChanged(w.location.href);
       };
 
-      window.addEventListener(popStateEventName, navigateEventHandler);
-
-      def.current.resolve();
+      w.addEventListener(popStateEventName, navigateEventHandler);
 
       return () => {
-        window.removeEventListener(popStateEventName, navigateEventHandler);
-        def.current = new Deferred();
+        w.removeEventListener(popStateEventName, navigateEventHandler);
       };
-    }
-
-    return noop;
-  }, [hook, setUrlOnlyIfChanged]);
+    }, noop);
+  }, [hasNav, hook, setUrlOnlyIfChanged]);
 
   return (
     <RouterContext.Provider value={[state, dispatch]}>
+      <DelayedEffect effect={init} />
       {children}
     </RouterContext.Provider>
   );

@@ -10,30 +10,30 @@ export type ExtractRouteOptionalParam<T extends string> =
   T extends `${infer Param}?`
     ? { [k in Param]?: string }
     : T extends `${infer Param}*`
-    ? { [k in Param]?: string }
-    : T extends `${infer Param}+`
-    ? { [k in Param]: string }
-    : { [k in T]: string };
+      ? { [k in Param]?: string }
+      : T extends `${infer Param}+`
+        ? { [k in Param]: string }
+        : { [k in T]: string };
 
 // CREDIT @types/react-router
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/3067ea199822cc2f06edcb84854adeecdfe640ad/types/react-router/index.d.ts#L149
 export type ExtractRouteParams<PathType extends Path> = string extends PathType
   ? { [k in string]: string }
   : // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}/${infer Rest}`
-  ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
-    ? ExtractRouteOptionalParam<Param> & ExtractRouteParams<Rest>
-    : ExtractRouteOptionalParam<ParamWithOptionalRegExp> &
-        ExtractRouteParams<Rest>
-  : // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}`
-  ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
-    ? ExtractRouteOptionalParam<Param>
-    : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
-  : // eslint-disable-next-line @typescript-eslint/ban-types
-    {};
+    PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}/${infer Rest}`
+    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
+      ? ExtractRouteOptionalParam<Param> & ExtractRouteParams<Rest>
+      : ExtractRouteOptionalParam<ParamWithOptionalRegExp> &
+          ExtractRouteParams<Rest>
+    : // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      PathType extends `${infer _Start}:${infer ParamWithOptionalRegExp}`
+      ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        ParamWithOptionalRegExp extends `${infer Param}(${infer _RegExp})`
+        ? ExtractRouteOptionalParam<Param>
+        : ExtractRouteOptionalParam<ParamWithOptionalRegExp>
+      : // eslint-disable-next-line @typescript-eslint/ban-types
+        {};
 
 export interface RoutingProps<TPath extends Path> {
   path: TPath;
@@ -43,21 +43,21 @@ export interface RoutingProps<TPath extends Path> {
 export type RouteComponentProps<TPath extends Path> =
   | {
       children: ReactNode;
-      path?: never;
-      component?: never;
+      // path?: never;
+      // component?: never;
     }
   | {
       component: FC<ExtractRouteParams<TPath>>;
-      path?: never;
-      children?: never;
+      // path?: never;
+      // children?: never;
     }
   | (RoutingProps<TPath> & {
       children: ReactNode;
-      component?: never;
+      // component?: never;
     })
   | (RoutingProps<TPath> & {
       component: FC<ExtractRouteParams<TPath>>;
-      children?: never;
+      // children?: never;
     });
 
 export type PartialWithUndefined<T> = {

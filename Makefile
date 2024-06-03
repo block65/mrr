@@ -28,9 +28,9 @@ dev: node_modules
 
 .PHONY: types
 types: node_modules
-	pnpm tsc --emitDeclarationOnly --removeComments false
+	pnpm tsc
 
-build/main.js: node_modules $(SRCS)
+build/main.js: node_modules $(SRCS) bundlesize.config.cjs
 	NODE_ENV=production pnpm vite build
 	npx bundlesize
 

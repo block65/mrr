@@ -5,6 +5,7 @@ import {
   Form,
   FormInputCheckbox,
   Heading,
+  Inline,
   Modal,
   useDialog,
   useModal,
@@ -67,14 +68,16 @@ export const UnloadDialog: FC = () => {
           </Button>
         </Modal>
       )}
-      <Form>
-        <FormInputCheckbox
-          label={<>Allow the user to leave?</>}
-          message="When checked, you can leave the page."
-          onChange={(e) => setCanLeave(e.target.checked)}
-          checked={canLeave}
-        />
-      </Form>
+      <Inline>
+        <Form>
+          <FormInputCheckbox
+            label={<>Allow the user to leave?</>}
+            message="When checked, you can leave the page."
+            onChange={(e) => setCanLeave(e.target.checked)}
+            checked={canLeave}
+          />
+        </Form>
+      </Inline>
     </Block>
   );
 };
