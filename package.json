@@ -39,7 +39,7 @@
     "last 2 iOS major versions"
   ],
   "dependencies": {
-    "regexparam": "^2.0.1"
+    "regexparam": "^3.0.0"
   },
   "devDependencies": {
     "@block65/bundlesize": "^1.0.1",
