@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`useMatch 1`] = `
+exports[`Router preset pathname 1`] = `
 <DocumentFragment>
   <pre>
     {
