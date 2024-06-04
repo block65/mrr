@@ -82,7 +82,7 @@ export const Link = forwardRef<
   const newProps: LinkChildProps = {
     ...props,
     href: isSameOrigin ? urlRhs(destAsUrl) : href.toString(),
-    ...(!hasNav && { onClick: handleClick }),
+    onClick: hasNav ? onClick : handleClick,
     ...(!isSameOrigin && { rel: 'no-opener noreferrer' }),
     ref,
   };
