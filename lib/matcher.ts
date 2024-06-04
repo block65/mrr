@@ -1,8 +1,12 @@
 import type { ReactElement } from 'react';
 import { parse } from 'regexparam';
 import { pathCache } from './path-cache.js';
-import type { RouteComponent } from './Routes.js';
-import type { ExtractRouteParams, Params, RoutingProps } from './types.js';
+import type {
+  ExtractRouteParams,
+  Params,
+  RouteComponentProps,
+  RoutingProps,
+} from './types.js';
 
 export type Match<TPath extends string = '/'> =
   | MatchResult<ExtractRouteParams<TPath>>
@@ -15,7 +19,7 @@ export interface MatchResult<P extends Params> {
 }
 
 export type Matcher = (
-  component: ReactElement<RouteComponent>,
+  component: ReactElement<RouteComponentProps>,
   pathname: string,
 ) => Match | false;
 
