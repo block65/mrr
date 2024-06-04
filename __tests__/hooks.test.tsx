@@ -13,7 +13,7 @@ const EffCee = (_: ExtractRouteParams<typeof login.path>) => {
   return <pre>{JSON.stringify(match, null, 2)}</pre>;
 };
 
-test('useMatch', async () => {
+test('Router preset pathname', async () => {
   const { asFragment } = render(
     <Router
       pathname={login.build({

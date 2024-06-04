@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from 'react';
 
-type Path = string | undefined;
+type Path = string;
+type MaybePath = Path | undefined;
 
 export type Params = Record<string, string>;
 
@@ -35,12 +36,12 @@ export type ExtractRouteParams<PathType extends Path> = string extends PathType
       : // eslint-disable-next-line @typescript-eslint/ban-types
         {};
 
-export interface RoutingProps<TPath extends Path> {
+export interface RoutingProps<TPath extends MaybePath = Path> {
   path: TPath;
   wildcard?: boolean | undefined;
 }
 
-export type RouteComponentProps<TPath extends Path> =
+export type RouteComponentProps<TPath extends Path = Path> =
   | {
       children: ReactNode;
       // path?: never;
