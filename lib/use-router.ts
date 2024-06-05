@@ -1,7 +1,22 @@
 import { useCallback, useContext } from 'react';
-import { RouterContext, type Destination } from './Router.js';
+import {
+  RouterContext,
+  type Destination,
+  type PartialNavigateEventListener,
+} from './Router.js';
 import { type PartialWithUndefined, type RestrictedURLProps } from './types.js';
 import { calculateUrl, popStateEventName, urlRhs, withWindow } from './util.js';
+
+type SyntheticNavigationResult = {
+  committed: Promise<void>;
+  finished: Promise<void>;
+};
+
+const resolved = Promise.resolve();
+const syntheticNavigationResult = {
+  committed: resolved,
+  finished: resolved,
+};
 
 export function useRouter() {
   const state = useContext(RouterContext);
@@ -11,21 +26,22 @@ export function useRouter() {
   return state;
 }
 
-export function useHook() {
+export function useRouterHook() {
   const [, dispatch] = useRouter();
-  return dispatch;
+
+  return useCallback(
+    (hook: PartialNavigateEventListener) => {
+      dispatch({
+        hook,
+      });
+
+      return () => {
+        dispatch({ hook: undefined });
+      };
+    },
+    [dispatch],
+  );
 }
-
-type FakeNavigationResult = {
-  committed: Promise<void>;
-  finished: Promise<void>;
-};
-
-const resolved = Promise.resolve();
-const fakeNavigationResult = {
-  committed: resolved,
-  finished: resolved,
-};
 
 export function useLocation() {
   const [{ url, useNavigationApi }] = useRouter();
@@ -36,7 +52,7 @@ export function useLocation() {
     (
       href: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
-    ): NavigationResult | FakeNavigationResult => {
+    ): NavigationResult | SyntheticNavigationResult => {
       const nextUrl = calculateUrl(href, url);
 
       if (hasNav) {
@@ -62,8 +78,8 @@ export function useLocation() {
           window?.location.assign(nextUrl);
         }
 
-        return fakeNavigationResult;
-      }, fakeNavigationResult);
+        return syntheticNavigationResult;
+      }, syntheticNavigationResult);
     },
     [hasNav, url],
   );
@@ -71,7 +87,7 @@ export function useLocation() {
   const back = useCallback(
     async (
       alternateHref?: Destination,
-    ): Promise<NavigationResult | FakeNavigationResult> => {
+    ): Promise<NavigationResult | SyntheticNavigationResult> => {
       if (hasNav) {
         if (navigation.entries()?.length > 0) {
           return navigation.back();
@@ -85,7 +101,7 @@ export function useLocation() {
         return navigation.back();
       }
       window?.history.back();
-      return fakeNavigationResult;
+      return syntheticNavigationResult;
     },
     [hasNav, navigate],
   );
