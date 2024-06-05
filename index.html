@@ -23,18 +23,6 @@
         }
       }
 
-      @keyframes slide-from-bottom {
-        from {
-          transform: translateY(50px);
-        }
-      }
-
-      @keyframes slide-to-top {
-        to {
-          transform: translateY(-50px);
-        }
-      }
-
       @keyframes slide-to-start {
         to {
           transform: translateX(-100%);
@@ -43,20 +31,24 @@
 
       @keyframes slide-from-end {
         from {
-          transform: translateX(100%);
+          transform: translateX(200%);
         }
       }
 
-      ::view-transition-old(pooopies) {
-        animation:
-          90ms ease-in both fade-out,
-          90ms linear both slide-to-start;
+      :root {
+        --_duration: 500ms;
       }
 
-      ::view-transition-new(pooopies) {
+      ::view-transition-old(animation-example-fwd) {
         animation:
-          90ms ease-in both fade-in,
-          90ms linear both slide-from-end;
+          var(--_duration) ease-in both fade-out,
+          var(--_duration) linear both slide-to-start;
+      }
+
+      ::view-transition-new(animation-example-fwd) {
+        animation:
+          var(--_duration) ease-in both fade-in,
+          var(--_duration) linear both slide-from-end;
       }
     </style>
   </head>
