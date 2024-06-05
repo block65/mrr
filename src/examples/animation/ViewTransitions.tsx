@@ -1,12 +1,20 @@
 import {
+  Block,
   Heading,
+  Inline,
   TextLink,
   type TextLinkProps,
 } from '@block65/react-design-system';
-import { type FC, type HTMLAttributes, type PropsWithChildren } from 'react';
-import { startViewTransition } from '../../../lib/animate.js';
+import {
+  useEffect,
+  useState,
+  type FC,
+  type HTMLAttributes,
+  type PropsWithChildren,
+} from 'react';
 import { Routes } from '../../../lib/Routes.js';
-import { Route, useLocation, useNavigate } from '../../index.js';
+import { startViewTransition } from '../../../lib/animate.js';
+import { Route, useLocation, useNavigate, useRouterHook } from '../../index.js';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';
 
@@ -26,21 +34,48 @@ export const NavLink = ({ href, ...props }: TextLinkProps) => {
   );
 };
 
-const Page: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (props) => (
-  <div
-    style={{
-      viewTransitionName: 'pooopies',
-      ...props.style,
-    }}
-    {...props}
-  >
-    <Heading>Page</Heading>
-    {props.children}
-  </div>
-);
+const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
+  props,
+) => {
+  const [navigationType, setNavigationType] =
+    useState<NavigationApiNavigationType | null>(null);
+
+  const onNavigation = useRouterHook();
+  useEffect(
+    () =>
+      onNavigation(async (e, next) => {
+        setNavigationType(e.navigationType);
+
+        return startViewTransition(async () => {
+          await next(e);
+        }).finished;
+      }),
+    [onNavigation],
+  );
+
+  return (
+    <Block>
+      <Heading>TransitionPage</Heading>
+
+      <Inline
+        style={{
+          viewTransitionName:
+            navigationType === 'push'
+              ? 'animation-example-fwd'
+              : 'animation-example-bwd',
+          ...props.style,
+        }}
+        {...props}
+      >
+        {props.children}
+      </Inline>
+    </Block>
+  );
+};
 
 export const ViewTransitionsExample = () => {
   const [location] = useLocation();
+
   return (
     <div>
       <ul>
@@ -97,18 +132,18 @@ export const ViewTransitionsExample = () => {
         <Route
           path={hslRoute.path}
           children={
-            <Page>
+            <TransitionPage>
               <HSL />
-            </Page>
+            </TransitionPage>
           }
         />
 
         <Route
           path={rgbRoute.path}
           children={
-            <Page>
+            <TransitionPage>
               <RGB />
-            </Page>
+            </TransitionPage>
           }
         />
 
