@@ -39,6 +39,8 @@
     "last 2 iOS major versions"
   ],
   "dependencies": {
+    "@types/dom-view-transitions": "^1.0.4",
+    "navigation-api-types": "^0.5.1",
     "regexparam": "^3.0.0"
   },
   "devDependencies": {
