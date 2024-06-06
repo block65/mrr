@@ -12,6 +12,7 @@ import {
   type HTMLAttributes,
   type PropsWithChildren,
 } from 'react';
+import styles from './ViewTransitions.module.scss';
 import { Routes } from '../../../lib/Routes.js';
 import { startViewTransition } from '../../../lib/animate.js';
 import { Route, useLocation, useNavigate, useRouterHook } from '../../index.js';
@@ -37,15 +38,16 @@ export const NavLink = ({ href, ...props }: TextLinkProps) => {
 const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
   props,
 ) => {
-  const [navigationType, setNavigationType] =
+  // this is the navigation type of the current page. It will be set to null
+  // when the page has just loaded and will change when a navigation occurs
+  const [pageExitNavType, setPageExitNavType] =
     useState<NavigationApiNavigationType | null>(null);
 
   const onNavigation = useRouterHook();
   useEffect(
     () =>
       onNavigation(async (e, next) => {
-        setNavigationType(e.navigationType);
-
+        setPageExitNavType(e.navigationType);
         return startViewTransition(async () => {
           await next(e);
         }).finished;
@@ -54,21 +56,15 @@ const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
   );
 
   return (
-    <Block>
-      <Heading>TransitionPage</Heading>
+    <Block
+      {...props}
+      data-testid="transition-page"
+      className={[props.className, styles.fwd]}
+      alignItems="center"
+    >
+      <Heading>{pageExitNavType ? `bye! ${pageExitNavType}` : 'New'}</Heading>
 
-      <Inline
-        style={{
-          viewTransitionName:
-            navigationType === 'push'
-              ? 'animation-example-fwd'
-              : 'animation-example-bwd',
-          ...props.style,
-        }}
-        {...props}
-      >
-        {props.children}
-      </Inline>
+      <Inline>{props.children}</Inline>
     </Block>
   );
 };
