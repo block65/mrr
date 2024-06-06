@@ -55,12 +55,14 @@ export function useLocation() {
     ): NavigationResult | SyntheticNavigationResult => {
       const nextUrl = calculateUrl(href, url);
 
+      // nav api
       if (hasNav) {
         return navigation.navigate(nextUrl.toString(), {
           ...(options?.history && { history: options.history }),
         });
       }
 
+      // window
       return withWindow(({ history }) => {
         // we can only use push/replaceState for same origin
         if (nextUrl.origin === url.origin) {
