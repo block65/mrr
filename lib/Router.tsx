@@ -31,7 +31,7 @@ export type ActionInterface = Partial<State>;
 
 export type PartialNavigateEvent = Pick<
   NavigateEvent,
-  'preventDefault' | 'signal' | 'type' | 'cancelable'
+  'preventDefault' | 'signal' | 'navigationType' | 'cancelable'
 >;
 
 export type Destination =
@@ -58,9 +58,12 @@ function reducer(state: State, action: ActionInterface) {
 
 export const RouterContext = createContext<ContextInterface | null>(null);
 
-export type PartialNavigateEventListener = (
-  e: PartialNavigateEvent,
-) => void | Promise<void>;
+export type PartialNavigateEventListener =
+  | ((
+      e: PartialNavigateEvent,
+      next: (nextE: PartialNavigateEvent) => Promise<void>,
+    ) => void | Promise<void>)
+  | ((e: PartialNavigateEvent) => void | Promise<void>);
 
 /**
  * Sometimes you want to run parent effects before those of the children. E.g.
@@ -128,28 +131,32 @@ export const Router: FC<
         // some urls for reference:
         // Cancelling UI initiated navigations (back/forward) - https://github.com/WICG/navigation-api/issues/32
         // Cancelable traversals: avoiding a slowdown - https://github.com/WICG/navigation-api/issues/254
-        const handler: NavigationInterceptHandler = async () => {
-          // we could also detect not user initiated, not cancellable etc
+        const interceptHandler: NavigationInterceptHandler = async () => {
+          // TODO: we could also detect not user-initiated, not cancellable etc
+
+          const next = async () => {
+            if (e.defaultPrevented && currentUrl) {
+              // we specifically dont wait for this because its the recovery
+              navigation.back({
+                info: kCancelRecovery,
+              });
+            }
+
+            if (!e.defaultPrevented && !e.signal.aborted) {
+              setUrlOnlyIfChanged(e.destination.url);
+            }
+          };
 
           if (hook && e.info !== kCancelRecovery) {
             // WARN: `e` can be different after this is called
             // especially if the user calls `preventDefault`
-            await hook({
-              preventDefault: () => e.preventDefault(),
-              cancelable: e.cancelable,
-              signal: e.signal,
-              type: e.type,
-            });
-          }
-
-          if (e.defaultPrevented && currentUrl) {
-            navigation.back({
-              info: kCancelRecovery,
-            });
-          }
-
-          if (!e.defaultPrevented && !e.signal.aborted) {
-            setUrlOnlyIfChanged(e.destination.url);
+            if (hook.length === 2) {
+              hook(e, next);
+            } else {
+              await Promise.resolve(hook(e, next)).then(next);
+            }
+          } else {
+            next();
           }
         };
 
@@ -161,7 +168,7 @@ export const Router: FC<
             // "manual" allows react to handle focus, without it, elements lose
             // focus as the URL changes
             focusReset: 'manual',
-            handler,
+            handler: interceptHandler,
           });
         }
 
@@ -189,16 +196,27 @@ export const Router: FC<
 
     return withWindow((w) => {
       const navigateEventHandler = (e: PopStateEvent): void => {
-        if (hook) {
-          hook({
-            preventDefault: e.preventDefault.bind(e),
-            signal: new AbortController().signal,
-            cancelable: e.cancelable,
-            type: 'push',
-          });
-        }
+        const next = async () => {
+          if (!e.defaultPrevented) {
+            setUrlOnlyIfChanged(w.location.href);
+          }
+        };
 
-        setUrlOnlyIfChanged(w.location.href);
+        if (hook) {
+          // the hook will decide when to call `next` so it can do both setup and
+          // tear down if it wants
+          hook(
+            {
+              preventDefault: e.preventDefault.bind(e),
+              signal: new AbortController().signal,
+              cancelable: e.cancelable,
+              navigationType: 'traverse',
+            },
+            next,
+          );
+        } else {
+          next();
+        }
       };
 
       w.addEventListener(popStateEventName, navigateEventHandler);
