@@ -1,20 +1,19 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
 
-  <meta name="color-scheme" content="dark" />
+    <style>
+      #root {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
 
-  <style>
-    #root {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    /*
+      /*
     @keyframes fade-in {
       from {
         opacity: 0;
@@ -48,12 +47,11 @@
       animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
         300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
     } */
-  </style>
-</head>
+    </style>
+  </head>
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/examples/main.tsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/examples/main.tsx"></script>
+  </body>
 </html>
