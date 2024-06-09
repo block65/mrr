@@ -4,11 +4,18 @@
     "noEmit": false,
     "declaration": true,
     "outDir": "./dist",
-    "types": ["./node_modules/navigation-api-types", "dom-view-transitions"],
+    "types": [
+      "./node_modules/navigation-api-types",
+      "dom-view-transitions",
+      "vite/client"
+    ],
     "allowJs": false,
     "checkJs": false,
     "removeComments": false,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+
+    // why does this even exist?
+    "noPropertyAccessFromIndexSignature": false
   },
   "exclude": ["./dist", "./build", "node_modules"]
 }

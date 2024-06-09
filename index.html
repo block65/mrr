@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta name="color-scheme" content="dark" />
+
     <style>
       #root {
         display: flex;
@@ -11,53 +13,40 @@
         height: 100vh;
       }
 
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
+      /*
+    @keyframes fade-in {
+      from {
+        opacity: 0;
       }
+    }
 
-      @keyframes fade-out {
-        to {
-          opacity: 0;
-        }
+    @keyframes fade-out {
+      to {
+        opacity: 0;
       }
+    }
 
-      @keyframes slide-from-bottom {
-        from {
-          transform: translateY(50px);
-        }
+    @keyframes slide-from-right {
+      from {
+        transform: translateX(30px);
       }
+    }
 
-      @keyframes slide-to-top {
-        to {
-          transform: translateY(-50px);
-        }
+    @keyframes slide-to-left {
+      to {
+        transform: translateX(-30px);
       }
+    }
 
-      @keyframes slide-to-start {
-        to {
-          transform: translateX(-100%);
-        }
-      }
+    ::view-transition-old(root) {
+      animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+    }
 
-      @keyframes slide-from-end {
-        from {
-          transform: translateX(100%);
-        }
-      }
-
-      ::view-transition-old(pooopies) {
-        animation:
-          90ms ease-in both fade-out,
-          90ms linear both slide-to-start;
-      }
-
-      ::view-transition-new(pooopies) {
-        animation:
-          90ms ease-in both fade-in,
-          90ms linear both slide-from-end;
-      }
+    ::view-transition-new(root) {
+      animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+        300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+    } */
     </style>
   </head>
 

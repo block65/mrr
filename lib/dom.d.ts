@@ -33,6 +33,18 @@ declare global {
     value: string;
   }
 
+  interface Navigation {
+    // this is bleeding edge!
+    // https://github.com/whatwg/html/pull/9856
+    // https://github.com/mdn/mdn/issues/491
+    activation: {
+      // The current entry is the entry that is currently being navigated to.
+      from: NavigationHistoryEntry | null;
+      entry: NavigationHistoryEntry | null;
+      navigationType: NavigationApiNavigationType;
+    };
+  }
+
   interface Window {
     navigation: Navigation | undefined;
     location: Location;

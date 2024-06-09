@@ -1,6 +1,6 @@
 import { type FC, useEffect } from 'react';
-import { useNavigate } from '../src/index.js';
-import { LocationDisplay } from './index.test.js';
+import { useNavigate } from '../../src/index.js';
+import { LocationDisplay } from '../main.test.js';
 
 export const NavigationInsideEffect: FC = () => {
   const { navigate } = useNavigate();

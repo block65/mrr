@@ -8,7 +8,7 @@ import {
   Route,
   Router,
   Routes,
-  type PartialNavigateEventListener,
+  type SyntheticNavigateEvent,
 } from '../src/index.js';
 
 const login = namedRoute('/');
@@ -33,11 +33,11 @@ test('custom route', async () => {
 
 test('cancel nav', async () => {
   const Component: FC = () => {
-    const onNav = useCallback<PartialNavigateEventListener>(async (e) => {
+    const onNav = useCallback(async (e: SyntheticNavigateEvent) => {
       e.preventDefault();
     }, []);
     return (
-      <Router hook={onNav}>
+      <Router intercept={onNav} useNavApi={false}>
         <Routes>
           <Route path={login.path}>
             <h1>custom route</h1>
@@ -56,7 +56,7 @@ test('routes with components/children/paths/no paths', async () => {
   const HelloComponent = () => <h1>hello</h1>;
 
   const { asFragment } = render(
-    <Router>
+    <Router useNavApi={false}>
       <Routes>
         <Route path={login.path} component={HelloComponent} />
         <Route path={login.path}>
@@ -84,7 +84,7 @@ test('effects inside route components or children dont fire', async () => {
   };
 
   render(
-    <Router>
+    <Router useNavApi={false}>
       <Routes>
         <Route path="/random" component={HelloComponent} />
         <Route path="random2">

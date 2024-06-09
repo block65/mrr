@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren, useLayoutEffect } from 'react';
-import { type Destination, type NavigationMethodOptions } from '../Router.js';
+import { type Destination, type NavigationMethodOptions } from '../State.js';
 import { useLocation } from '../use-router.js';
 
 export const Redirect: FC<
@@ -13,7 +13,7 @@ export const Redirect: FC<
 
   useLayoutEffect(() => {
     navigate(href, history && { history });
-  }, [href, history, navigate]);
+  }, [history, href, navigate]);
 
   return <>{children}</>;
 };

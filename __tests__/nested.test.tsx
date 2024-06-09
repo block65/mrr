@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import { expect, test } from 'vitest';
 import { namedRoute } from '../lib/named-route.js';
 import { Route, Router, Routes } from '../src/index.js';
-import { LocationDisplay } from './index.test.js';
+import { LocationDisplay } from './main.test.js';
 
 test('wildcard routes + nested', async () => {
   const userRoot = namedRoute('/users');
@@ -17,7 +17,7 @@ test('wildcard routes + nested', async () => {
   const ParamlessComponent: FC = () => <>I am a Paramless Component</>;
 
   const { asFragment } = render(
-    <Router pathname="/users/blah/test1">
+    <Router pathname="/users/blah/test1" useNavApi={false}>
       <LocationDisplay />
       <Routes>
         <Route wildcard path={userRoot.path}>

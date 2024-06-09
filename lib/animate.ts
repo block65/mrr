@@ -1,23 +1,18 @@
 import { flushSync } from 'react-dom';
 
 export function startViewTransition(
-  updateCallback: () => Promise<unknown> | unknown,
-  withFlush = true,
+  updateCallback: () => Promise<unknown> | unknown, // allowing any return type makes calling easier
 ): ViewTransition {
   if (document?.startViewTransition) {
     return document.startViewTransition(async () => {
-      if (withFlush) {
-        await flushSync(updateCallback);
-      } else {
-        await updateCallback();
-      }
+      // https://developer.chrome.com/docs/web-platform/view-transitions/same-document#working_with_frameworks
+      await flushSync(updateCallback);
     });
   }
 
+  // VTA not supported, run it immediately.
   updateCallback();
-
   const resolved = Promise.resolve();
-
   return {
     ready: resolved,
     finished: resolved,

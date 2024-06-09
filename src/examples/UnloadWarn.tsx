@@ -21,7 +21,6 @@ export const UnloadWarn: FC = () => {
           placeholder="delicious"
           autoFocus
           message={preventUnload ? 'preventNav' : 'allowNav'}
-          messageTone={preventUnload ? 'positive' : 'warn'}
           onChange={(e) => setValue(e.currentTarget.value)}
         />
         <Button type="submit">Submit</Button>

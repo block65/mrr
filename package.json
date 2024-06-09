@@ -39,24 +39,26 @@
     "last 2 iOS major versions"
   ],
   "dependencies": {
+    "@types/dom-view-transitions": "^1.0.4",
+    "navigation-api-types": "^0.5.1",
     "regexparam": "^3.0.0"
   },
   "devDependencies": {
     "@block65/bundlesize": "^1.0.1",
     "@block65/eslint-config": "^12.0.1",
-    "@block65/react-design-system": "0.32.0",
+    "@block65/react-design-system": "0.33.0",
     "@testing-library/dom": "^10.1.0",
     "@testing-library/jest-dom": "^6.4.5",
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.0.0",
     "@tsconfig/strictest": "^2.0.5",
     "@tsconfig/vite-react": "^3.0.2",
     "@types/dom-view-transitions": "^1.0.4",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.0",
+    "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
     "@vitejs/plugin-react": "^4.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-formatjs": "^4.13.3",
@@ -69,13 +71,14 @@
     "framer-motion": "^11.2.10",
     "jsdom": "^24.1.0",
     "navigation-api-types": "^0.5.1",
-    "prettier": "^3.3.0",
+    "prettier": "^3.3.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-intl": "^6.6.8",
+    "sass": "^1.77.4",
     "the-new-css-reset": "^1.11.2",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
+    "vite": "^5.2.13",
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
@@ -84,8 +87,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
+  "packageManager": "pnpm@9.1.4+sha512.9df9cf27c91715646c7d675d1c9c8e41f6fce88246f1318c1aa6a1ed1aeb3c4f032fcdf4ba63cc69c4fe6d634279176b5358727d8f2cc1e65b65f43ce2f8bfb0",
   "engines": {
     "node": ">=20.0.0"
-  },
-  "packageManager": "pnpm@9.1.4+sha512.9df9cf27c91715646c7d675d1c9c8e41f6fce88246f1318c1aa6a1ed1aeb3c4f032fcdf4ba63cc69c4fe6d634279176b5358727d8f2cc1e65b65f43ce2f8bfb0"
+  }
 }

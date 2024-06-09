@@ -1,91 +1,97 @@
 import {
   createContext,
   useCallback,
-  useEffect,
   useReducer,
-  type Dispatch,
+  useRef,
   type FC,
   type PropsWithChildren,
 } from 'react';
-import { regexParamMatcher, type Matcher } from './matcher.js';
-import type { PartialWithUndefined, RestrictedURLProps } from './types.js';
+import { flushSync } from 'react-dom';
+import { DelayedEffect } from './DelayedEffect.js';
 import {
-  noop,
+  ActionType,
+  Direction,
+  currentEntryChangeEventName,
+  kCancelRecovery,
+  navigationEventName,
+  type Action,
+  type ContextInterface,
+  type State,
+  type SyntheticNavigateEventListener,
+} from './State.js';
+import { regexParamMatcher, type Matcher } from './matcher.js';
+import {
   nullOrigin,
   popStateEventName,
   urlObjectAssign,
+  withNavigation,
   withWindow,
 } from './util.js';
 
-export interface State {
-  url: URL;
-  matcher: Matcher;
-  hook?: PartialNavigateEventListener | undefined;
-  /** @private - discouraged, this is just an escape hatch */
-  useNavigationApi: boolean;
+function getDirection(
+  type: NavigationApiNavigationType | null,
+  from: NavigationHistoryEntry | null,
+  to: NavigationHistoryEntry,
+) {
+  switch (type) {
+    case 'push':
+      return Direction.Forward;
+    case 'traverse':
+      if (!from || from.index === to.index) {
+        return Direction.Unknown;
+      }
+      return from.index < to.index ? Direction.Forward : Direction.Backward;
+    case 'reload':
+    case 'replace':
+    default:
+      return Direction.Unknown;
+  }
 }
 
-export type ContextInterface = [State, Dispatch<ActionInterface>];
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case ActionType.Navigate: {
+      if ('dest' in action) {
+        // proper navigation update
+        const { dest, ...rest } = action;
+        const destUrl = new URL(dest);
+        return state.url.href !== destUrl.href
+          ? {
+              ...state,
+              direction: action.direction || state.direction,
+              url: destUrl,
+              ...rest,
+            }
+          : state;
+      }
 
-export type ActionInterface = Partial<State>;
+      // direction only
+      return {
+        ...state,
+        direction: action.direction,
+      };
+    }
+    case ActionType.Hooks: {
+      const { type, ...hooks } = action;
+      return { ...state, ...hooks };
+    }
 
-export type PartialNavigateEvent = Pick<
-  NavigateEvent,
-  'preventDefault' | 'signal' | 'type' | 'cancelable'
->;
-
-export type Destination =
-  | PartialWithUndefined<RestrictedURLProps>
-  | URL
-  | string;
-
-export type NavigationMethodOptions = { history?: NavigationHistoryBehavior };
-
-export type NavigationMethod = (
-  href: Destination,
-  options?: NavigationMethodOptions,
-) => void;
-
-type NavigateEventListener = (evt: NavigateEvent) => void;
-
-// used so we can recognise the subsequent recovery navigation event that
-// occurs after cancelling a navigation
-const kCancelRecovery = Symbol('recover');
-
-function reducer(state: State, action: ActionInterface) {
-  return { ...state, ...action };
+    default:
+      return state;
+  }
 }
 
 export const RouterContext = createContext<ContextInterface | null>(null);
-
-export type PartialNavigateEventListener = (
-  e: PartialNavigateEvent,
-) => void | Promise<void>;
-
-/**
- * Sometimes you want to run parent effects before those of the children. E.g.
-   when setting something up or binding document event listeners. By passing the
-   effect to the first child it will run before any effects by later children.
- * @param {Function} effect
- * @returns null
- */
-const DelayedEffect: FC<{ effect: () => void }> = ({ effect }) => {
-  useEffect(() => effect?.(), [effect]);
-  return null;
-};
 
 export const Router: FC<
   PropsWithChildren<{
     matcher?: Matcher;
     pathname?: string;
     search?: string;
-    hook?: PartialNavigateEventListener;
-    useNavigationApi?: boolean;
+    intercept?: SyntheticNavigateEventListener;
+    useNavApi?: false; // this can only ever be turned off
   }>
-> = ({ children, pathname, search, useNavigationApi, ...props }) => {
-  const hasNav =
-    typeof navigation !== 'undefined' && useNavigationApi !== false;
-
+> = ({ children, pathname, search, useNavApi = true, ...props }) => {
   const [state, dispatch] = useReducer(reducer, {
     url: withWindow(
       ({ location }) =>
@@ -99,115 +105,195 @@ export const Router: FC<
       }),
     ),
     matcher: regexParamMatcher,
-    useNavigationApi: hasNav,
+    useNavApi,
+    direction: Direction.Unknown,
     ...props,
   });
 
-  const setUrlOnlyIfChanged = useCallback(
-    (dest: string) => {
-      if (state.url.toString() !== dest) {
-        dispatch({ url: new URL(dest) });
+  const navigationDirectionGuess = useRef<Direction>(Direction.Unknown);
+
+  const naviationApiChangeEventHandler = useCallback(
+    async (e: NavigationCurrentEntryChangeEvent) => {
+      if (navigation?.currentEntry) {
+        navigationDirectionGuess.current = getDirection(
+          e.navigationType || null,
+          e.from,
+          navigation.currentEntry,
+        );
       }
     },
-    [state.url],
+    [],
   );
 
-  const { hook } = state;
+  const { intercept, change } = state;
 
-  const init = useCallback(() => {
-    // Navigation API
-    if (hasNav) {
-      const navigateEventHandler: NavigateEventListener = (e) => {
-        const currentUrl = navigation.currentEntry?.url;
+  const naviationApiNavigateEventHandler = useCallback(
+    (e: NavigateEvent) => {
+      if (typeof navigation === 'undefined') {
+        return;
+      }
 
-        // Don't intercept fragment navigations or downloads.
-        if (e.hashChange || e.downloadRequest !== null) {
-          return;
-        }
+      // Some navigations, e.g. cross-origin navigations, we cannot intercept.
+      // Let the browser handle those normally.
+      if (!e.canIntercept || e.defaultPrevented) {
+        return;
+      }
 
-        // some urls for reference:
-        // Cancelling UI initiated navigations (back/forward) - https://github.com/WICG/navigation-api/issues/32
-        // Cancelable traversals: avoiding a slowdown - https://github.com/WICG/navigation-api/issues/254
-        const handler: NavigationInterceptHandler = async () => {
-          // we could also detect not user initiated, not cancellable etc
+      // Don't intercept fragment navigations or downloads.
+      if (e.hashChange || e.downloadRequest !== null) {
+        return;
+      }
 
-          if (hook && e.info !== kCancelRecovery) {
-            // WARN: `e` can be different after this is called
-            // especially if the user calls `preventDefault`
-            await hook({
-              preventDefault: () => e.preventDefault(),
-              cancelable: e.cancelable,
-              signal: e.signal,
-              type: e.type,
+      // Some urls for reference:
+      // Cancelling UI initiated navigations (back/forward) - https://github.com/WICG/navigation-api/issues/32
+      // Cancelable traversals: avoiding a slowdown - https://github.com/WICG/navigation-api/issues/254
+      // TODO: we could also detect not user-initiated, not cancellable etc
+      e.intercept({
+        // "manual" allows react to handle focus, without it, elements lose
+        // focus as the URL changes
+        focusReset: 'manual',
+        handler: async () => {
+          // hoisted destructure so we are all dealing with the same entry
+          const { currentEntry /* , activation */ } = navigation;
+
+          // useless navigation
+          if (!currentEntry || !currentEntry.url) {
+            return;
+          }
+
+          const { url } = currentEntry;
+
+          // a cancelled navigation
+          if (e.info === kCancelRecovery) {
+            dispatch({
+              type: ActionType.Navigate,
+              dest: url,
             });
+            return;
           }
 
-          if (e.defaultPrevented && currentUrl) {
-            navigation.back({
-              info: kCancelRecovery,
+          const direction = navigationDirectionGuess.current;
+
+          // direction state update which we will flush if we need to
+          // WARN: we cannot change the URL here as we flush the state update
+          // but we dont want the route to change yet.
+          dispatch({
+            type: ActionType.Navigate,
+            direction,
+          });
+
+          const finish = async () => {
+            // if the event was cancelled, we need to go back to the previous
+            // this will trigger a navigate event again.
+            if (e.defaultPrevented) {
+              await navigation.back({
+                info: kCancelRecovery,
+              }).finished;
+              return;
+            }
+
+            // full state update which will trigger a re-render
+            dispatch({
+              type: ActionType.Navigate,
+              dest: url,
+              direction,
             });
-          }
+          };
 
-          if (!e.defaultPrevented && !e.signal.aborted) {
-            setUrlOnlyIfChanged(e.destination.url);
-          }
-        };
+          // this is the user intercept hook
+          if (intercept) {
+            // we need `intercept()` to have the absolute latest direction, so
+            // it gets flushed here.
 
-        // Some navigations, e.g. cross-origin navigations, we cannot intercept.
-        // Let the browser handle those normally.
-        // as of Chrome 108, this works
-        if (e.canIntercept && !e.defaultPrevented) {
-          e.intercept?.({
-            // "manual" allows react to handle focus, without it, elements lose
-            // focus as the URL changes
-            focusReset: 'manual',
-            handler,
+            const promise = flushSync(async () =>
+              // we always pass cleanup, but it may not get called. we check
+              // for that possibility below
+              Promise.resolve(intercept(e, finish)),
+            );
+
+            // intercepter is DEFINITELY NOT handling the `next` themselves,
+            // so we will await it
+            if (intercept.length === 1) {
+              await promise.then(finish);
+            }
+          } else {
+            finish();
+          }
+          // eslint-disable-next-line no-useless-return
+          return; // WARN: `finish()` should be the last code running
+        },
+      });
+    },
+    [intercept],
+  );
+
+  const popStateHandler = useCallback(
+    (e: PopStateEvent): void => {
+      if (typeof window !== 'undefined') {
+        if (!e.defaultPrevented) {
+          dispatch({
+            type: ActionType.Navigate,
+            dest: window.location.href,
+            direction: Direction.Backward, // pop is always backwards
           });
         }
 
-        // as of Chrome 102, this seems to be the only thing that works
-        // as of Chrome 108, this no longer works
-        // else if (e.canTransition && e.transitionWhile) {
-        //   e.transitionWhile(handler());
-        // }
-      };
-
-      const eventName = 'navigate';
-
-      navigation.addEventListener(eventName, navigateEventHandler);
-
-      // first trigger
-      // navigation.dispatchEvent(new Event(eventName));
-
-      return () => {
-        navigation.removeEventListener(
-          eventName,
-          navigateEventHandler as EventListener,
-        );
-      };
-    }
-
-    return withWindow((w) => {
-      const navigateEventHandler = (e: PopStateEvent): void => {
-        if (hook) {
-          hook({
+        // change hook
+        if (change) {
+          change({
             preventDefault: e.preventDefault.bind(e),
             signal: new AbortController().signal,
             cancelable: e.cancelable,
-            type: 'push',
+            navigationType: 'traverse', // pop is always traverse
           });
         }
+      }
+    },
+    [change],
+  );
 
-        setUrlOnlyIfChanged(w.location.href);
-      };
+  const init = useCallback(() => {
+    if (useNavApi) {
+      withNavigation((n) => {
+        n.addEventListener(
+          currentEntryChangeEventName,
+          naviationApiChangeEventHandler,
+        );
+        n.addEventListener(
+          navigationEventName,
+          naviationApiNavigateEventHandler,
+        );
+      });
+    } else {
+      withWindow((w) => {
+        w.addEventListener(popStateEventName, popStateHandler);
+      });
+    }
 
-      w.addEventListener(popStateEventName, navigateEventHandler);
-
-      return () => {
-        w.removeEventListener(popStateEventName, navigateEventHandler);
-      };
-    }, noop);
-  }, [hasNav, hook, setUrlOnlyIfChanged]);
+    return () => {
+      if (useNavApi) {
+        withNavigation((n) => {
+          n.removeEventListener(
+            currentEntryChangeEventName,
+            naviationApiChangeEventHandler,
+          );
+          n.removeEventListener(
+            navigationEventName,
+            naviationApiNavigateEventHandler,
+          );
+        });
+      } else {
+        withWindow((w) => {
+          w.removeEventListener(popStateEventName, popStateHandler);
+        });
+      }
+    };
+  }, [
+    naviationApiChangeEventHandler,
+    naviationApiNavigateEventHandler,
+    popStateHandler,
+    useNavApi,
+  ]);
 
   return (
     <RouterContext.Provider value={[state, dispatch]}>

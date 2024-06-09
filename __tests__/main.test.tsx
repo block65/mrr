@@ -4,10 +4,6 @@ import { expect, test } from 'vitest';
 import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
 import { namedRoute } from '../src/named-route.js';
 
-if (!window) {
-  throw new Error('window is not defined');
-}
-
 export const LocationDisplay = () => {
   const [location] = useLocation();
 
@@ -20,7 +16,7 @@ test('basic', async () => {
   const userView = namedRoute('/user/:userId');
 
   const { asFragment } = render(
-    <Router pathname="/">
+    <Router pathname="/" useNavApi={false}>
       <LocationDisplay />
       <Routes>
         <Route path={userView.path}>

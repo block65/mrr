@@ -1,7 +1,23 @@
 import { useCallback, useContext } from 'react';
-import { RouterContext, type Destination } from './Router.js';
+import { RouterContext } from './Router.js';
+import {
+  ActionType,
+  type Destination,
+  type SyntheticNavigateEventListener,
+} from './State.js';
 import { type PartialWithUndefined, type RestrictedURLProps } from './types.js';
 import { calculateUrl, popStateEventName, urlRhs, withWindow } from './util.js';
+
+type SyntheticNavigationResult = {
+  committed: Promise<void>;
+  finished: Promise<void>;
+};
+
+const resolved = Promise.resolve();
+const syntheticNavigationResult = {
+  committed: resolved,
+  finished: resolved,
+};
 
 export function useRouter() {
   const state = useContext(RouterContext);
@@ -11,40 +27,43 @@ export function useRouter() {
   return state;
 }
 
-export function useHook() {
+export function useRouterIntercept() {
   const [, dispatch] = useRouter();
-  return dispatch;
+
+  return useCallback(
+    (listener: SyntheticNavigateEventListener) => {
+      dispatch({
+        type: ActionType.Hooks,
+        intercept: listener,
+      });
+
+      return () => {
+        dispatch({ type: ActionType.Hooks, intercept: undefined });
+      };
+    },
+    [dispatch],
+  );
 }
 
-type FakeNavigationResult = {
-  committed: Promise<void>;
-  finished: Promise<void>;
-};
-
-const resolved = Promise.resolve();
-const fakeNavigationResult = {
-  committed: resolved,
-  finished: resolved,
-};
-
 export function useLocation() {
-  const [{ url, useNavigationApi }] = useRouter();
-  const hasNav =
-    typeof navigation !== 'undefined' && useNavigationApi !== false;
+  const [{ url, useNavApi }] = useRouter();
+  const hasNav = typeof navigation !== 'undefined' && useNavApi !== false;
 
   const navigate = useCallback(
     (
       href: PartialWithUndefined<RestrictedURLProps> | URL | string,
       options?: { history?: NavigationHistoryBehavior },
-    ): NavigationResult | FakeNavigationResult => {
+    ): NavigationResult | SyntheticNavigationResult => {
       const nextUrl = calculateUrl(href, url);
 
+      // nav api
       if (hasNav) {
         return navigation.navigate(nextUrl.toString(), {
           ...(options?.history && { history: options.history }),
         });
       }
 
+      // window
       return withWindow(({ history }) => {
         // we can only use push/replaceState for same origin
         if (nextUrl.origin === url.origin) {
@@ -62,8 +81,8 @@ export function useLocation() {
           window?.location.assign(nextUrl);
         }
 
-        return fakeNavigationResult;
-      }, fakeNavigationResult);
+        return syntheticNavigationResult;
+      }, syntheticNavigationResult);
     },
     [hasNav, url],
   );
@@ -71,7 +90,7 @@ export function useLocation() {
   const back = useCallback(
     async (
       alternateHref?: Destination,
-    ): Promise<NavigationResult | FakeNavigationResult> => {
+    ): Promise<NavigationResult | SyntheticNavigationResult> => {
       if (hasNav) {
         if (navigation.entries()?.length > 0) {
           return navigation.back();
@@ -85,7 +104,7 @@ export function useLocation() {
         return navigation.back();
       }
       window?.history.back();
-      return fakeNavigationResult;
+      return syntheticNavigationResult;
     },
     [hasNav, navigate],
   );

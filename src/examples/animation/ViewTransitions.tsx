@@ -1,12 +1,23 @@
 import {
+  Block,
   Heading,
+  Inline,
+  Paragraph,
   TextLink,
   type TextLinkProps,
 } from '@block65/react-design-system';
-import { type FC, type HTMLAttributes, type PropsWithChildren } from 'react';
-import { startViewTransition } from '../../../lib/animate.js';
+import {
+  useEffect,
+  useState,
+  type FC,
+  type HTMLAttributes,
+  type PropsWithChildren,
+} from 'react';
+import styles from './ViewTransitions.module.scss';
 import { Routes } from '../../../lib/Routes.js';
-import { Route, useLocation, useNavigate } from '../../index.js';
+import { ActionType, Direction } from '../../../lib/State.js';
+import { startViewTransition } from '../../../lib/animate.js';
+import { Route, useLocation, useNavigate, useRouter } from '../../index.js';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';
 
@@ -14,36 +25,74 @@ export const NavLink = ({ href, ...props }: TextLinkProps) => {
   const { navigate } = useNavigate();
 
   return (
-    <li>
+    <Inline component="li">
       <TextLink
         {...props}
         onClick={(e) => {
           e.preventDefault();
-          startViewTransition(() => navigate(`${href}`).committed);
+          // startViewTransition(() => navigate(`${href}`).committed);
+          navigate(`${href}`);
         }}
       />
-    </li>
+    </Inline>
   );
 };
 
-const Page: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (props) => (
-  <div
-    style={{
-      viewTransitionName: 'pooopies',
-      ...props.style,
-    }}
-    {...props}
-  >
-    <Heading>Page</Heading>
-    {props.children}
-  </div>
-);
+const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
+  props,
+) => {
+  const [sinceRender, setSinceRender] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSinceRender((prev) => prev + 1);
+    }, 100);
+    return () => clearInterval(interval);
+  }, [sinceRender]);
+
+  const [{ direction }, dispatch] = useRouter();
+
+  useEffect(() => {
+    dispatch({
+      type: ActionType.Hooks,
+      intercept: async (_, update) =>
+        startViewTransition(async () => {
+          await update();
+        }).finished,
+    });
+
+    return () => {
+      dispatch({ type: ActionType.Hooks, intercept: undefined });
+    };
+  }, [dispatch]);
+
+  return (
+    <Block
+      {...props}
+      borderWidth="1"
+      padding="7"
+      className={[
+        props.className,
+        direction === Direction.Forward && styles.fwd,
+        direction === Direction.Backward && styles.bwd,
+      ]}
+      alignItems="center"
+    >
+      <Paragraph fontSize="0">
+        navDirection=
+        {direction}
+      </Paragraph>
+      <Paragraph>{sinceRender}</Paragraph>
+      <Inline>{props.children}</Inline>
+    </Block>
+  );
+};
 
 export const ViewTransitionsExample = () => {
   const [location] = useLocation();
+
   return (
-    <div>
-      <ul>
+    <Block padding="10">
+      <Inline component="ul" justifyContent="center">
         <NavLink
           href={hslRoute.build({
             params: {
@@ -91,24 +140,24 @@ export const ViewTransitionsExample = () => {
         >
           RGB Pink
         </NavLink>
-      </ul>
+      </Inline>
 
       <Routes key={location.pathname}>
         <Route
           path={hslRoute.path}
           children={
-            <Page>
+            <TransitionPage>
               <HSL />
-            </Page>
+            </TransitionPage>
           }
         />
 
         <Route
           path={rgbRoute.path}
           children={
-            <Page>
+            <TransitionPage>
               <RGB />
-            </Page>
+            </TransitionPage>
           }
         />
 
@@ -116,6 +165,6 @@ export const ViewTransitionsExample = () => {
           <Heading>404</Heading>
         </Route>
       </Routes>
-    </div>
+    </Block>
   );
 };
