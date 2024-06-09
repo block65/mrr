@@ -5,6 +5,9 @@
 }
 
 @keyframes fade-out {
+  50% {
+    opacity: 0;
+  }
   to {
     opacity: 0;
   }
@@ -22,24 +25,53 @@
   }
 }
 
-$duration: 1000ms;
-
-::view-transition-old(animation-example) {
-  animation: #{$duration} linear both slide-to-left;
-}
-::view-transition-new(animation-example) {
-  animation: #{$duration} linear both slide-from-right;
+@keyframes slide-from-left {
+  from {
+    transform: translateX(-100%);
+  }
 }
 
-.fwd,
-.bwd {
-  // view-transition-name: animation-example-fwd;
+@keyframes slide-to-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+$duration: 150ms;
+
+$bezier: cubic-bezier(0.17, 0.67, 0.83, 0.67);
+
+:root {
+  --duration: #{$duration};
+
+  // reduced motion
+  @media (prefers-reduced-motion: reduce) {
+    --duration: 0ms;
+  }
+}
+
+::view-transition-old(animation-example-bwd) {
+  animation:
+    var(--duration) #{$bezier} both slide-to-right,
+    var(--duration) linear both fade-out;
+}
+::view-transition-new(animation-example-bwd) {
+  animation: var(--duration) #{$bezier} both slide-from-left;
+}
+
+::view-transition-old(animation-example-fwd) {
+  animation:
+    var(--duration) #{$bezier} both slide-to-left,
+    var(--duration) ease-out both fade-out;
+}
+::view-transition-new(animation-example-fwd) {
+  animation: var(--duration) #{$bezier} both slide-from-right;
 }
 
 .fwd {
-  view-transition-name: animation-example;
+  view-transition-name: animation-example-fwd;
 }
 
 .bwd {
-  view-transition-name: animation-example;
+  view-transition-name: animation-example-bwd;
 }

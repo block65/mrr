@@ -3,8 +3,8 @@ import type { FC } from 'react';
 import { expect, test } from 'vitest';
 import { Route, Router, Routes, useNavigate } from '../src/index.js';
 import { namedRoute } from '../src/named-route.js';
-import { NavigationInsideEffect } from './NavigationInsideEffect.js';
-import { LocationDisplay } from './index.test.js';
+import { NavigationInsideEffect } from './components/NavigationInsideEffect.js';
+import { LocationDisplay } from './main.test.js';
 
 const usersView = namedRoute('/users/:userId');
 
@@ -35,7 +35,7 @@ const Buttons: FC = () => {
 
 test('nav with clicks', async () => {
   render(
-    <Router pathname="/users/test1">
+    <Router pathname="/users/test1" useNavApi={false}>
       <LocationDisplay />
       <Routes>
         <Route
@@ -76,7 +76,7 @@ test('nav with clicks', async () => {
 
 test('programmatic navigation with hooks', async () => {
   render(
-    <Router pathname="/">
+    <Router pathname="/" useNavApi={false}>
       <NavigationInsideEffect />
     </Router>,
   );

@@ -1,9 +1,10 @@
 import { useCallback, useContext } from 'react';
+import { RouterContext } from './Router.js';
 import {
-  RouterContext,
+  ActionType,
   type Destination,
-  type PartialNavigateEventListener,
-} from './Router.js';
+  type SyntheticNavigateEventListener,
+} from './State.js';
 import { type PartialWithUndefined, type RestrictedURLProps } from './types.js';
 import { calculateUrl, popStateEventName, urlRhs, withWindow } from './util.js';
 
@@ -26,17 +27,18 @@ export function useRouter() {
   return state;
 }
 
-export function useRouterHook() {
+export function useRouterIntercept() {
   const [, dispatch] = useRouter();
 
   return useCallback(
-    (hook: PartialNavigateEventListener) => {
+    (listener: SyntheticNavigateEventListener) => {
       dispatch({
-        hook,
+        type: ActionType.Hooks,
+        intercept: listener,
       });
 
       return () => {
-        dispatch({ hook: undefined });
+        dispatch({ type: ActionType.Hooks, intercept: undefined });
       };
     },
     [dispatch],
@@ -44,9 +46,8 @@ export function useRouterHook() {
 }
 
 export function useLocation() {
-  const [{ url, useNavigationApi }] = useRouter();
-  const hasNav =
-    typeof navigation !== 'undefined' && useNavigationApi !== false;
+  const [{ url, useNavApi }] = useRouter();
+  const hasNav = typeof navigation !== 'undefined' && useNavApi !== false;
 
   const navigate = useCallback(
     (

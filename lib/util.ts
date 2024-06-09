@@ -5,30 +5,12 @@ import {
   type ComponentProps,
   type ReactNode,
 } from 'react';
-import type { Destination } from './Router.js';
+import type { Destination } from './State.js';
 import type { PartialWithUndefined, URLProps } from './types.js';
 
 export const nullOrigin = new URL('https://0');
 
-export function noop() {}
-export async function pnoop() {
-  //
-}
-
 export const popStateEventName = 'popstate';
-
-export class Deferred<T extends void = void> {
-  public promise: Promise<T>;
-
-  public resolve: (value: T | PromiseLike<T>) => void;
-
-  constructor() {
-    this.resolve = noop;
-    this.promise = new Promise<T>((resolve) => {
-      this.resolve = resolve;
-    });
-  }
-}
 
 export function withWindow<A>(a: (window: Window) => A): A | undefined;
 export function withWindow<A, B>(a: (window: Window) => A, b: B): A | B;
@@ -39,13 +21,18 @@ export function withWindow<A, B>(
   return typeof window !== 'undefined' ? a(window) : b;
 }
 
-export function withDocument<A>(a: (document: Document) => A): A | undefined;
-export function withDocument<A, B>(a: (document: Document) => A, b: B): A | B;
-export function withDocument<A, B>(
-  a: (document: Document) => A,
+export function withNavigation<A>(
+  a: (navigation: Navigation) => A,
+): A | undefined;
+export function withNavigation<A, B>(
+  a: (navigation: Navigation) => A,
+  b: B,
+): A | B;
+export function withNavigation<A, B>(
+  a: (navigation: Navigation) => A,
   b?: B,
 ): A | B | undefined {
-  return typeof document !== 'undefined' ? a(document) : b;
+  return withWindow((w) => (w.navigation ? a(w.navigation) : b), b);
 }
 
 export function urlRhs(url: URL): string {
