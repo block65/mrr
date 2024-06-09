@@ -46,7 +46,7 @@
   "devDependencies": {
     "@block65/bundlesize": "^1.0.1",
     "@block65/eslint-config": "^12.0.1",
-    "@block65/react-design-system": "0.32.0",
+    "@block65/react-design-system": "0.33.0",
     "@testing-library/dom": "^10.1.0",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^16.0.0",
