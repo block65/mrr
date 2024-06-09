@@ -28,6 +28,10 @@ export function useHashParam(value: string) {
   return useHashAsParams().get(value);
 }
 
+/**
+ * @deprecated
+ * @use navigation API and intercept hook
+ */
 export function usePreventUnload(
   cb: boolean | ((e: BeforeUnloadEvent) => boolean),
 ) {
