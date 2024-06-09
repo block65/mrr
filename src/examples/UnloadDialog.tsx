@@ -10,7 +10,7 @@ import {
 } from '@block65/react-design-system';
 import { useToggle } from '@block65/react-design-system/hooks';
 import { useEffect, type FC } from 'react';
-import { useRouterHook } from '../index.js';
+import { useRouterIntercept } from '../index.js';
 
 export const UnloadDialog: FC = () => {
   // const [dialog, dialogClose] = useDialog<'ok' | 'nah' | 'dismiss'>();
@@ -20,10 +20,10 @@ export const UnloadDialog: FC = () => {
 
   const [canLeave, setCanLeave] = useToggle(false);
 
-  const onNavigation = useRouterHook();
+  const intercept = useRouterIntercept();
   useEffect(
     () =>
-      onNavigation(async (e, next) => {
+      intercept(async (e, next) => {
         // not allowed, show the modal
         if (!canLeave) {
           // wait for the modal to be closed
@@ -35,9 +35,9 @@ export const UnloadDialog: FC = () => {
           }
         }
 
-        await next(e);
+        await next();
       }),
-    [canLeave, onNavigation, modal],
+    [canLeave, intercept, modal],
   );
 
   return (
@@ -53,9 +53,7 @@ export const UnloadDialog: FC = () => {
           >
             can
           </Button>
-          <Button variant="ghost" onClick={() => modal.close('cannot')}>
-            cannot
-          </Button>
+          <Button onClick={() => modal.close('cannot')}>cannot</Button>
         </Modal>
       )}
       <Inline>

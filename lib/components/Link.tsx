@@ -10,7 +10,7 @@ import {
   type MouseEvent,
   type PropsWithChildren,
 } from 'react';
-import { type Destination, type NavigationMethodOptions } from '../Router.js';
+import { type Destination, type NavigationMethodOptions } from '../State.js';
 import { useLocation, useRouter } from '../use-router.js';
 import { calculateUrl, nullOrigin, urlRhs } from '../util.js';
 
@@ -30,8 +30,8 @@ export const Link = forwardRef<
   // eslint-disable-next-line prefer-arrow-callback
 >(function Link({ children, href, onClick, history, ...props }, ref) {
   const [url, { navigate }] = useLocation();
-  const [{ useNavigationApi }] = useRouter();
-  const hasNav = useNavigationApi;
+  const [{ useNavApi }] = useRouter();
+  const hasNav = useNavApi;
 
   const isStringDest = typeof href === 'string';
 
