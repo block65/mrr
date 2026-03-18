@@ -8,11 +8,6 @@
   "endOfLine": "lf",
   "useTabs": false,
   "semi": true,
-  "sortPackageJson": false,
-  "ignorePatterns": [
-    "pnpm-lock.yaml",
-    "node_modules",
-    "dist",
-    "build"
-  ]
+  "sortPackageJson": true,
+  "ignorePatterns": ["pnpm-lock.yaml", "node_modules", "dist", "build"],
 }
