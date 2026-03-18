@@ -20,28 +20,30 @@ export type State = {
 
 export type ContextInterface = [State, Dispatch<Action>];
 
-export const enum ActionType {
-  Hooks,
-  Navigate,
+export const ActionType = {
+  Hooks: 0 as const,
+  Navigate: 1 as const
 }
+export type ActionType = typeof ActionType[keyof typeof ActionType];
 
-export const enum Direction {
-  Backward = -1,
-  Unknown,
-  Forward,
-}
+export const Direction = {
+  Backward: -1  as const,
+  Unknown: 0 as const,
+  Forward: 1 as const,
+} as const;
+export type Direction = typeof Direction[keyof typeof Direction];
 
 export type Action =
   | {
-      type: ActionType.Navigate;
+      type: typeof ActionType.Navigate;
       direction: Direction;
     }
   | {
-      type: ActionType.Navigate;
+      type: typeof ActionType.Navigate;
       dest: string;
       direction?: Direction;
     }
-  | ({ type: ActionType.Hooks } & Pick<State, 'intercept' | 'change'>);
+  | ({ type: typeof ActionType.Hooks } & Pick<State, 'intercept' | 'change'>);
 
 export type SyntheticNavigateEvent = Pick<
   NavigateEvent,

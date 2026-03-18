@@ -72,7 +72,7 @@ function reducer(state: State, action: Action): State {
       };
     }
     case ActionType.Hooks: {
-      const { type, ...hooks } = action;
+      const { type: _, ...hooks } = action;
       return { ...state, ...hooks };
     }
 
@@ -83,6 +83,8 @@ function reducer(state: State, action: Action): State {
 
 export const RouterContext = createContext<ContextInterface | null>(null);
 
+const navApiSupported = withNavigation(() => true, false);
+
 export const Router: FC<
   PropsWithChildren<{
     matcher?: Matcher;
@@ -91,7 +93,7 @@ export const Router: FC<
     intercept?: SyntheticNavigateEventListener;
     useNavApi?: false; // this can only ever be turned off
   }>
-> = ({ children, pathname, search, useNavApi = true, ...props }) => {
+> = ({ children, pathname, search, useNavApi = navApiSupported, ...props }) => {
   const [state, dispatch] = useReducer(reducer, {
     url: withWindow(
       ({ location }) =>
@@ -219,7 +221,6 @@ export const Router: FC<
           } else {
             finish();
           }
-          // eslint-disable-next-line no-useless-return
           return; // WARN: `finish()` should be the last code running
         },
       });
