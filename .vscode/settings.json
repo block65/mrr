@@ -1,0 +1,7 @@
+{
+  "biome.enabled": false,
+  "prettier.enable": false,
+  "eslint.enable": false,
+  "oxc.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+}
