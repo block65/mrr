@@ -3,29 +3,21 @@
   "version": "6.0.0-rc1",
   "private": false,
   "license": "MIT",
-  "sideEffects": false,
-  "type": "module",
-  "exports": {
-    ".": "./src/main.ts",
-    "./named-route": "./src/named-route.ts",
-    "./animate": "./src/animate.ts"
-  },
   "files": [
     "lib/**/*.ts",
     "lib/**/*.tsx",
     "src/**/*.ts"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/main.ts",
+    "./named-route": "./src/named-route.ts",
+    "./animate": "./src/animate.ts"
+  },
   "scripts": {
     "preversion": "make test"
   },
-  "browserslist": [
-    "last 1 Chrome major versions",
-    "last 2 Firefox major versions",
-    "last 2 Safari major versions",
-    "last 3 Android major versions",
-    "last 3 ChromeAndroid major versions",
-    "last 2 iOS major versions"
-  ],
   "dependencies": {
     "@types/dom-view-transitions": "^1.0.6",
     "navigation-api-types": "^0.6.1",
@@ -62,5 +54,14 @@
     "@types/react-dom": "^19.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
-  }
+  },
+  "browserslist": [
+    "last 1 Chrome major versions",
+    "last 2 Firefox major versions",
+    "last 2 Safari major versions",
+    "last 3 Android major versions",
+    "last 3 ChromeAndroid major versions",
+    "last 2 iOS major versions"
+  ],
+  "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be"
 }
