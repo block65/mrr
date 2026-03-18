@@ -2,14 +2,14 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import { useCallback, useEffect, type FC } from 'react';
 import { expect, test, vi } from 'vitest';
-import { namedRoute } from '../lib/named-route.js';
+import { namedRoute } from '@block65/mrr/named-route';
 import type { RouteComponentProps } from '../lib/types.js';
 import {
   Route,
   Router,
   Routes,
   type SyntheticNavigateEvent,
-} from '../src/index.js';
+} from '@block65/mrr';
 
 const login = namedRoute('/');
 

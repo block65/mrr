@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { expect, test } from 'vitest';
-import { Link, Route, Router, Routes, useLocation } from '../src/index.js';
-import { namedRoute } from '../src/named-route.js';
+import { Link, Route, Router, Routes, useLocation } from '@block65/mrr';
+import { namedRoute } from '@block65/mrr/named-route';
 
 export const LocationDisplay = () => {
   const [location] = useLocation();

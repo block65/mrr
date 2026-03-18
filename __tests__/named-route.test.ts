@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { expect, test } from 'vitest';
-import { namedRoute } from '../src/named-route.js';
+import { namedRoute } from '@block65/mrr/named-route';
 
 const route1 = namedRoute('/');
 const route2 = namedRoute('/test');

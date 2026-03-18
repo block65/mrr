@@ -3,8 +3,8 @@ import { render } from '@testing-library/react';
 import type { AnchorHTMLAttributes, FC, PropsWithChildren } from 'react';
 import { FormattedMessage, IntlProvider } from 'react-intl';
 import { expect, test } from 'vitest';
-import { Link, Router } from '../src/index.js';
-import { namedRoute } from '../src/named-route.js';
+import { Link, Router } from '@block65/mrr';
+import { namedRoute } from '@block65/mrr/named-route';
 
 const ComponentThatTakesProps: FC<
   PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>

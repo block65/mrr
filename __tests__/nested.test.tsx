@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
 import { expect, test } from 'vitest';
-import { namedRoute } from '../lib/named-route.js';
-import { Route, Router, Routes } from '../src/index.js';
+import { namedRoute } from '@block65/mrr/named-route';
+import { Route, Router, Routes } from '@block65/mrr';
 import { LocationDisplay } from './main.test.js';
 
 test('wildcard routes + nested', async () => {
