@@ -1,12 +1,10 @@
 
-SRCS := $(shell find lib -print -name *.ts?)
-
-all: build/main.js types
+.PHONY: all
+all: test
 
 .PHONY: clean
 clean:
 	pnpm tsc -b --clean
-	rm -rf dist build
 
 .PHONY: distclean
 distclean: clean
@@ -15,8 +13,7 @@ distclean: clean
 .PHONY: test
 test: node_modules
 	pnpm tsc --noEmit
-	pnpm vitest run
-	$(MAKE) build/main.js
+	pnpm vitest run --typecheck
 
 .PRECIOUS: pnpm-lock.yaml
 node_modules: pnpm-lock.yaml package.json
@@ -24,17 +21,9 @@ node_modules: pnpm-lock.yaml package.json
 
 .PHONY: dev
 dev: node_modules
-	pnpm vite dev
-
-.PHONY: types
-types: node_modules
-	pnpm tsc
-
-build/main.js: node_modules $(SRCS) bundlesize.config.cjs
-	NODE_ENV=production pnpm vite build
-	npx bundlesize
+	pnpm vite dev --config examples/vite.config.ts examples
 
 .PHONY: pretty
 pretty:
-	pnpm eslint --fix .
-	pnpm prettier --write .
+	pnpm oxlint --fix .
+	pnpm oxfmt --write .

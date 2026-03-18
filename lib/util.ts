@@ -22,17 +22,17 @@ export function withWindow<A, B>(
 }
 
 export function withNavigation<A>(
-  a: (navigation: Navigation) => A,
+  fn: (navigation: Navigation) => A,
 ): A | undefined;
 export function withNavigation<A, B>(
-  a: (navigation: Navigation) => A,
+  fn: (navigation: Navigation) => A,
   b: B,
 ): A | B;
 export function withNavigation<A, B>(
-  a: (navigation: Navigation) => A,
+  fn: (navigation: Navigation) => A,
   b?: B,
 ): A | B | undefined {
-  return withWindow((w) => (w.navigation ? a(w.navigation) : b), b);
+  return withWindow((w) => (w.navigation ? fn(w.navigation) : b), b);
 }
 
 export function urlRhs(url: URL): string {
@@ -48,7 +48,6 @@ export function urlObjectAssign(
   const newUrl = origin ? new URL(urlRhs(url), origin) : new URL(url);
 
   Object.entries(rest).forEach(([k, v]) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     newUrl[k as keyof typeof rest] = v || '';
   });
 

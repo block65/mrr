@@ -18,5 +18,6 @@ export function startViewTransition(
     finished: resolved,
     skipTransition: async () => {},
     updateCallbackDone: resolved,
+    types: new Set(),
   };
 }

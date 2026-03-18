@@ -1,9 +1,7 @@
 {
   "extends": ["@tsconfig/vite-react", "@tsconfig/strictest"],
   "compilerOptions": {
-    "noEmit": false,
-    "declaration": true,
-    "outDir": "./dist",
+    "noEmit": true,
     "types": [
       "./node_modules/navigation-api-types",
       "dom-view-transitions",
@@ -12,10 +10,10 @@
     "allowJs": false,
     "checkJs": false,
     "removeComments": false,
-    "allowImportingTsExtensions": false,
+    "allowImportingTsExtensions": true,
 
     // why does this even exist?
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": ["./dist", "./build", "node_modules"]
+  "exclude": ["node_modules"]
 }

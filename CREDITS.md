@@ -1,4 +1,5 @@
-Credit to [@nikparo](https://github.com/nikparo) for "Running React parent effects before child effects"
+Credit to [@nikparo](https://github.com/nikparo) for "Running React parent
+effects before child effects"
 
 ```
 // Sometimes you want to run parent effects before those of the children. E.g. when setting

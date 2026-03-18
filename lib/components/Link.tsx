@@ -27,7 +27,6 @@ type LinkChildProps = LinkBaseProps & {
 export const Link = forwardRef<
   HTMLAnchorElement,
   LinkProps
-  // eslint-disable-next-line prefer-arrow-callback
 >(function Link({ children, href, onClick, history, ...props }, ref) {
   const [url, { navigate }] = useLocation();
   const [{ useNavApi }] = useRouter();

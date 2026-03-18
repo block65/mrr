@@ -1,5 +1,5 @@
 import { type FC, useEffect } from 'react';
-import { useNavigate } from '../../src/index.js';
+import { useNavigate } from '@block65/mrr';
 import { LocationDisplay } from '../main.test.js';
 
 export const NavigationInsideEffect: FC = () => {

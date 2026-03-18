@@ -1,4 +1,4 @@
-import { namedRoute } from '../named-route.js';
+import { namedRoute } from '@block65/mrr/named-route';
 
 export const index = namedRoute('/');
 export const admin = namedRoute('/admin');

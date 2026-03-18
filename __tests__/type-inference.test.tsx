@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 import { expect, test } from 'vitest';
 import type { ExtractRouteParams } from '../lib/types.js';
-import { Route, Router, Routes } from '../src/index.js';
-import { namedRoute } from '../src/named-route.js';
+import { Route, Router, Routes } from '@block65/mrr';
+import { namedRoute } from '@block65/mrr/named-route';
 
 const login = namedRoute('/foo/:foo');
 

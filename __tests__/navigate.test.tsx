@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FC } from 'react';
 import { expect, test } from 'vitest';
-import { Route, Router, Routes, useNavigate } from '../src/index.js';
-import { namedRoute } from '../src/named-route.js';
+import { Route, Router, Routes, useNavigate } from '@block65/mrr';
+import { namedRoute } from '@block65/mrr/named-route';
 import { NavigationInsideEffect } from './components/NavigationInsideEffect.js';
 import { LocationDisplay } from './main.test.js';
 
