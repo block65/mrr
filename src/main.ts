@@ -1,3 +1,4 @@
+/// <reference types="navigation-api-types" />
 export { Redirect } from '../lib/components/Redirect.js';
 export { Link, type LinkProps } from '../lib/components/Link.js';
 
