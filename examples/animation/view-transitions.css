@@ -1,0 +1,52 @@
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes fade-out {
+  50% { opacity: 0; }
+  to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+  from { transform: translateX(100%); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateX(-100%); }
+}
+
+@keyframes slide-from-left {
+  from { transform: translateX(-100%); }
+}
+
+@keyframes slide-to-right {
+  to { transform: translateX(100%); }
+}
+
+:root {
+  --vt-duration: 150ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --vt-duration: 0ms;
+  }
+}
+
+::view-transition-old(animation-example-bwd) {
+  animation:
+    var(--vt-duration) cubic-bezier(0.17, 0.67, 0.83, 0.67) both slide-to-right,
+    var(--vt-duration) linear both fade-out;
+}
+::view-transition-new(animation-example-bwd) {
+  animation: var(--vt-duration) cubic-bezier(0.17, 0.67, 0.83, 0.67) both slide-from-left;
+}
+
+::view-transition-old(animation-example-fwd) {
+  animation:
+    var(--vt-duration) cubic-bezier(0.17, 0.67, 0.83, 0.67) both slide-to-left,
+    var(--vt-duration) ease-out both fade-out;
+}
+::view-transition-new(animation-example-fwd) {
+  animation: var(--vt-duration) cubic-bezier(0.17, 0.67, 0.83, 0.67) both slide-from-right;
+}

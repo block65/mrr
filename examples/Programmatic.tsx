@@ -1,23 +1,27 @@
 import { useCallback, type FC } from 'react';
-import { useNavigate } from '../index.js';
+import { useNavigate } from '@block65/mrr';
 
 export const Programmatic: FC = () => {
   const { navigate } = useNavigate();
 
   const nav = useCallback(() => {
     navigate({
-      // pathname: '/woot',
       searchParams: new URLSearchParams({ foo: Date.now().toString() }),
     });
   }, [navigate]);
 
   return (
-    <p>
-      This
-      <button type="button" onClick={nav}>
-        nav
+    <div className="flex items-center gap-4">
+      <button
+        type="button"
+        onClick={nav}
+        className="px-5 py-2.5 rounded-lg bg-accent text-white font-medium hover:bg-accent-dim transition-colors"
+      >
+        navigate()
       </button>
-      is programmatic
-    </p>
+      <span className="text-text-muted">
+        Appends timestamp to search params
+      </span>
+    </div>
   );
 };

@@ -1,14 +1,13 @@
-import { Heading } from '@block65/react-design-system';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { FC, PropsWithChildren } from 'react';
-import { Routes } from '../../../lib/Routes.js';
-import { Link, Route, useLocation, type LinkProps } from '../../index.js';
+import { Routes } from '../../lib/Routes.js';
+import { Link, Route, useLocation, type LinkProps } from '@block65/mrr';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';
 
 export const NavLink = (props: LinkProps) => (
   <li>
-    <Link {...props} style={{ color: 'inherit' }} />
+    <Link {...props} />
   </li>
 );
 
@@ -32,57 +31,30 @@ export const FramerMotionExample = () => {
   return (
     <div>
       {location.pathname}
-      <ul>
+      <ul className="flex gap-2 flex-wrap">
         <NavLink
-          href={hslRoute.build({
-            params: {
-              h: '10',
-              s: '90',
-              l: '50',
-            },
-          })}
+          href={hslRoute.build({ params: { h: '10', s: '90', l: '50' } })}
         >
           HSL Red
         </NavLink>
-
         <NavLink
-          href={hslRoute.build({
-            params: {
-              h: '120',
-              s: '100',
-              l: '40',
-            },
-          })}
+          href={hslRoute.build({ params: { h: '120', s: '100', l: '40' } })}
         >
           HSL Green
         </NavLink>
-
         <NavLink
-          href={rgbRoute.build({
-            params: {
-              r: '33',
-              g: '150',
-              b: '243',
-            },
-          })}
+          href={rgbRoute.build({ params: { r: '33', g: '150', b: '243' } })}
         >
           RGB Blue
         </NavLink>
-
         <NavLink
-          href={rgbRoute.build({
-            params: {
-              r: '240',
-              g: '98',
-              b: '146',
-            },
-          })}
+          href={rgbRoute.build({ params: { r: '240', g: '98', b: '146' } })}
         >
           RGB Pink
         </NavLink>
       </ul>
 
-      <div style={{ overflow: 'hidden' }}>
+      <div className="overflow-hidden">
         <AnimatePresence mode="popLayout">
           <Routes>
             <Route
@@ -93,7 +65,6 @@ export const FramerMotionExample = () => {
                 </Page>
               }
             />
-
             <Route
               path={rgbRoute.path}
               children={
@@ -102,9 +73,10 @@ export const FramerMotionExample = () => {
                 </Page>
               }
             />
-
             <Route>
-              <Heading>404</Heading>
+              <p className="font-mono text-text-dim text-sm">
+                Select a color
+              </p>
             </Route>
           </Routes>
         </AnimatePresence>

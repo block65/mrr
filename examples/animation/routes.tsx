@@ -1,4 +1,4 @@
-import { namedRoute } from '../../named-route.js';
+import { namedRoute } from '@block65/mrr/named-route';
 import { animationRoute } from '../paths.js';
 
 export const hslRoute = namedRoute(`${animationRoute.path}/hsl/:h/:s/:l`);

@@ -1,46 +1,51 @@
-import {
-  Block,
-  Heading,
-  Inline,
-  Paragraph,
-  TextLink,
-  type TextLinkProps,
-} from '@block65/react-design-system';
+import './view-transitions.css';
 import {
   useEffect,
   useState,
   type FC,
-  type HTMLAttributes,
   type PropsWithChildren,
 } from 'react';
-import styles from './ViewTransitions.module.scss';
-import { Routes } from '../../../lib/Routes.js';
-import { ActionType, Direction } from '../../../lib/State.js';
-import { startViewTransition } from '../../../lib/animate.js';
-import { Route, useLocation, useNavigate, useRouter } from '../../index.js';
+import { Routes } from '../../lib/Routes.js';
+import { ActionType, Direction } from '../../lib/State.js';
+import { startViewTransition } from '@block65/mrr/animate';
+import { Route, useLocation, useNavigate, useRouter } from '@block65/mrr';
 import { HSL, RGB } from './components.js';
 import { hslRoute, rgbRoute } from './routes.js';
 
-export const NavLink = ({ href, ...props }: TextLinkProps) => {
+const colorLinks = [
+  { label: 'Red', href: hslRoute.build({ params: { h: '10', s: '90', l: '50' } }) },
+  { label: 'Green', href: hslRoute.build({ params: { h: '120', s: '100', l: '40' } }) },
+  { label: 'Blue', href: rgbRoute.build({ params: { r: '33', g: '150', b: '243' } }) },
+  { label: 'Pink', href: rgbRoute.build({ params: { r: '240', g: '98', b: '146' } }) },
+];
+
+const NavLink: FC<{ href: string; children: React.ReactNode }> = ({
+  href,
+  children,
+}) => {
   const { navigate } = useNavigate();
+  const [location] = useLocation();
+  const isActive = location.pathname === new URL(href, location).pathname;
 
   return (
-    <Inline component="li">
-      <TextLink
-        {...props}
-        onClick={(e) => {
-          e.preventDefault();
-          // startViewTransition(() => navigate(`${href}`).committed);
-          navigate(`${href}`);
-        }}
-      />
-    </Inline>
+    <a
+      className={`text-sm px-3 py-1.5 rounded-md transition-colors ${
+        isActive
+          ? 'bg-accent/15 text-accent font-medium'
+          : 'text-text-muted hover:text-text hover:bg-surface-raised'
+      }`}
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(`${href}`);
+      }}
+    >
+      {children}
+    </a>
   );
 };
 
-const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
-  props,
-) => {
+const TransitionPage: FC<PropsWithChildren> = ({ children }) => {
   const [sinceRender, setSinceRender] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,25 +70,26 @@ const TransitionPage: FC<PropsWithChildren<HTMLAttributes<HTMLElement>>> = (
     };
   }, [dispatch]);
 
+  const transitionName =
+    direction === Direction.Forward
+      ? 'animation-example-fwd'
+      : direction === Direction.Backward
+        ? 'animation-example-bwd'
+        : undefined;
+
   return (
-    <Block
-      {...props}
-      borderWidth="1"
-      padding="7"
-      className={[
-        props.className,
-        direction === Direction.Forward && styles.fwd,
-        direction === Direction.Backward && styles.bwd,
-      ]}
-      alignItems="center"
+    <div
+      className="rounded-lg border border-border p-6 flex flex-col items-center gap-4"
+      style={transitionName ? { viewTransitionName: transitionName } : undefined}
     >
-      <Paragraph fontSize="0">
-        navDirection=
-        {direction}
-      </Paragraph>
-      <Paragraph>{sinceRender}</Paragraph>
-      <Inline>{props.children}</Inline>
-    </Block>
+      <div className="flex gap-4 text-xs text-text-dim tabular-nums">
+        <span>
+          dir: {direction === Direction.Forward ? 'fwd' : direction === Direction.Backward ? 'bwd' : '—'}
+        </span>
+        <span>tick: {sinceRender}</span>
+      </div>
+      {children}
+    </div>
   );
 };
 
@@ -91,56 +97,21 @@ export const ViewTransitionsExample = () => {
   const [location] = useLocation();
 
   return (
-    <Block padding="10">
-      <Inline component="ul" justifyContent="center">
-        <NavLink
-          href={hslRoute.build({
-            params: {
-              h: '10',
-              s: '90',
-              l: '50',
-            },
-          })}
-        >
-          HSL Red
-        </NavLink>
+    <div className="px-8 space-y-6 pb-8 sm:px-12">
+      <div>
+        <h1 className="text-xl font-semibold">/animation</h1>
+        <p className="text-sm text-text-muted mt-1">
+          View Transitions with directional slides
+        </p>
+      </div>
 
-        <NavLink
-          href={hslRoute.build({
-            params: {
-              h: '120',
-              s: '100',
-              l: '40',
-            },
-          })}
-        >
-          HSL Green
-        </NavLink>
-
-        <NavLink
-          href={rgbRoute.build({
-            params: {
-              r: '33',
-              g: '150',
-              b: '243',
-            },
-          })}
-        >
-          RGB Blue
-        </NavLink>
-
-        <NavLink
-          href={rgbRoute.build({
-            params: {
-              r: '240',
-              g: '98',
-              b: '146',
-            },
-          })}
-        >
-          RGB Pink
-        </NavLink>
-      </Inline>
+      <div className="flex gap-2 flex-wrap">
+        {colorLinks.map((link) => (
+          <NavLink key={link.label} href={link.href}>
+            {link.label}
+          </NavLink>
+        ))}
+      </div>
 
       <Routes key={location.pathname}>
         <Route
@@ -151,7 +122,6 @@ export const ViewTransitionsExample = () => {
             </TransitionPage>
           }
         />
-
         <Route
           path={rgbRoute.path}
           children={
@@ -160,11 +130,12 @@ export const ViewTransitionsExample = () => {
             </TransitionPage>
           }
         />
-
         <Route>
-          <Heading>404</Heading>
+          <div className="rounded-lg border border-dashed border-border p-8 text-center">
+            <p className="text-sm text-text-dim">Pick a color above</p>
+          </div>
         </Route>
       </Routes>
-    </Block>
+    </div>
   );
 };
